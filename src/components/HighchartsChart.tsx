@@ -1,17 +1,11 @@
+import { useLayoutEffect, useState } from 'react';
+
 import HighchartsReact from 'highcharts-react-official'
 import Highcharts from 'highcharts/highstock'
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+
+import { ChartProps, TData } from './Chart';
 
 const defaultHistoryLength = 10;
-
-type TData = number;
-type TLabel = string;
-
-interface Props<T extends TData> {
-  length?: number;
-  label?: string;
-  handlers: (() => T | Promise<T>)[];
-}
 
 
 const options: Highcharts.Options = {
@@ -22,7 +16,7 @@ const options: Highcharts.Options = {
 }
 
 
-export default function HighchartsChart<T extends TData>(props: Props<T>) {
+export default function HighchartsChart<T extends TData>(props: ChartProps<T>) {
 
   const {
     label,

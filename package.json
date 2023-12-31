@@ -16,7 +16,8 @@
     "highcharts-react-official": "^3.2.1",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-google-charts": "^4.0.1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.9",

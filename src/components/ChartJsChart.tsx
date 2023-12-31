@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { ChartProps, TData } from "./Chart";
 
 ChartJS.register(
   CategoryScale,
@@ -23,16 +24,9 @@ ChartJS.register(
 
 const defaultHistoryLength = 10;
 
-type TData = number;
 type TLabel = string;
 
-interface Props<T extends TData> {
-  length?: number;
-  label?: string;
-  handlers: (() => T | Promise<T>)[];
-}
-
-export default function ChartJsChart<T extends TData>(props: Props<T>) {
+export default function ChartJsChart<T extends TData>(props: ChartProps<T>) {
 
   const {
     label,
