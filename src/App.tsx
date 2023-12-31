@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./App.css";
 
 import { getCpuState, getMemoryState, getSwapState } from "./api";
-import LineChart from "./components/LineChart";
+import HighchartsChart from "./components/Chart";
 
 interface ChartProps {
   id: string;
@@ -16,8 +16,8 @@ const defaultStack: ChartProps[] = [
     label: 'CPU',
     handler: async () => {
       const cpu = await getCpuState();
-      // console.log(cpu);
-      return cpu.idle * 100;
+      console.log(cpu);
+      return cpu.system * 100 + cpu.user * 100;
     }
   },
   {
@@ -48,7 +48,7 @@ function App() {
 
     <>
       {stack.map((data) => (
-        <LineChart
+        <HighchartsChart
           key={data.id}
           label={data.label}
           handlers={[data.handler]}

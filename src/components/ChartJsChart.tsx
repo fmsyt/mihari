@@ -32,7 +32,7 @@ interface Props<T extends TData> {
   handlers: (() => T | Promise<T>)[];
 }
 
-export default function LineChart<T extends TData>(props: Props<T>) {
+export default function ChartJsChart<T extends TData>(props: Props<T>) {
 
   const {
     label,
