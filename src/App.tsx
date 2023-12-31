@@ -12,7 +12,6 @@ const defaultStack: AppChartProps[] = [
     handlers: [
       async () => {
         const cpu = await getCpuState();
-        console.log(cpu);
         return cpu.system * 100 + cpu.user * 100;
       }
     ],
@@ -20,7 +19,6 @@ const defaultStack: AppChartProps[] = [
       label: 'CPU',
       handleUpdate: async () => {
         const cpu = await getCpuState();
-        console.log(cpu);
         return cpu.system * 100 + cpu.user * 100;
       }
     }],
@@ -48,7 +46,7 @@ const defaultStack: AppChartProps[] = [
     handlers: [
       async () => {
         const swap = await getSwapState();
-        // console.log(swap);
+        console.log(swap);
         return (swap.free / swap.total) * 100;
       }
     ],
@@ -56,7 +54,7 @@ const defaultStack: AppChartProps[] = [
       label: 'Swap',
       handleUpdate: async () => {
         const swap = await getSwapState();
-        // console.log(swap);
+        console.log(swap);
         return (swap.free / swap.total) * 100;
       }
     }],

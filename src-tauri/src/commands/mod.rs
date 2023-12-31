@@ -1,3 +1,6 @@
+use tokio::time::sleep;
+use std::time::Duration;
+
 use serde::Serialize;
 use systemstat::{System, Platform};
 
@@ -11,9 +14,12 @@ pub struct CPUState {
 }
 
 #[tauri::command]
-pub fn cpu_state() -> CPUState {
+pub async fn cpu_state() -> CPUState {
     let sys = System::new();
     let cpu = sys.cpu_load_aggregate().unwrap();
+
+    // wait 500 ms
+    sleep(Duration::from_millis(500)).await;
 
     let cpu_load = cpu.done().unwrap();
 

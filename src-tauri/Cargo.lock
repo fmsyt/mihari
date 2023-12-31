@@ -1533,6 +1533,7 @@ dependencies = [
  "systemstat",
  "tauri",
  "tauri-build",
+ "tokio",
 ]
 
 [[package]]
