@@ -73,7 +73,7 @@ export default function GoogleChartsChart(props: ChartProps<TData>) {
         ...rows.map((row) => ["", ...row])
       ]}
       width="100%"
-      height="400px"
+      height="100%"
       legendToggle
       options={{
         vAxis: {

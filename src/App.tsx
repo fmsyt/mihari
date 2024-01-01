@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Grid } from "@mui/material";
+
 import "./App.css";
 
 import { getCpuState, getMemoryState, getSwapState } from "./api";
@@ -67,14 +69,23 @@ function App() {
 
   return (
 
-    <>
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        height: '100vh',
+        width: '100vw',
+      }}
+    >
       {stack.map((data) => (
-        <Chart
-          key={data.label}
-          {...data}
-          />
+        <Grid item xs={4}>
+          <Chart
+            key={data.label}
+            {...data}
+            />
+        </Grid>
       ))}
-    </>
+    </Grid>
 
   );
 }
