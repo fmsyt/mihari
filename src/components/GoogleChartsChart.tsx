@@ -16,6 +16,7 @@ const defaultHistoryLength = 60;
 /**
  * @see https://developers.google.com/chart/interactive/docs?hl=ja
  * @see https://www.react-google-charts.com/examples/area-chart
+ * @see https://qiita.com/arakaki_tokyo/items/9f57524df1509837bbec#google-charts
  */
 export default function GoogleChartsChart(props: ChartProps<TData>) {
 
@@ -95,6 +96,6 @@ export default function GoogleChartsChart(props: ChartProps<TData>) {
           bottom: 48,
         }
       }}
-      />
+    />
   )
 }
