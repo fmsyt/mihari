@@ -81,7 +81,18 @@ export default function GoogleChartsChart(props: ChartProps<TData>) {
           maxValue: 100,
         },
         legend: {
-          position: 'top',
+          position: "top",
+          textStyle: {
+            color: "white"
+          }
+        },
+        backgroundColor: "transparent",
+        // colors: ["#ff0000", "#00ff00", "#0000ff"],
+        chartArea: {
+          top: 48,
+          left: 48,
+          right: 48,
+          bottom: 48,
         }
       }}
       />
