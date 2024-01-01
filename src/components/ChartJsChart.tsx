@@ -8,8 +8,8 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+} from "chart.js";
+import { Line } from "react-chartjs-2";
 import { ChartProps, TData } from "./Chart";
 
 ChartJS.register(
@@ -19,7 +19,7 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const defaultHistoryLength = 10;
@@ -27,14 +27,9 @@ const defaultHistoryLength = 10;
 type TLabel = string;
 
 export default function ChartJsChart<T extends TData>(props: ChartProps<T>) {
+  const { label, length, handlers } = props;
 
-  const {
-    label,
-    length,
-    handlers,
-  } = props;
-
-  const ref = useRef<ChartJS<"line", T[], TLabel>>(null)
+  const ref = useRef<ChartJS<"line", T[], TLabel>>(null);
 
   const [historyLength, setHistoryLength] = useState(defaultHistoryLength);
   useLayoutEffect(() => {
@@ -49,12 +44,13 @@ export default function ChartJsChart<T extends TData>(props: ChartProps<T>) {
       digits++;
     }
 
-    return Array(historyLength).fill(0).map((_, i) => {
-      const n = i + 1;
-      const s = n.toString();
-      return s.padStart(digits, '0');
-    });
-
+    return Array(historyLength)
+      .fill(0)
+      .map((_, i) => {
+        const n = i + 1;
+        const s = n.toString();
+        return s.padStart(digits, "0");
+      });
   }, [historyLength]);
 
   useLayoutEffect(() => {
@@ -64,30 +60,29 @@ export default function ChartJsChart<T extends TData>(props: ChartProps<T>) {
         return;
       }
 
-      const next = await Promise.all(handlers.map(h => h()));
+      const next = await Promise.all(handlers.map((h) => h()));
       next.forEach((v, i) => {
         chart.data.datasets[i].data?.push(v);
 
         if (chart.data.datasets[i].data?.length > historyLength) {
           chart.data.datasets[i].data?.shift();
 
-          let lastLabel = chart.data.labels?.[chart.data.labels?.length - 1] || 0;
-          chart.data.labels?.push(((+lastLabel + 1) % historyLength).toString());
+          let lastLabel =
+            chart.data.labels?.[chart.data.labels?.length - 1] || 0;
+          chart.data.labels?.push(
+            ((+lastLabel + 1) % historyLength).toString(),
+          );
           chart.data.labels?.shift();
         }
       });
 
       chart.update();
-
     }, 1000);
 
     return () => {
       clearInterval(interval);
-    }
+    };
   }, [handlers, historyLength]);
-
-
-
 
   return (
     <Line
@@ -112,38 +107,39 @@ export default function ChartJsChart<T extends TData>(props: ChartProps<T>) {
               // maxTicksLimit: historyLength - 1,
               minRotation: 0,
               maxRotation: 0,
-            }
+            },
           },
           y: {
             min: 0,
             max: 100,
             ticks: {
               display: false,
-            }
+            },
           },
         },
         animation: false,
         elements: {
-          point: {
-          }
+          point: {},
         },
         datasets: {
           line: {
             // pointRadius: 0,
             // pointHoverRadius: 0,
-            fill: "stack"
-          }
+            fill: "stack",
+          },
         },
       }}
       data={{
         labels: xLabels,
-        datasets: [{
-          label,
-          data: [],
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1
-        }]
+        datasets: [
+          {
+            label,
+            data: [],
+            borderColor: "rgb(75, 192, 192)",
+            tension: 0.1,
+          },
+        ],
       }}
-      />
-  )
+    />
+  );
 }

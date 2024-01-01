@@ -1,11 +1,8 @@
 import { invoke } from "@tauri-apps/api/tauri";
 
-const handlerNameList = [
-  "cpu_state",
-  "memory_state",
-] as const;
+const handlerNameList = ["cpu_state", "memory_state"] as const;
 
-export type HandlerName = typeof handlerNameList[number];
+export type HandlerName = (typeof handlerNameList)[number];
 
 export interface CPUState {
   system: number;

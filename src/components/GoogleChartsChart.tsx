@@ -19,11 +19,7 @@ const defaultHistoryLength = 60;
  * @see https://qiita.com/arakaki_tokyo/items/9f57524df1509837bbec#google-charts
  */
 export default function GoogleChartsChart(props: ChartProps<TData>) {
-
-  const {
-    length,
-    series,
-  } = props;
+  const { length, series } = props;
 
   const [historyLength, setHistoryLength] = useState(defaultHistoryLength);
   useLayoutEffect(() => {
@@ -35,44 +31,39 @@ export default function GoogleChartsChart(props: ChartProps<TData>) {
   const [rows, setRows] = useState<TData[][]>([]);
   useLayoutEffect(() => {
     const timer = setInterval(async () => {
+      const nextValues = await Promise.all(
+        series?.map((s) => s.handleUpdate()) || [],
+      );
 
-      const nextValues = await Promise.all(series?.map((s) => s.handleUpdate()) || []);
-
-      setRows(prev => {
-        const next = [
-          ...prev,
-          nextValues,
-        ]
+      setRows((prev) => {
+        const next = [...prev, nextValues];
 
         next.shift();
 
         return next;
       });
-
     }, 1000);
 
     return () => {
       clearInterval(timer);
-    }
-
+    };
   }, [series]);
 
   useLayoutEffect(() => {
-
-    const defaultRows = Array(series?.length).fill(0).map((_) => 0);
-    const nextSeries = Array(historyLength).fill(0).map((_) => defaultRows);
+    const defaultRows = Array(series?.length)
+      .fill(0)
+      .map((_) => 0);
+    const nextSeries = Array(historyLength)
+      .fill(0)
+      .map((_) => defaultRows);
 
     setRows(nextSeries);
-
   }, [series, historyLength]);
 
   return (
     <Chart
       chartType="AreaChart"
-      data={[
-        ["index", ...headerRow],
-        ...rows.map((row) => ["", ...row])
-      ]}
+      data={[["index", ...headerRow], ...rows.map((row) => ["", ...row])]}
       width="100%"
       height="100%"
       legendToggle
@@ -84,8 +75,8 @@ export default function GoogleChartsChart(props: ChartProps<TData>) {
         legend: {
           position: "top",
           textStyle: {
-            color: "white"
-          }
+            color: "white",
+          },
         },
         backgroundColor: "transparent",
         // colors: ["#ff0000", "#00ff00", "#0000ff"],
@@ -94,8 +85,8 @@ export default function GoogleChartsChart(props: ChartProps<TData>) {
           left: 48,
           right: 48,
           bottom: 48,
-        }
+        },
       }}
     />
-  )
+  );
 }

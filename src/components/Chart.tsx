@@ -13,7 +13,7 @@ export interface ChartProps<T extends TData> {
   labels?: string[];
   handlers: (() => T | Promise<T>)[];
 
-  series?: SeriesType[]
+  series?: SeriesType[];
 }
 
 export const Chart = WrappedChart;
