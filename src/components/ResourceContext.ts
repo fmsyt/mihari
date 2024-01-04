@@ -2,7 +2,7 @@ import { createContext } from "react";
 
 import { ResourceGroup } from "../types";
 
-interface Context<T = any> {
+interface Context<T> {
   resourceGroups: ResourceGroup[];
   addResourceGroup: (resourceGroup: ResourceGroup) => void;
   removeResourceGroup: (id: string) => void;
@@ -11,7 +11,7 @@ interface Context<T = any> {
   setUpdateInterval: (interval: number) => void;
 }
 
-const ResourceContext = createContext<Context>({
+const ResourceContext = createContext<Context<number>>({
   resourceGroups: [],
   addResourceGroup: () => {},
   removeResourceGroup: () => {},

@@ -1,10 +1,12 @@
-import { useState } from "react";
 import { Grid } from "@mui/material";
+import { useState } from "react";
 
 import "./App.css";
 
 import { getCpuState, getMemoryState, getSwapState } from "./api";
 import { Chart, ChartProps } from "./components/Chart";
+import { ResourceGroup } from "./types";
+import ResourceProvider from "./components/ResourceProvider";
 
 type AppChartProps = ChartProps<number>;
 
@@ -22,6 +24,19 @@ const swapUpdateHandler = async () => {
   const swap = await getSwapState();
   return (swap.free / swap.total) * 100;
 };
+
+const defaultResourceGroups: ResourceGroup[] = [
+  {
+    id: "cpu",
+    label: "CPU",
+    resources: [
+      {
+        label: "CPU",
+        updateHandler: cpuUpdateHandler,
+      },
+    ],
+  },
+];
 
 const defaultStack: AppChartProps[] = [
   {
@@ -60,20 +75,22 @@ function App() {
   const [stack, _setStack] = useState<AppChartProps[]>(defaultStack);
 
   return (
-    <Grid
-      container
-      spacing={2}
-      sx={{
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
-      {stack.map((data) => (
-        <Grid item xs={4}>
-          <Chart key={data.label} {...data} />
-        </Grid>
-      ))}
-    </Grid>
+    <ResourceProvider groups={defaultResourceGroups}>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          height: "100vh",
+          width: "100vw",
+        }}
+      >
+        {stack.map((data) => (
+          <Grid item xs={4}>
+            <Chart key={data.label} {...data} />
+          </Grid>
+        ))}
+      </Grid>
+    </ResourceProvider>
   );
 }
 

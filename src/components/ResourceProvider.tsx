@@ -5,24 +5,20 @@ import { Resource, ResourceGroup } from "../types";
 
 interface ResourceProviderProps {
   children: ReactNode;
+  groups?: ResourceGroup[];
 }
 
-type UpdateHandler = () => Promise<Resource<any>[]>;
-interface updateHandlerMapType {
-  timer: Promise<void>;
-  handlers: {
-    [key: string]: UpdateHandler;
-  };
-}
+type UpdateHandler = Resource["updateHandler"];
 
-const defaultUpdateHandlerMap: updateHandlerMapType = {
-  timer: Promise.resolve(),
-  handlers: {},
-};
+interface currentValuesType {
+  id: string;
+  handler: UpdateHandler;
+}
 
 export default function ResourceProvider(props: ResourceProviderProps) {
   const [updateInterval, setUpdateInterval] = useState(1000);
 
+  const [currentMap, setCurrentMap] = useState<currentValuesType[]>([]);
   const [groups, setGroups] = useState<ResourceGroup[]>([]);
 
   const addGroup = (group: ResourceGroup) => {
@@ -33,42 +29,48 @@ export default function ResourceProvider(props: ResourceProviderProps) {
     setGroups((prev) => prev.filter((g) => g.id !== id));
   };
 
-  const [updateHandlerMap, setUpdateHandlerMap] =
-    useState<updateHandlerMapType>(defaultUpdateHandlerMap);
-
   const timerDependencies = groups.map((g) => g.id);
 
-  useLayoutEffect(() => {
-    const timer = new Promise<void>((resolve) => {
+  const update = useCallback(async () => {
+    // NOTE: 同じメモリを参照させることで、Promise.allの結果を待つタイミングを揃える
+    const promiseList: UpdateHandler[] = [];
+
+    const map: currentValuesType[] = groups
+      .map((g) => {
+        return g.resources.map((r) => {
+          promiseList.push(r.updateHandler);
+
+          return {
+            id: g.id,
+            handler: r.updateHandler,
+          };
+        });
+      })
+      .flat();
+
+    const delay = new Promise<void>((resolve) => {
       setTimeout(() => {
         resolve();
       }, updateInterval);
     });
 
-    const handlers: { [key: string]: UpdateHandler } = {};
+    await Promise.all([delay, ...promiseList]);
 
-    groups.forEach((group) => {
-      group.resources.forEach((resource) => {
-        handlers[resource.id] = resource.updateHandler;
-      });
-    });
-
-    setUpdateHandlerMap({ timer, handlers });
+    setCurrentMap(map);
   }, [...timerDependencies, updateInterval]);
+
+  useLayoutEffect(() => {
+    update();
+  }, [update, currentMap]);
 
   const nextResources = useCallback(
     async (id: string) => {
-      const handler = updateHandlerMap.handlers[id];
+      const next = currentMap.filter((m) => m.id === id);
+      const nextValues = await Promise.all(next.map((n) => n.handler()));
 
-      if (!handler) {
-        return Promise.reject(`Resource with id ${id} not found`);
-      }
-
-      const [value] = await Promise.all([handler(), updateHandlerMap.timer]);
-
-      return value;
+      return nextValues;
     },
-    [updateHandlerMap],
+    [currentMap],
   );
 
   return (

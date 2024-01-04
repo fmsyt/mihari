@@ -1,5 +1,4 @@
 export interface Resource<T = number> {
-  id: string;
   label: string;
   updateHandler: () => T | Promise<T>;
   min?: number;
@@ -10,5 +9,5 @@ export interface Resource<T = number> {
 export interface ResourceGroup {
   id: string;
   label: string;
-  resources: Resource<any>[];
+  resources: Resource[];
 }

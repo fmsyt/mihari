@@ -13,6 +13,10 @@ const defaultHistoryLength = 60;
 //   ["2016", 1030, 540],
 // ];
 
+interface Props {
+  id: string;
+}
+
 /**
  * @see https://developers.google.com/chart/interactive/docs?hl=ja
  * @see https://www.react-google-charts.com/examples/area-chart
