@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { ResourceGroup } from "./types";
+import { ResourceGroup } from "../types";
 
 interface Context<T = any> {
   resourceGroups: ResourceGroup[];

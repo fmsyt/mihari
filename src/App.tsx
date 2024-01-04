@@ -8,62 +8,49 @@ import { Chart, ChartProps } from "./components/Chart";
 
 type AppChartProps = ChartProps<number>;
 
+const cpuUpdateHandler = async () => {
+  const cpu = await getCpuState();
+  return cpu.system * 100 + cpu.user * 100;
+};
+
+const memoryUpdateHandler = async () => {
+  const memory = await getMemoryState();
+  return (1 - memory.free / memory.total) * 100;
+};
+
+const swapUpdateHandler = async () => {
+  const swap = await getSwapState();
+  return (swap.free / swap.total) * 100;
+};
+
 const defaultStack: AppChartProps[] = [
   {
     label: "CPU",
-    handlers: [
-      async () => {
-        const cpu = await getCpuState();
-        return cpu.system * 100 + cpu.user * 100;
-      },
-    ],
+    handlers: [cpuUpdateHandler],
     series: [
       {
         label: "CPU",
-        handleUpdate: async () => {
-          const cpu = await getCpuState();
-          return cpu.system * 100 + cpu.user * 100;
-        },
+        handleUpdate: cpuUpdateHandler,
       },
     ],
   },
   {
     label: "Memory",
-    handlers: [
-      async () => {
-        const memory = await getMemoryState();
-        // console.log(memory);
-        return (1 - memory.free / memory.total) * 100;
-      },
-    ],
+    handlers: [memoryUpdateHandler],
     series: [
       {
         label: "Memory",
-        handleUpdate: async () => {
-          const memory = await getMemoryState();
-          // console.log(memory);
-          return (1 - memory.free / memory.total) * 100;
-        },
+        handleUpdate: memoryUpdateHandler,
       },
     ],
   },
   {
     label: "Swap",
-    handlers: [
-      async () => {
-        const swap = await getSwapState();
-        console.log(swap);
-        return (swap.free / swap.total) * 100;
-      },
-    ],
+    handlers: [swapUpdateHandler],
     series: [
       {
         label: "Swap",
-        handleUpdate: async () => {
-          const swap = await getSwapState();
-          console.log(swap);
-          return (swap.free / swap.total) * 100;
-        },
+        handleUpdate: swapUpdateHandler,
       },
     ],
   },

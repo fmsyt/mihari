@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useLayoutEffect, useState } from "react";
 
 import ResourceContext from "./ResourceContext";
-import { Resource, ResourceGroup } from "./types";
+import { Resource, ResourceGroup } from "../types";
 
 interface ResourceProviderProps {
   children: ReactNode;
