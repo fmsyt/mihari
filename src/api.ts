@@ -12,17 +12,17 @@ export interface CPUState {
   interrupt: number;
 }
 
-export async function getCpuState(): Promise<CPUState[]> {
-  return await invoke("cpu_state");
+export async function getCpuState(ms?: number): Promise<CPUState[]> {
+  return await invoke("cpu_state", { ms });
 }
 
-export async function getCpuCoreState(core: number): Promise<CPUState> {
-  const cores = await getCpuState();
+export async function getCpuCoreState(core: number, ms?: number): Promise<CPUState> {
+  const cores = await getCpuState(ms);
   return cores[core];
 }
 
-export async function getCpuStateAggregate(): Promise<CPUState> {
-  return await invoke("cpu_state_aggregate");
+export async function getCpuStateAggregate(ms?: number): Promise<CPUState> {
+  return await invoke("cpu_state_aggregate", { ms });
 }
 
 export interface MemoryState {

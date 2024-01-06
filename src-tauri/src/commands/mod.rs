@@ -14,22 +14,15 @@ pub struct CPUState {
 }
 
 #[tauri::command]
-pub async fn cpu_state() -> Vec<CPUState> {
+pub async fn cpu_state(ms: Option<u64>) -> Vec<CPUState> {
+
     let sys = System::new();
     let cpu = sys.cpu_load().unwrap();
 
-    // wait 500 ms
-    sleep(Duration::from_millis(1000)).await;
+    let ms = ms.unwrap_or(1000);
+    sleep(Duration::from_millis(ms)).await;
 
     let cpu_load = cpu.done().unwrap();
-
-    // CPUState {
-    //     system: cpu_load.system,
-    //     user: cpu_load.user,
-    //     nice: cpu_load.nice,
-    //     idle: cpu_load.idle,
-    //     interrupt: cpu_load.interrupt,
-    // }
 
     let state_list = cpu_load
         .iter()
@@ -46,12 +39,12 @@ pub async fn cpu_state() -> Vec<CPUState> {
 }
 
 #[tauri::command]
-pub async fn cpu_state_aggregate() -> CPUState {
+pub async fn cpu_state_aggregate(ms: Option<u64>) -> CPUState {
     let sys = System::new();
     let cpu = sys.cpu_load_aggregate().unwrap();
 
-    // wait 500 ms
-    sleep(Duration::from_millis(500)).await;
+    let ms = ms.unwrap_or(1000);
+    sleep(Duration::from_millis(ms)).await;
 
     let cpu_load = cpu.done().unwrap();
 
