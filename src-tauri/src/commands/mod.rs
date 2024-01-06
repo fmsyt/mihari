@@ -19,7 +19,7 @@ pub async fn cpu_state() -> Vec<CPUState> {
     let cpu = sys.cpu_load().unwrap();
 
     // wait 500 ms
-    sleep(Duration::from_millis(500)).await;
+    sleep(Duration::from_millis(1000)).await;
 
     let cpu_load = cpu.done().unwrap();
 

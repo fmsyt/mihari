@@ -1,52 +1,49 @@
-import { ReactNode, useCallback, useLayoutEffect, useState } from "react";
+import { ReactNode, useCallback, useLayoutEffect, useRef, useState } from "react";
 
 import ResourceContext from "./ResourceContext";
-import { Resource, ResourceGroup } from "../types";
+import { ResourceGroup } from "../types";
 
 interface ResourceProviderProps {
   children: ReactNode;
   groups?: ResourceGroup[];
+  updateInterval?: number;
 }
-
-type UpdateHandler = Resource["updateHandler"];
 
 interface currentValuesType {
   id: string;
-  handler: UpdateHandler;
+  values: number[];
 }
 
 export default function ResourceProvider(props: ResourceProviderProps) {
+  const { groups: initialGroups = [] } = props;
+  const [groups, setGroups] = useState<ResourceGroup[]>(initialGroups);
+  useLayoutEffect(() => {
+    setGroups(initialGroups || []);
+  }, [initialGroups]);
+
   const [updateInterval, setUpdateInterval] = useState(1000);
+  useLayoutEffect(() => {
+    setUpdateInterval(props.updateInterval || 1000);
+  }, [props.updateInterval]);
 
-  const [currentMap, setCurrentMap] = useState<currentValuesType[]>([]);
-  const [groups, setGroups] = useState<ResourceGroup[]>([]);
+  const [currentValues, setCurrentValues] = useState<currentValuesType[]>([]);
 
-  const addGroup = (group: ResourceGroup) => {
-    setGroups((prev) => [...prev, group]);
-  };
-
-  const removeGroup = (id: string) => {
-    setGroups((prev) => prev.filter((g) => g.id !== id));
-  };
-
-  const timerDependencies = groups.map((g) => g.id);
+  const isUpdatedRef = useRef(false);
 
   const update = useCallback(async () => {
+
     // NOTE: 同じメモリを参照させることで、Promise.allの結果を待つタイミングを揃える
-    const promiseList: UpdateHandler[] = [];
+    const promiseList: Promise<number[]>[] = [];
 
-    const map: currentValuesType[] = groups
-      .map((g) => {
-        return g.resources.map((r) => {
-          promiseList.push(r.updateHandler);
+    const map = groups.map((g) => {
+      const promise = Promise.all(g.resources.map((r) => r.updateHandler()));
+      promiseList.push(promise);
 
-          return {
-            id: g.id,
-            handler: r.updateHandler,
-          };
-        });
-      })
-      .flat();
+      return {
+        id: g.id,
+        promise,
+      };
+    });
 
     const delay = new Promise<void>((resolve) => {
       setTimeout(() => {
@@ -54,36 +51,41 @@ export default function ResourceProvider(props: ResourceProviderProps) {
       }, updateInterval);
     });
 
-    await Promise.all([delay, ...promiseList]);
+    const [, ...values] = await Promise.all([delay, ...promiseList]);
+    const nextCurrentValues = values.map((v, i) => {
+      return {
+        id: map[i].id,
+        values: v,
+      };
+    });
 
-    setCurrentMap(map);
-  }, [...timerDependencies, updateInterval]);
+    setCurrentValues(nextCurrentValues);
+  }, [groups, updateInterval]);
 
   useLayoutEffect(() => {
+
+    if (isUpdatedRef.current) {
+      return;
+    }
+    isUpdatedRef.current = true;
+
+    console.log("useLayoutEffect");
     update();
-  }, [update, currentMap]);
 
-  const nextResources = useCallback(
-    async (id: string) => {
-      const next = currentMap.filter((m) => m.id === id);
-      const nextValues = await Promise.all(next.map((n) => n.handler()));
+    return () => {
+      isUpdatedRef.current = false;
+    }
 
-      return nextValues;
-    },
-    [currentMap],
-  );
+  }, [update, currentValues]);
+
+  const getCurrentValues = useCallback((id: string) => currentValues.find((v) => v.id === id)?.values || [], [currentValues]);
 
   return (
     <ResourceContext.Provider
       value={{
         resourceGroups: groups,
-        addResourceGroup: addGroup,
-        removeResourceGroup: removeGroup,
         updateInterval,
-        nextResources,
-        setUpdateInterval: (interval: number) => {
-          setUpdateInterval(interval);
-        },
+        getCurrentValues,
       }}
     >
       {props.children}

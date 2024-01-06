@@ -16,6 +16,11 @@ export async function getCpuState(): Promise<CPUState[]> {
   return await invoke("cpu_state");
 }
 
+export async function getCpuCoreState(core: number): Promise<CPUState> {
+  const cores = await getCpuState();
+  return cores[core];
+}
+
 export async function getCpuStateAggregate(): Promise<CPUState> {
   return await invoke("cpu_state_aggregate");
 }

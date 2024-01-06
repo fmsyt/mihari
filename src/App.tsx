@@ -1,16 +1,13 @@
-import { Grid } from "@mui/material";
-import { useState } from "react";
+import { Box } from "@mui/material";
 
 import "./App.css";
 
-import { getCpuStateAggregate, getMemoryState, getSwapState } from "./api";
-import { Chart, ChartProps } from "./components/Chart";
+import { useLayoutEffect, useState } from "react";
+import { getCpuCoreState, getCpuState, getCpuStateAggregate, getMemoryState, getSwapState } from "./api";
+import ResourceMonitor from "./components/ResourceMonitor";
 import { ResourceGroup } from "./types";
-import ResourceProvider from "./components/ResourceProvider";
 
-type AppChartProps = ChartProps<number>;
-
-const cpuUpdateHandler = async () => {
+const _cpuUpdateHandler = async () => {
   const cpu = await getCpuStateAggregate();
   return cpu.system * 100 + cpu.user * 100;
 };
@@ -25,72 +22,74 @@ const swapUpdateHandler = async () => {
   return (swap.free / swap.total) * 100;
 };
 
-const defaultResourceGroups: ResourceGroup[] = [
-  {
-    id: "cpu",
-    label: "CPU",
-    resources: [
-      {
-        label: "CPU",
-        updateHandler: cpuUpdateHandler,
-      },
-    ],
-  },
-];
-
-const defaultStack: AppChartProps[] = [
-  {
-    label: "CPU",
-    handlers: [cpuUpdateHandler],
-    series: [
-      {
-        label: "CPU",
-        handleUpdate: cpuUpdateHandler,
-      },
-    ],
-  },
-  {
-    label: "Memory",
-    handlers: [memoryUpdateHandler],
-    series: [
-      {
-        label: "Memory",
-        handleUpdate: memoryUpdateHandler,
-      },
-    ],
-  },
-  {
-    label: "Swap",
-    handlers: [swapUpdateHandler],
-    series: [
-      {
-        label: "Swap",
-        handleUpdate: swapUpdateHandler,
-      },
-    ],
-  },
-];
-
 function App() {
-  const [stack, _setStack] = useState<AppChartProps[]>(defaultStack);
+  const [resources, setResources] = useState<ResourceGroup[]>([]);
+
+  useLayoutEffect(() => {
+
+    let isActive = false;
+
+    const func = async () => {
+
+      if (isActive) {
+        return;
+      }
+
+      isActive = true;
+
+      const cores = await getCpuState();
+
+      const next: ResourceGroup[] = [
+        {
+          id: "cpu",
+          label: "CPU",
+          resources: cores.map((_, i) => ({
+            label: `Core ${i + 1}`,
+            updateHandler: async () => {
+              const core = await getCpuCoreState(i);
+              return core.system * 100 + core.user * 100;
+            },
+          })),
+        },
+        {
+          id: "memory",
+          label: "Memory",
+          resources: [
+            {
+              label: "Memory",
+              updateHandler: memoryUpdateHandler,
+            },
+          ],
+        },
+        {
+          id: "swap",
+          label: "Swap",
+          resources: [
+            {
+              label: "Swap",
+              updateHandler: swapUpdateHandler,
+            },
+          ],
+        },
+      ];
+
+      setResources(next);
+    }
+
+    func();
+
+    return () => {
+      isActive = false;
+    };
+
+  }, []);
 
   return (
-    <ResourceProvider groups={defaultResourceGroups}>
-      <Grid
-        container
-        spacing={2}
-        sx={{
-          height: "100vh",
-          width: "100vw",
-        }}
-      >
-        {stack.map((data) => (
-          <Grid item xs={4}>
-            <Chart key={data.label} {...data} />
-          </Grid>
-        ))}
-      </Grid>
-    </ResourceProvider>
+    <Box sx={{ width: "100%", height: "100vh" }} padding={0}>
+      <ResourceMonitor
+        resources={resources}
+      />
+    </Box>
   );
 }
 
