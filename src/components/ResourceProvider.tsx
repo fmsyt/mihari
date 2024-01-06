@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useLayoutEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useLayoutEffect, useState } from "react";
 
 import ResourceContext from "./ResourceContext";
 import { ResourceGroup } from "../types";
@@ -27,8 +27,6 @@ export default function ResourceProvider(props: ResourceProviderProps) {
   }, [props.updateInterval]);
 
   const [currentValues, setCurrentValues] = useState<currentValuesType[]>([]);
-
-  const isUpdatedRef = useRef(false);
 
   const update = useCallback(async () => {
 
@@ -64,19 +62,13 @@ export default function ResourceProvider(props: ResourceProviderProps) {
 
   useLayoutEffect(() => {
 
-    if (isUpdatedRef.current) {
-      return;
-    }
-    isUpdatedRef.current = true;
-
-    console.log("useLayoutEffect");
-    update();
+    const timer = setInterval(update, updateInterval);
 
     return () => {
-      isUpdatedRef.current = false;
-    }
+      clearInterval(timer);
+    };
 
-  }, [update, currentValues]);
+  }, [update, updateInterval]);
 
   const getCurrentValues = useCallback((id: string) => currentValues.find((v) => v.id === id)?.values || [], [currentValues]);
 

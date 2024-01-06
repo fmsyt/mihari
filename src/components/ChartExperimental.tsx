@@ -22,8 +22,6 @@ export default function ChartExperimental(props: Props) {
   const resourceGroup = useMemo(() => {
     const group = resourceGroups?.find((g) => g.id === groupId);
     if (!group) {
-      console.error(`ResourceGroup not found. id: ${groupId}`);
-
       return {
         id: groupId,
         label: groupId,

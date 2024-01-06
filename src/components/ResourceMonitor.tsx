@@ -12,8 +12,6 @@ interface Props {
 export default function ResourceMonitor(props: Props) {
   const { resources, muiGridProps } = props;
 
-  console.log("ResourceMonitor", resources);
-
   return (
     <ResourceProvider groups={resources}>
       <Grid
