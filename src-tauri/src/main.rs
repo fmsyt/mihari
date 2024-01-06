@@ -3,7 +3,7 @@
 
 mod commands;
 
-use commands::{cpu_state, memory_state, swap_state};
+use commands::{cpu_state, cpu_state_aggregate, memory_state, swap_state};
 use tauri::{
     AppHandle, CustomMenuItem, GlobalWindowEvent, Manager, SystemTray, SystemTrayEvent,
     SystemTrayMenu, WindowEvent,
@@ -48,6 +48,7 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             cpu_state,
+            cpu_state_aggregate,
             memory_state,
             swap_state,
         ])

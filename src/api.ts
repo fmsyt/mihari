@@ -12,8 +12,12 @@ export interface CPUState {
   interrupt: number;
 }
 
-export async function getCpuState(): Promise<CPUState> {
+export async function getCpuState(): Promise<CPUState[]> {
   return await invoke("cpu_state");
+}
+
+export async function getCpuStateAggregate(): Promise<CPUState> {
+  return await invoke("cpu_state_aggregate");
 }
 
 export interface MemoryState {

@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import "./App.css";
 
-import { getCpuState, getMemoryState, getSwapState } from "./api";
+import { getCpuStateAggregate, getMemoryState, getSwapState } from "./api";
 import { Chart, ChartProps } from "./components/Chart";
 import { ResourceGroup } from "./types";
 import ResourceProvider from "./components/ResourceProvider";
@@ -11,7 +11,7 @@ import ResourceProvider from "./components/ResourceProvider";
 type AppChartProps = ChartProps<number>;
 
 const cpuUpdateHandler = async () => {
-  const cpu = await getCpuState();
+  const cpu = await getCpuStateAggregate();
   return cpu.system * 100 + cpu.user * 100;
 };
 

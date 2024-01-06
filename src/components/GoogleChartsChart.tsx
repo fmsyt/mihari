@@ -5,18 +5,6 @@ import { ChartProps, TData } from "./Chart";
 
 const defaultHistoryLength = 60;
 
-// const sampleData = [
-//   ["Year", "Sales", "Expenses"],
-//   ["2013", 1000, 400],
-//   ["2014", 1170, 460],
-//   ["2015", 660, 1120],
-//   ["2016", 1030, 540],
-// ];
-
-interface Props {
-  id: string;
-}
-
 /**
  * @see https://developers.google.com/chart/interactive/docs?hl=ja
  * @see https://www.react-google-charts.com/examples/area-chart
