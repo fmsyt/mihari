@@ -21,7 +21,7 @@ export default function ResourceLabel(props: { id: string; }) {
   }, [resourceGroups, id]);
 
   return (
-    <Typography variant="body2">
+    <Typography variant="caption">
       {resourceGroup.label}
     </Typography>
   );

@@ -17,7 +17,7 @@ export default function ResourceValue(props: ResourceValueProps) {
   }, [getCurrentValues, id]);
 
   return (
-    <Typography variant="body2">
+    <Typography variant="caption">
       {Math.round(values.reduce((a, b) => a + b, 0) / values.length)}%
     </Typography>
   );

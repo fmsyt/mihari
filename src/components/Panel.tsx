@@ -14,7 +14,6 @@ export default function Panel(props: PanelProps) {
         width: props.width,
         height: "100%",
         maxHeight: "100%",
-        backgroundColor: "hsla(192, 60%, 4%, 0.9)",
         overflow: "hidden",
         ...props.sx,
       }}

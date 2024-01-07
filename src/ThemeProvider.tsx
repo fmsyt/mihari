@@ -15,11 +15,34 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">(initialThemeMode || "system");
 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const theme = useMemo(() => createTheme({
-    palette: {
-      mode: themeMode === "system" ? (prefersDarkMode ? "dark" : "light") : themeMode,
+  const isDarkMode = useMemo(() => {
+    switch (themeMode) {
+      case "light":
+        return false;
+      case "dark":
+        return true;
+      case "system":
+        return prefersDarkMode;
     }
-  }), [prefersDarkMode, themeMode]);
+  }, [prefersDarkMode, themeMode]);
+
+  const theme = useMemo(() => createTheme({
+
+    palette: {
+      mode: isDarkMode ? "dark" : "light",
+    },
+    components: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundColor: isDarkMode
+              ? "hsla(192, 10%, 4%, 0.9)"
+              : "hsla(192, 10%, 90%, 0.9)",
+          },
+        },
+      }
+    }
+  }), [isDarkMode]);
 
   return (
     <ThemeContext.Provider value={{
