@@ -76,13 +76,11 @@ function App() {
 
   return (
     <ThemeProvider>
-      <div data-tauri-drag-region="svg">
-        <Box sx={{ width: "100%", height: "100vh" }}>
-          <Monitor
-            resources={resources}
-          />
-        </Box>
-      </div>
+      <Box sx={{ width: "100%", height: "100vh" }}>
+        <Monitor
+          resources={resources}
+        />
+      </Box>
     </ThemeProvider>
   );
 }
