@@ -1,24 +1,33 @@
-import { useContext, useMemo } from "react";
-import { Typography } from "@mui/material";
+import { ReactNode, useContext, useMemo } from "react";
+import { Box, Typography } from "@mui/material";
 
 import ResourceContext from "./ResourceContext";
 
 interface ResourceValueProps {
   id: string;
-  toDisplay?: (value: number) => string;
+  displayComponent?: (param: { values: number[], rawValues: any[] }) => ReactNode;
 }
 
 export default function ResourceValue(props: ResourceValueProps) {
-  const { id } = props;
-  const { getCurrentValues } = useContext(ResourceContext);
+  const { id, displayComponent } = props;
+  const { getCurrentValues, getCurrentRawValues } = useContext(ResourceContext);
 
-  const values = useMemo(() => {
-    return getCurrentValues(id);
+  const { values, rawValues } = useMemo(() => {
+    const values = getCurrentValues(id);
+    const rawValues = getCurrentRawValues(id);
+
+    return { values, rawValues };
   }, [getCurrentValues, id]);
 
   return (
-    <Typography variant="caption">
-      {Math.round(values.reduce((a, b) => a + b, 0) / values.length)}%
-    </Typography>
+    <Box>
+      {!displayComponent ? (
+        <Typography variant="caption">
+          {Math.round(values.reduce((a, b) => a + b, 0) / values.length)}%
+        </Typography>
+      ) : (
+        displayComponent({ values, rawValues })
+      )}
+    </Box>
   );
 }
