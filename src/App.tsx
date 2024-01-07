@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Container } from "@mui/material";
 import { useLayoutEffect, useState } from "react";
 
 import ThemeProvider from "./ThemeProvider";
@@ -76,11 +76,11 @@ function App() {
 
   return (
     <ThemeProvider>
-      <Box sx={{ width: "100%", height: "100vh" }} padding={0}>
+      <Container fixed sx={{ width: "100%", height: "100vh" }}>
         <Monitor
           resources={resources}
         />
-      </Box>
+      </Container>
     </ThemeProvider>
   );
 }

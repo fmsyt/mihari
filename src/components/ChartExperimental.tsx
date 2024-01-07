@@ -99,10 +99,10 @@ export default function ChartExperimental(props: { id: string; length?: number }
         backgroundColor: "transparent",
         // colors: ["#ff0000", "#00ff00", "#0000ff"],
         chartArea: {
-          top: 24,
-          left: 24,
-          right: 24,
-          bottom: 24,
+          top: "1em",
+          left: 36,
+          right: 0,
+          bottom: "1em",
         },
       }}
     />
