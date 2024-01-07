@@ -1,10 +1,10 @@
 import { Box } from "@mui/material";
-
 import { useLayoutEffect, useState } from "react";
-import { getCpuCoreState, getCpuState, getCpuStateAggregate, getMemoryState, getSwapState } from "./api";
-import { CPUState, MemoryState, SwapState } from "./types";
-import ResourceMonitor from "./components/ResourceMonitor";
-import { Resource, ResourceGroup } from "./types";
+
+import ThemeProvider from "./ThemeProvider";
+import { getCpuCoreState, getCpuState, getMemoryState, getSwapState } from "./api";
+import Monitor from "./components/Monitor";
+import { CPUState, MemoryState, Resource, ResourceGroup, SwapState } from "./types";
 
 function App() {
   const [resources, setResources] = useState<ResourceGroup[]>([]);
@@ -75,11 +75,13 @@ function App() {
   }, []);
 
   return (
-    <Box sx={{ width: "100%", height: "100vh" }} padding={0}>
-      <ResourceMonitor
-        resources={resources}
-      />
-    </Box>
+    <ThemeProvider>
+      <Box sx={{ width: "100%", height: "100vh" }} padding={0}>
+        <Monitor
+          resources={resources}
+        />
+      </Box>
+    </ThemeProvider>
   );
 }
 

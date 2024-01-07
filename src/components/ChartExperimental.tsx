@@ -5,17 +5,12 @@ import ResourceContext from "./ResourceContext";
 
 const defaultHistoryLength = 60;
 
-interface Props {
-  id: string;
-  length?: number;
-}
-
 /**
  * @see https://developers.google.com/chart/interactive/docs?hl=ja
  * @see https://www.react-google-charts.com/examples/area-chart
  * @see https://qiita.com/arakaki_tokyo/items/9f57524df1509837bbec#google-charts
  */
-export default function ChartExperimental(props: Props) {
+export default function ChartExperimental(props: { id: string; length?: number }) {
   const { length, id: groupId } = props;
   const { resourceGroups, getCurrentValues } = useContext(ResourceContext);
 
@@ -87,8 +82,8 @@ export default function ChartExperimental(props: Props) {
     <Chart
       chartType="AreaChart"
       data={data}
-      width="100%"
-      height="100%"
+      // width="100%"
+      // height="100%"
       legendToggle
       options={{
         vAxis: {
@@ -104,10 +99,10 @@ export default function ChartExperimental(props: Props) {
         backgroundColor: "transparent",
         // colors: ["#ff0000", "#00ff00", "#0000ff"],
         chartArea: {
-          top: 48,
-          left: 48,
-          right: 48,
-          bottom: 48,
+          top: 24,
+          left: 24,
+          right: 24,
+          bottom: 24,
         },
       }}
     />
