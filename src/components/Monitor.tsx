@@ -15,7 +15,7 @@ export default function Monitor(props: { resources: ResourceGroup[], muiGridProp
     <ResourceProvider groups={resources}>
       <Grid
         container
-        spacing={1}
+        gap="4px"
         height="100%"
 
         display="grid"
@@ -27,12 +27,12 @@ export default function Monitor(props: { resources: ResourceGroup[], muiGridProp
         {resources.map((group) => (
           <Fragment key={group.id}>
             <Grid item>
-              <Panel width="4em">
+              <Panel width="3em">
                 <ResourceLabel id={group.id} />
               </Panel>
             </Grid>
             <Grid item>
-              <Panel width="4em" justifyContent="end">
+              <Panel width="3em">
                 <ResourceValue id={group.id} />
               </Panel>
             </Grid>

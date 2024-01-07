@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Box } from "@mui/material";
 import { useLayoutEffect, useState } from "react";
 
 import ThemeProvider from "./ThemeProvider";
@@ -37,10 +37,10 @@ function App() {
         },
         {
           id: "memory",
-          label: "Memory",
+          label: "Mem",
           resources: [
             {
-              label: "Memory",
+              label: "Mem",
               updateHandler: getMemoryState,
               toValue: (memory) => {
                 return (1 - memory.free / memory.total) * 100;
@@ -76,11 +76,13 @@ function App() {
 
   return (
     <ThemeProvider>
-      <Container fixed sx={{ width: "100%", height: "100vh" }}>
-        <Monitor
-          resources={resources}
-        />
-      </Container>
+      <div data-tauri-drag-region="svg">
+        <Box sx={{ width: "100%", height: "100vh" }}>
+          <Monitor
+            resources={resources}
+          />
+        </Box>
+      </div>
     </ThemeProvider>
   );
 }

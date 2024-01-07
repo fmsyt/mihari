@@ -3,7 +3,12 @@ import { Typography } from "@mui/material";
 
 import ResourceContext from "./ResourceContext";
 
-export default function ResourceValue(props: { id: string; }) {
+interface ResourceValueProps {
+  id: string;
+  toDisplay?: (value: number) => string;
+}
+
+export default function ResourceValue(props: ResourceValueProps) {
   const { id } = props;
   const { getCurrentValues } = useContext(ResourceContext);
 
@@ -13,7 +18,7 @@ export default function ResourceValue(props: { id: string; }) {
 
   return (
     <Typography variant="body2">
-      {Math.round(values.reduce((a, b) => a + b, 0) / values.length)}
+      {Math.round(values.reduce((a, b) => a + b, 0) / values.length)}%
     </Typography>
   );
 }

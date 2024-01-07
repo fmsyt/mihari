@@ -1,9 +1,16 @@
-import { useContext, useLayoutEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Box } from "@mui/material";
+
 import { Chart } from "react-google-charts";
 
 import ResourceContext from "./ResourceContext";
 
 const defaultHistoryLength = 60;
+
+interface ChartSize {
+  width?: number | string;
+  height?: number | string;
+}
 
 /**
  * @see https://developers.google.com/chart/interactive/docs?hl=ja
@@ -13,6 +20,34 @@ const defaultHistoryLength = 60;
 export default function ChartExperimental(props: { id: string; length?: number }) {
   const { length, id: groupId } = props;
   const { resourceGroups, getCurrentValues } = useContext(ResourceContext);
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<ChartSize>({});
+
+  useEffect(() => {
+
+    const onResize = () => {
+      if (!wrapperRef.current) {
+        return;
+      }
+
+      const { width, height } = wrapperRef.current.getBoundingClientRect();
+      const next: ChartSize = {
+        width: `${width}px`, // `${width}px`,
+        height: `${height}px`, // `${height}px`,
+      };
+
+      // console.log("onResize", next);
+      setSize(next);
+
+    }
+
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+    }
+  }, []);
 
   const resourceGroup = useMemo(() => {
     const group = resourceGroups?.find((g) => g.id === groupId);
@@ -77,34 +112,42 @@ export default function ChartExperimental(props: { id: string; length?: number }
 
   }, [headerRow, rows]);
 
-
   return (
-    <Chart
-      chartType="AreaChart"
-      data={data}
-      // width="100%"
-      // height="100%"
-      legendToggle
-      options={{
-        vAxis: {
-          minValue: 0,
-          maxValue: 100,
-        },
-        legend: {
-          position: "top",
-          textStyle: {
-            color: "white",
+    <Box
+      ref={wrapperRef}
+      width="100%"
+      height="100%"
+    >
+      <Chart
+        chartType="AreaChart"
+        data={data}
+        width={size.width || "100%"}
+        height={size.height || "100%"}
+        // width="100%"
+        // height="100px"
+        // legendToggle
+        options={{
+          vAxis: {
+            minValue: 0,
+            maxValue: 100,
+            // ticks: [25, 50, 75],
+            ticks: [],
           },
-        },
-        backgroundColor: "transparent",
-        // colors: ["#ff0000", "#00ff00", "#0000ff"],
-        chartArea: {
-          top: "1em",
-          left: 36,
-          right: 0,
-          bottom: "1em",
-        },
-      }}
-    />
+          legend: {
+            position: "none",
+            textStyle: {
+              color: "white",
+            },
+          },
+          backgroundColor: "transparent",
+          chartArea: {
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          },
+        }}
+      />
+    </Box>
   );
 }

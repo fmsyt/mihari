@@ -1,27 +1,36 @@
-import { Paper } from "@mui/material";
+import { Card, CardContent, SxProps, Theme } from "@mui/material";
 import { ReactNode } from "react";
 
 interface PanelProps {
   children?: ReactNode;
   width?: number | string;
-  justifyContent?: "start" | "center" | "end";
-  alignItems?: "start" | "center" | "end";
+  sx?: SxProps<Theme>;
 }
 
 export default function Panel(props: PanelProps) {
   return (
-    <Paper
+    <Card
       sx={{
-        width: props.width || "100%",
+        width: props.width,
         height: "100%",
         maxHeight: "100%",
         backgroundColor: "hsla(192, 60%, 4%, 0.9)",
-        justifyContent: props.justifyContent ?? "start",
-        alignItems: props.alignItems ?? "start",
         overflow: "hidden",
+        ...props.sx,
       }}
+      square
     >
-      {props.children}
-    </Paper>
+      <CardContent
+        sx={{
+          padding: "8px",
+          height: "calc(100% - 16px)",
+          "&:last-child": {
+            paddingBottom: "8px",
+          },
+        }}
+      >
+        {props.children}
+      </CardContent>
+    </Card>
   )
 }
