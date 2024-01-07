@@ -31,10 +31,13 @@ export default function ResourceProvider(props: ResourceProviderProps) {
   const update = useCallback(async () => {
 
     // NOTE: 同じメモリを参照させることで、Promise.allの結果を待つタイミングを揃える
-    const promiseList: Promise<number[]>[] = [];
+    const promiseList: Promise<any[]>[] = [];
 
     const map = groups.map((g) => {
-      const promise = Promise.all(g.resources.map((r) => r.updateHandler()));
+      const promise = Promise.all(g.resources.map(async (r) => {
+        const data = await r.updateHandler();
+        return r.toValue ? r.toValue(data) : data;
+      }));
       promiseList.push(promise);
 
       return {

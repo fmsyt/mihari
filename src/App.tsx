@@ -1,26 +1,10 @@
 import { Box } from "@mui/material";
 
-import "./App.css";
-
 import { useLayoutEffect, useState } from "react";
 import { getCpuCoreState, getCpuState, getCpuStateAggregate, getMemoryState, getSwapState } from "./api";
+import { CPUState, MemoryState, SwapState } from "./types";
 import ResourceMonitor from "./components/ResourceMonitor";
-import { ResourceGroup } from "./types";
-
-const _cpuUpdateHandler = async () => {
-  const cpu = await getCpuStateAggregate();
-  return cpu.system * 100 + cpu.user * 100;
-};
-
-const memoryUpdateHandler = async () => {
-  const memory = await getMemoryState();
-  return (1 - memory.free / memory.total) * 100;
-};
-
-const swapUpdateHandler = async () => {
-  const swap = await getSwapState();
-  return (swap.free / swap.total) * 100;
-};
+import { Resource, ResourceGroup } from "./types";
 
 function App() {
   const [resources, setResources] = useState<ResourceGroup[]>([]);
@@ -45,11 +29,11 @@ function App() {
           label: "CPU",
           resources: cores.map((_, i) => ({
             label: `Core ${i + 1}`,
-            updateHandler: async () => {
-              const core = await getCpuCoreState(i);
+            updateHandler: () => getCpuCoreState(i),
+            toValue: (core) => {
               return core.system * 100 + core.user * 100;
             },
-          })),
+          })) as Resource<CPUState>[],
         },
         {
           id: "memory",
@@ -57,9 +41,12 @@ function App() {
           resources: [
             {
               label: "Memory",
-              updateHandler: memoryUpdateHandler,
+              updateHandler: getMemoryState,
+              toValue: (memory) => {
+                return (1 - memory.free / memory.total) * 100;
+              }
             },
-          ],
+          ] as Resource<MemoryState>[],
         },
         {
           id: "swap",
@@ -67,9 +54,12 @@ function App() {
           resources: [
             {
               label: "Swap",
-              updateHandler: swapUpdateHandler,
+              updateHandler: getSwapState,
+              toValue: (swap) => {
+                return (swap.free / swap.total) * 100;
+              }
             },
-          ],
+          ] as Resource<SwapState>[],
         },
       ];
 
