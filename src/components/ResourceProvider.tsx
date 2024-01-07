@@ -11,6 +11,7 @@ interface ResourceProviderProps {
 
 interface currentValuesType {
   id: string;
+  rawValues: any[];
   values: number[];
 }
 
@@ -31,20 +32,15 @@ export default function ResourceProvider(props: ResourceProviderProps) {
   const update = useCallback(async () => {
 
     // NOTE: 同じメモリを参照させることで、Promise.allの結果を待つタイミングを揃える
-    const promiseList: Promise<any[]>[] = [];
-
-    const map = groups.map((g) => {
-      const promise = Promise.all(g.resources.map(async (r) => {
+    const promiseList = groups.map((g) => {
+      return Promise.all(g.resources.map(async (r) => {
         const data = await r.updateHandler();
-        return r.toValue ? r.toValue(data) : data;
+        return {
+          raw: data,
+          value: r.toValue ? r.toValue(data) : data
+        }
       }));
-      promiseList.push(promise);
-
-      return {
-        id: g.id,
-        promise,
-      };
-    });
+    })
 
     const delay = new Promise<void>((resolve) => {
       setTimeout(() => {
@@ -52,12 +48,13 @@ export default function ResourceProvider(props: ResourceProviderProps) {
       }, updateInterval);
     });
 
-    const [, ...values] = await Promise.all([delay, ...promiseList]);
-    const nextCurrentValues = values.map((v, i) => {
+    const [, ...resolved] = await Promise.all([delay, ...promiseList]);
+    const nextCurrentValues = resolved.map((data, i) => {
       return {
-        id: map[i].id,
-        values: v,
-      };
+        id: groups[i].id,
+        values: data.map((vv) => vv.value),
+        rawValues: data.map((vv) => vv.raw),
+      } as currentValuesType;
     });
 
     setCurrentValues(nextCurrentValues);
@@ -74,6 +71,7 @@ export default function ResourceProvider(props: ResourceProviderProps) {
   }, [update, updateInterval]);
 
   const getCurrentValues = useCallback((id: string) => currentValues.find((v) => v.id === id)?.values || [], [currentValues]);
+  const getCurrentRawValues = useCallback((id: string) => currentValues.find((v) => v.id === id)?.rawValues || [], [currentValues]);
 
   return (
     <ResourceContext.Provider
@@ -81,6 +79,7 @@ export default function ResourceProvider(props: ResourceProviderProps) {
         resourceGroups: groups,
         updateInterval,
         getCurrentValues,
+        getCurrentRawValues,
       }}
     >
       {props.children}
