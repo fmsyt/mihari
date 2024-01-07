@@ -21,10 +21,12 @@ export default function ResourceMonitor(props: Props) {
           width: "100%",
           height: "100%",
         }}
+        display="grid"
+        gridTemplateRows={`repeat(${resources.length}, 1fr)`}
         {...muiGridProps}
       >
         {resources.map((group) => (
-          <Grid key={group.id} item xs={4}>
+          <Grid key={group.id} item>
             <ChartExperimental {...group} />
           </Grid>
         ))}
