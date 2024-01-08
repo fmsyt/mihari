@@ -42,6 +42,17 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
           mode: isDarkMode ? "dark" : "light",
         },
         components: {
+          MuiTypography: {
+            styleOverrides: {
+              root: {
+                fontFamily: "Inter, Avenir, Helvetica, Arial, sans-serif",
+                color: isDarkMode ? "hsla(192, 10%, 90%, 0.9)" : "hsla(192, 10%, 4%, 0.9)",
+              },
+              caption: {
+                fontSize: "0.7rem",
+              },
+            },
+          },
           MuiPaper: {
             styleOverrides: {
               root: {
