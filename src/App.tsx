@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useLayoutEffect, useState } from "react";
 
 import ThemeProvider from "./ThemeProvider";
@@ -54,22 +54,37 @@ function App() {
               toValue: (memory) => {
                 return (1 - memory.free / memory.total) * 100;
               },
-            },
-          ] as Resource<MemoryState>[],
-        },
-        {
-          id: "swap",
-          label: "Swap",
-          resources: [
+            } as Resource<MemoryState>,
             {
               label: "Swap",
-              updateHandler: getSwapState,
-              toValue: (swap) => {
-                return (swap.free / swap.total) * 100;
+              updateHandler: async () => {
+                const [memory, swap] = await Promise.all([
+                  getMemoryState(),
+                  getSwapState(),
+                ]);
+
+                return {
+                  memory,
+                  swap,
+                }
               },
-            },
-          ] as Resource<SwapState>[],
-        },
+              toValue: ({ memory, swap }) => {
+                return (swap.total / memory.total) * 100;
+              },
+            } as Resource<{ memory: MemoryState; swap: SwapState }>,
+          ],
+          monitorLabelComponent: ({ values }) => {
+            if (values.length === 0) {
+              return "";
+            }
+
+            return (
+              <Typography variant="caption">
+                {`${values[0].toFixed(0)}%`}
+              </Typography>
+            )
+          },
+        }
       ];
 
       setResources(next);

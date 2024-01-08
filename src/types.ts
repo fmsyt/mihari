@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface CPUState {
   system: number;
   user: number;
@@ -19,9 +21,9 @@ export interface SwapState {
 
 export type ResourceState = CPUState | MemoryState | SwapState;
 
-export interface Resource<T extends ResourceState> {
+export interface Resource<T> {
   label: string;
-  updateHandler: () => T | Promise<T>;
+  updateHandler: () => Promise<T>;
   min?: number;
   max?: number;
   color?: string;
@@ -32,4 +34,5 @@ export interface ResourceGroup {
   id: string;
   label: string;
   resources: Resource<any>[];
+  monitorLabelComponent?: ({ values, rawValues }: { values: any[], rawValues: any[] }) => ReactNode;
 }

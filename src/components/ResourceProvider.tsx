@@ -77,12 +77,17 @@ export default function ResourceProvider(props: ResourceProviderProps) {
     (id: string) => currentValues.find((v) => v.id === id)?.rawValues || [],
     [currentValues],
   );
+  const getGroup = useCallback(
+    (id: string) => groups.find((g) => g.id === id),
+    [groups],
+  );
 
   return (
     <ResourceContext.Provider
       value={{
         resourceGroups: groups,
         updateInterval,
+        getGroup,
         getCurrentValues,
         getCurrentRawValues,
       }}

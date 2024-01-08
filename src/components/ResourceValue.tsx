@@ -13,7 +13,9 @@ interface ResourceValueProps {
 
 export default function ResourceValue(props: ResourceValueProps) {
   const { id, displayComponent } = props;
-  const { getCurrentValues, getCurrentRawValues } = useContext(ResourceContext);
+  const { getGroup, getCurrentValues, getCurrentRawValues } = useContext(ResourceContext);
+
+  const group = useMemo(() => getGroup(id), [getGroup, id]);
 
   const { values, rawValues } = useMemo(() => {
     const values = getCurrentValues(id);
@@ -22,15 +24,17 @@ export default function ResourceValue(props: ResourceValueProps) {
     return { values, rawValues };
   }, [getCurrentValues, id]);
 
+  if (displayComponent) {
+    return displayComponent({ values, rawValues });
+  }
+
+  if (group?.monitorLabelComponent) {
+    return group.monitorLabelComponent({ values, rawValues });
+  }
+
   return (
-    <Box>
-      {!displayComponent ? (
-        <Typography variant="caption">
-          {Math.round(values.reduce((a, b) => a + b, 0) / values.length)}%
-        </Typography>
-      ) : (
-        displayComponent({ values, rawValues })
-      )}
-    </Box>
+    <Typography variant="caption">
+      {Math.round(values.reduce((a, b) => a + b, 0) / values.length)}%
+    </Typography>
   );
 }
