@@ -52,7 +52,7 @@ function App() {
               label: "Mem",
               updateHandler: getMemoryState,
               toValue: (memory) => {
-                return (memory.free / memory.total) * 100;
+                return (1 - memory.free / memory.total) * 100;
               },
             } as Resource<MemoryState>,
             {
