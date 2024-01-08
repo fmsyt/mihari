@@ -55,23 +55,23 @@ function App() {
                 return (1 - memory.free / memory.total) * 100;
               },
             } as Resource<MemoryState>,
-            {
-              label: "Swap",
-              updateHandler: async () => {
-                const [memory, swap] = await Promise.all([
-                  getMemoryState(),
-                  getSwapState(),
-                ]);
+            // {
+            //   label: "Swap",
+            //   updateHandler: async () => {
+            //     const [memory, swap] = await Promise.all([
+            //       getMemoryState(),
+            //       getSwapState(),
+            //     ]);
 
-                return {
-                  memory,
-                  swap,
-                }
-              },
-              toValue: ({ memory, swap }) => {
-                return (swap.total / memory.total) * 100;
-              },
-            } as Resource<{ memory: MemoryState; swap: SwapState }>,
+            //     return {
+            //       memory,
+            //       swap,
+            //     }
+            //   },
+            //   toValue: ({ memory, swap }) => {
+            //     return (swap.total / memory.total) * 100;
+            //   },
+            // } as Resource<{ memory: MemoryState; swap: SwapState }>,
           ],
           monitorLabelComponent: ({ values }) => {
             if (values.length === 0) {
