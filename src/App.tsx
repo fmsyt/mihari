@@ -6,7 +6,7 @@ import {
   getCpuCoreState,
   getCpuState,
   getMemoryState,
-  getSwapState,
+  // getSwapState,
 } from "./api";
 import Monitor from "./components/Monitor";
 import {
@@ -14,7 +14,7 @@ import {
   MemoryState,
   Resource,
   ResourceGroup,
-  SwapState,
+  // SwapState,
 } from "./types";
 
 function App() {
