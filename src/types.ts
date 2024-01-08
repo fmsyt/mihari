@@ -17,7 +17,6 @@ export interface SwapState {
   free: number;
 }
 
-
 export type ResourceState = CPUState | MemoryState | SwapState;
 
 export interface Resource<T extends ResourceState> {

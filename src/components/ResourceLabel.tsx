@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 
 import ResourceContext from "./ResourceContext";
 
-export default function ResourceLabel(props: { id: string; }) {
+export default function ResourceLabel(props: { id: string }) {
   const { id } = props;
   const { resourceGroups } = useContext(ResourceContext);
 
@@ -20,9 +20,5 @@ export default function ResourceLabel(props: { id: string; }) {
     return group;
   }, [resourceGroups, id]);
 
-  return (
-    <Typography variant="caption">
-      {resourceGroup.label}
-    </Typography>
-  );
+  return <Typography variant="caption">{resourceGroup.label}</Typography>;
 }

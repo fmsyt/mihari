@@ -8,7 +8,10 @@ import ResourceLabel from "./ResourceLabel";
 import ResourceValue from "./ResourceValue";
 import Panel from "./Panel";
 
-export default function Monitor(props: { resources: ResourceGroup[], muiGridProps?: typeof Grid }) {
+export default function Monitor(props: {
+  resources: ResourceGroup[];
+  muiGridProps?: typeof Grid;
+}) {
   const { resources, muiGridProps } = props;
 
   return (
@@ -17,11 +20,9 @@ export default function Monitor(props: { resources: ResourceGroup[], muiGridProp
         container
         gap="4px"
         height="100%"
-
         display="grid"
         gridTemplateColumns="max-content max-content 1fr"
         gridTemplateRows={`repeat(${resources.length}, 1fr)`}
-
         {...muiGridProps}
       >
         {resources.map((group) => (

@@ -1,1 +1,10 @@
 tabWidth: 2
+useTabs: false
+singleQuote: false
+bracketSpacing: true
+arrowParens: always
+endOfLine: lf
+trailingComma: all
+
+bracketSameLine: false
+jsxSingleQuote: false

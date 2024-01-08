@@ -31,5 +31,5 @@ export default function Panel(props: PanelProps) {
         {props.children}
       </CardContent>
     </Card>
-  )
+  );
 }

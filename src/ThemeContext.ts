@@ -7,7 +7,7 @@ interface ThemeContextProps {
 
 const ThemeContext = createContext<ThemeContextProps>({
   themeMode: "system",
-  setThemeMode: () => { },
+  setThemeMode: () => {},
 });
 
 export default ThemeContext;

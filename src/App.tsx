@@ -2,19 +2,28 @@ import { Box } from "@mui/material";
 import { useLayoutEffect, useState } from "react";
 
 import ThemeProvider from "./ThemeProvider";
-import { getCpuCoreState, getCpuState, getMemoryState, getSwapState } from "./api";
+import {
+  getCpuCoreState,
+  getCpuState,
+  getMemoryState,
+  getSwapState,
+} from "./api";
 import Monitor from "./components/Monitor";
-import { CPUState, MemoryState, Resource, ResourceGroup, SwapState } from "./types";
+import {
+  CPUState,
+  MemoryState,
+  Resource,
+  ResourceGroup,
+  SwapState,
+} from "./types";
 
 function App() {
   const [resources, setResources] = useState<ResourceGroup[]>([]);
 
   useLayoutEffect(() => {
-
     let isActive = false;
 
     const func = async () => {
-
       if (isActive) {
         return;
       }
@@ -44,7 +53,7 @@ function App() {
               updateHandler: getMemoryState,
               toValue: (memory) => {
                 return (1 - memory.free / memory.total) * 100;
-              }
+              },
             },
           ] as Resource<MemoryState>[],
         },
@@ -57,29 +66,26 @@ function App() {
               updateHandler: getSwapState,
               toValue: (swap) => {
                 return (swap.free / swap.total) * 100;
-              }
+              },
             },
           ] as Resource<SwapState>[],
         },
       ];
 
       setResources(next);
-    }
+    };
 
     func();
 
     return () => {
       isActive = false;
     };
-
   }, []);
 
   return (
     <ThemeProvider>
       <Box sx={{ width: "100%", height: "100vh" }}>
-        <Monitor
-          resources={resources}
-        />
+        <Monitor resources={resources} />
       </Box>
     </ThemeProvider>
   );

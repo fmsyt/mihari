@@ -5,7 +5,10 @@ import ResourceContext from "./ResourceContext";
 
 interface ResourceValueProps {
   id: string;
-  displayComponent?: (param: { values: number[], rawValues: any[] }) => ReactNode;
+  displayComponent?: (param: {
+    values: number[];
+    rawValues: any[];
+  }) => ReactNode;
 }
 
 export default function ResourceValue(props: ResourceValueProps) {

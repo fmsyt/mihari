@@ -1,4 +1,11 @@
-import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Box } from "@mui/material";
 
 import { Chart } from "react-google-charts";
@@ -17,7 +24,10 @@ interface ChartSize {
  * @see https://www.react-google-charts.com/examples/area-chart
  * @see https://qiita.com/arakaki_tokyo/items/9f57524df1509837bbec#google-charts
  */
-export default function ChartExperimental(props: { id: string; length?: number }) {
+export default function ChartExperimental(props: {
+  id: string;
+  length?: number;
+}) {
   const { length, id: groupId } = props;
   const { resourceGroups, getCurrentValues } = useContext(ResourceContext);
 
@@ -25,7 +35,6 @@ export default function ChartExperimental(props: { id: string; length?: number }
   const [size, setSize] = useState<ChartSize>({});
 
   useEffect(() => {
-
     const onResize = () => {
       if (!wrapperRef.current) {
         return;
@@ -39,14 +48,13 @@ export default function ChartExperimental(props: { id: string; length?: number }
 
       // console.log("onResize", next);
       setSize(next);
-
-    }
+    };
 
     window.addEventListener("resize", onResize);
 
     return () => {
       window.removeEventListener("resize", onResize);
-    }
+    };
   }, []);
 
   const resourceGroup = useMemo(() => {
@@ -86,7 +94,6 @@ export default function ChartExperimental(props: { id: string; length?: number }
   }, [resourceGroup, historyLength]);
 
   useLayoutEffect(() => {
-
     const nextValues = getCurrentValues(groupId);
     if (nextValues.length !== resourceGroup.resources.length) {
       return;
@@ -100,7 +107,6 @@ export default function ChartExperimental(props: { id: string; length?: number }
 
       return next;
     });
-
   }, [getCurrentValues, groupId, resourceGroup]);
 
   const data = useMemo(() => {
@@ -109,15 +115,10 @@ export default function ChartExperimental(props: { id: string; length?: number }
       ...rows.map((row, _i) => ["", ...row]),
     ];
     return nextData;
-
   }, [headerRow, rows]);
 
   return (
-    <Box
-      ref={wrapperRef}
-      width="100%"
-      height="100%"
-    >
+    <Box ref={wrapperRef} width="100%" height="100%">
       <Chart
         chartType="AreaChart"
         data={data}

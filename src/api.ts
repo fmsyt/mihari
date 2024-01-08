@@ -6,7 +6,10 @@ export async function getCpuState(ms?: number): Promise<CPUState[]> {
   return await invoke("cpu_state", { ms });
 }
 
-export async function getCpuCoreState(core: number, ms?: number): Promise<CPUState> {
+export async function getCpuCoreState(
+  core: number,
+  ms?: number,
+): Promise<CPUState> {
   const cores = await getCpuState(ms);
   return cores[core];
 }
