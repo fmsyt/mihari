@@ -20,12 +20,6 @@ dependencies:
   chart.js:
     specifier: ^4.4.1
     version: 4.4.1
-  highcharts:
-    specifier: ^11.2.0
-    version: 11.2.0
-  highcharts-react-official:
-    specifier: ^3.2.1
-    version: 3.2.1(highcharts@11.2.0)(react@18.2.0)
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -1335,20 +1329,6 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       function-bind: 1.1.2
-    dev: false
-
-  /highcharts-react-official@3.2.1(highcharts@11.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-hyQTX7ezCxl7JqumaWiGsroGWalzh24GedQIgO3vJbkGOZ6ySRAltIYjfxhrq4HszJOySZegotEF7v+haQ75UA==}
-    peerDependencies:
-      highcharts: '>=6.0.0'
-      react: '>=16.8.0'
-    dependencies:
-      highcharts: 11.2.0
-      react: 18.2.0
-    dev: false
-
-  /highcharts@11.2.0:
-    resolution: {integrity: sha512-9i650YK7ZBA1Mgtr3avMkLVCAI45RQvYnwi+eHsdFSaBGuQN6BHoa4j4lMkSJLv0V4LISTK1z7J7G82Lzd7zwg==}
     dev: false
 
   /hoist-non-react-statics@3.3.2:
