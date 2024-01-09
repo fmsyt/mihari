@@ -32,6 +32,10 @@ export default function ResourceValue(props: ResourceValueProps) {
     return group.monitorLabelComponent({ values, rawValues });
   }
 
+  if (!values.length) {
+    return null;
+  }
+
   return (
     <Typography variant="caption">
       {Math.round(values.reduce((a, b) => a + b, 0) / values.length)}%
