@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
-import ThemeContext from "./ThemeContext";
 import {
-  ThemeProvider as MuiThemeProvider,
   createTheme,
+  ThemeProvider as MuiThemeProvider,
   useMediaQuery,
 } from "@mui/material";
+import { UnlistenFn } from '@tauri-apps/api/event';
+import { appWindow, Theme } from '@tauri-apps/api/window';
+import { useEffect, useMemo, useState } from "react";
+import ThemeContext from "./ThemeContext";
 
 interface ThemeProviderProps {
   children: React.ReactNode;
@@ -24,6 +26,28 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
   );
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+  const [systemTheme, setSystemTheme] = useState<Theme | null>()
+  useEffect(() => {
+    let unlisten: UnlistenFn | undefined;
+
+    (async () => {
+      setSystemTheme(await appWindow.theme());
+
+      unlisten = await appWindow.onThemeChanged(({ payload: theme }) => {
+        setSystemTheme(theme);
+      });
+    })();
+
+    return () => {
+      if (unlisten != null) {
+        unlisten();
+      }
+    };
+  }, []);
+
+
+
   const isDarkMode = useMemo(() => {
     switch (themeMode) {
       case "light":
@@ -31,9 +55,13 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
       case "dark":
         return true;
       case "system":
-        return prefersDarkMode;
+      default:
+        if (systemTheme == null) {
+          return prefersDarkMode;
+        }
+        return systemTheme === "dark";
     }
-  }, [prefersDarkMode, themeMode]);
+  }, [prefersDarkMode, themeMode, systemTheme]);
 
   const theme = useMemo(
     () =>

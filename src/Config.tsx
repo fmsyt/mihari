@@ -20,10 +20,9 @@ function App() {
   }
 
   const { themeMode, setThemeMode } = useContext(ThemeContext);
-  const [isTopMost, setIsTopMost] = useState<boolean | null>(null);
+  const [isTopMost, setIsTopMost] = useState<boolean>(true);
 
   const handleChangeTopMost = async (toEnable: boolean) => {
-    setIsTopMost(null);
     if (toEnable) {
       await mainWindow.setAlwaysOnTop(true);
       setIsTopMost(true);
@@ -33,18 +32,22 @@ function App() {
     }
   }
 
+  const handleChangeThemeMode = async (mode: "light" | "dark" | "system") => {
+    setThemeMode(mode);
+  }
+
 
   return (
     <Container>
       <Stack spacing={2}>
-        <Typography variant="h6">System Monitor</Typography>
+        <Typography variant="h6">{i18n.t("title")}</Typography>
         <FormControl>
           <FormLabel>{i18n.t("themeMode")}</FormLabel>
           <ButtonGroup size="small">
             <Tooltip title="System">
               <Button
                 variant={themeMode === "system" ? "contained" : "outlined"}
-                onClick={() => { setThemeMode("system") }}
+                onClick={() => { handleChangeThemeMode("system") }}
                 startIcon={themeMode === "system" ? <SettingsBrightnessIcon /> : undefined}
                 sx={{ textTransform: "none" }}
               >
@@ -54,7 +57,7 @@ function App() {
             <Tooltip title="Light">
               <Button
                 variant={themeMode === "light" ? "contained" : "outlined"}
-                onClick={() => { setThemeMode("light") }}
+                onClick={() => { handleChangeThemeMode("light") }}
                 startIcon={themeMode === "light" ? <LightModeIcon /> : undefined}
                 sx={{ textTransform: "none" }}
               >
@@ -64,7 +67,7 @@ function App() {
             <Tooltip title="Dark">
               <Button
                 variant={themeMode === "dark" ? "contained" : "outlined"}
-                onClick={() => { setThemeMode("dark") }}
+                onClick={() => { handleChangeThemeMode("dark") }}
                 startIcon={themeMode === "dark" ? <DarkModeIcon /> : undefined}
                 sx={{ textTransform: "none" }}
               >
