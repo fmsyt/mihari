@@ -2,19 +2,6 @@
   "folders": [
     {
       "path": ".",
-      "name": "Root"
-    },
-    {
-      "path": "src-tauri",
-      "name": "Tauri",
-      "settings": {
-        "files.autoSave": "off"
-      },
-      "icon": "./icons/tauri.png"
-    },
-    {
-      "path": "src",
-      "name": "UI"
     }
   ],
   "settings": {
@@ -34,6 +21,9 @@
       "**/Thumbs.db": true
     },
     "editor.formatOnSave": true,
-    "files.autoSave": "onFocusChange"
+    "files.autoSave": "off",
+    "[rust]": {
+      "editor.formatOnSave": false,
+    },
   }
 }

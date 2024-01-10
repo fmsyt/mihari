@@ -18,39 +18,9 @@
       },
       "window": {
         "all": false,
-        "center": false,
-        "close": false,
-        "create": false,
-        "hide": false,
-        "maximize": false,
-        "minimize": false,
-        "print": false,
-        "requestUserAttention": false,
         "setAlwaysOnTop": true,
-        "setClosable": false,
-        "setContentProtected": false,
-        "setCursorGrab": false,
-        "setCursorIcon": false,
-        "setCursorPosition": false,
-        "setCursorVisible": false,
-        "setDecorations": false,
-        "setFocus": false,
-        "setFullscreen": false,
-        "setIcon": false,
-        "setIgnoreCursorEvents": false,
-        "setMaxSize": false,
-        "setMaximizable": false,
-        "setMinSize": false,
-        "setMinimizable": false,
-        "setPosition": false,
-        "setResizable": false,
-        "setSize": true,
-        "setSkipTaskbar": false,
-        "setTitle": false,
-        "show": false,
-        "startDragging": true,
-        "unmaximize": false,
-        "unminimize": false
+        "setDecorations": true,
+        "startDragging": true
       }
     },
     "bundle": {
@@ -89,6 +59,7 @@
     },
     "windows": [
       {
+        "label": "main",
         "fullscreen": false,
         "resizable": false,
         "title": "mihari",
@@ -100,6 +71,12 @@
         "hiddenTitle": true,
         "titleBarStyle": "Transparent",
         "decorations": false
+      },
+      {
+        "label": "config",
+        "title": "Config - mihari",
+        "url": "config.html",
+        "visible": false
       }
     ],
     "systemTray": {
