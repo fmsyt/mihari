@@ -15,19 +15,18 @@ use tauri::{
 
 type AppState = Arc<Mutex<Config>>;
 
-fn create_task_tray(config: &AppState) -> SystemTray {
-    let config = config.lock().unwrap();
-    let is_always_on_top = config.window.as_ref().unwrap().always_on_top;
+fn create_task_tray(_config: &AppState) -> SystemTray {
+
+    let _config = _config.lock().unwrap();
 
     let menu_title: String;
-
     #[cfg(target_os = "windows")]
     {
         menu_title = "常に手前に表示する".to_string();
     }
 
     #[cfg(not(target_os = "windows"))]
-    if is_always_on_top {
+    if _config.window.as_ref().unwrap().always_on_top {
         menu_title = "常に手前に表示する (有効)".to_string();
     } else {
         menu_title = "常に手前に表示する".to_string();
@@ -35,10 +34,14 @@ fn create_task_tray(config: &AppState) -> SystemTray {
 
     let always_on_top = CustomMenuItem::new("always_on_top".to_string(), menu_title);
 
+    let config_menu_item = CustomMenuItem::new("config".to_string(), "設定");
+
     let quit = CustomMenuItem::new("quit".to_string(), "終了");
 
     let tray = SystemTrayMenu::new()
         .add_item(always_on_top)
+        .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(config_menu_item)
         .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(quit);
 
@@ -80,6 +83,11 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
             }
             "quit" => {
                 app.exit(0);
+            }
+            "config" => {
+                let window = app.get_window("config").unwrap();
+                window.show().unwrap();
+                window.set_focus().unwrap();
             }
             _ => {}
         },
