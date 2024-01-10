@@ -38,9 +38,13 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
         }
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
             "config" => {
-                let config_window = app.get_window("config").unwrap();
-                config_window.show().unwrap();
-                config_window.set_focus().unwrap();
+                let config_window_option = app.get_window("config");
+
+                if let Some(config_window) = config_window_option {
+                    config_window.show().unwrap();
+                    config_window.set_focus().unwrap();
+                    return;
+                }
             }
             "quit" => {
                 app.exit(0);

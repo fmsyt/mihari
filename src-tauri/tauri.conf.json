@@ -61,7 +61,6 @@
       {
         "label": "main",
         "fullscreen": false,
-        "resizable": false,
         "title": "mihari",
         "width": 200,
         "height": 180,

@@ -5,18 +5,21 @@ interface Translation {
   title: string;
   themeMode: string;
   alwaysOnTop: string;
+  decoration: string;
 }
 
 const translation_ja: Translation = {
   title: "設定",
   themeMode: "表示モード",
-  alwaysOnTop: "常に手前に表示する"
+  alwaysOnTop: "常に手前に表示する",
+  decoration: "タイトルバーを表示する",
 };
 
 const translation_en: Translation = {
   title: "Settings",
   themeMode: "Theme mode",
-  alwaysOnTop: "Always on top"
+  alwaysOnTop: "Always on top",
+  decoration: "Show title bar",
 };
 
 

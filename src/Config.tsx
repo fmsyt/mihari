@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, ButtonGroup, Checkbox, Container, FormControl, FormControlLabel, FormLabel, Stack, Tooltip, Typography } from "@mui/material";
 import { WebviewWindow } from "@tauri-apps/api/window";
 
@@ -21,6 +21,7 @@ function App() {
 
   const { themeMode, setThemeMode } = useContext(ThemeContext);
   const [isTopMost, setIsTopMost] = useState<boolean>(true);
+  const [decoration, setDecoration] = useState<boolean>(false);
 
   const handleChangeTopMost = async (toEnable: boolean) => {
     if (toEnable) {
@@ -35,6 +36,17 @@ function App() {
   const handleChangeThemeMode = async (mode: "light" | "dark" | "system") => {
     setThemeMode(mode);
   }
+
+  const handleChangeDecoration = async (toEnable: boolean) => {
+    await mainWindow.setDecorations(toEnable);
+    setDecoration(toEnable);
+  }
+
+  useEffect(() => {
+    return () => {
+      handleChangeDecoration(false);
+    }
+  }, [])
 
 
   return (
@@ -83,6 +95,16 @@ function App() {
             <Checkbox
               checked={isTopMost === true}
               onChange={(e) => { handleChangeTopMost(e.target.checked) }}
+            />
+          )}
+        />
+
+        <FormControlLabel
+          label={i18n.t("decoration")}
+          control={(
+            <Checkbox
+              checked={decoration === true}
+              onChange={(e) => { handleChangeDecoration(e.target.checked) }}
             />
           )}
         />
