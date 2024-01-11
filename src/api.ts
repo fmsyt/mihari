@@ -1,6 +1,10 @@
 import { invoke } from "@tauri-apps/api/tauri";
 
-import { CPUState, MemoryState, SwapState } from "./types";
+import { AppConfig, CPUState, MemoryState, SwapState } from "./types";
+
+export async function getAppConfig(): Promise<AppConfig> {
+  return await invoke("get_app_config");
+}
 
 export async function getCpuState(ms?: number): Promise<CPUState[]> {
   return await invoke("cpu_state", { ms });

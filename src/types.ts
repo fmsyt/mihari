@@ -1,4 +1,22 @@
+import { Theme } from "@mui/material";
 import { ReactNode } from "react";
+
+export interface AppConfig {
+  window: WindowState;
+  monitor: MonitorConfig;
+}
+
+export interface WindowState {
+  themeMode: Theme;
+  alwaysOnTop: boolean;
+  decoration: boolean;
+}
+
+export interface MonitorConfig {
+  showCpuState: boolean;
+  showCpuAggregateState: boolean;
+  showMemoryState: boolean;
+}
 
 export interface CPUState {
   system: number;

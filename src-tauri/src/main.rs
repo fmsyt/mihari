@@ -6,7 +6,7 @@ mod config;
 
 use std::sync::{Arc, Mutex};
 
-use commands::{cpu_state, cpu_state_aggregate, memory_state, swap_state};
+use commands::{cpu_state, cpu_state_aggregate, memory_state, swap_state, get_app_config};
 use config::Config;
 use tauri::{
     AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
@@ -66,6 +66,7 @@ fn main() {
             cpu_state_aggregate,
             memory_state,
             swap_state,
+            get_app_config,
         ])
         .on_system_tray_event(handle_system_tray)
         .run(tauri::generate_context!())

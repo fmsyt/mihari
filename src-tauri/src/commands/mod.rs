@@ -1,8 +1,17 @@
-use std::time::Duration;
+use std::{time::Duration, sync::{Arc, Mutex}};
+use tauri::State;
 use tokio::time::sleep;
 
 use serde::Serialize;
 use systemstat::{Platform, System};
+
+use crate::config::Config;
+
+#[tauri::command]
+pub fn get_app_config(state: State<Arc<Mutex<Config>>>) -> Config {
+    let config = state.lock().unwrap();
+    config.clone()
+}
 
 #[derive(Debug, Serialize)]
 pub struct CPUState {
