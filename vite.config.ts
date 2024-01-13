@@ -3,6 +3,15 @@ import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
+  build: {
+    rollupOptions: {
+      input: {
+        index: "./index.html",
+        config: "./config.html",
+      },
+    },
+    emptyOutDir: true,
+  },
   plugins: [react()],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
