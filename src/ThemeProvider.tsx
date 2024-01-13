@@ -70,10 +70,22 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
           mode: isDarkMode ? "dark" : "light",
         },
         components: {
+          MuiCssBaseline: {
+            styleOverrides: {
+              ":root": {
+                colorScheme: isDarkMode ? "dark" : "light",
+                fontFamily: "Inter, Avenir, Helvetica, Arial, sans-serif",
+                fontSynthesis: "none",
+                textRendering: "optimizeLegibility",
+              },
+              body: {
+                backgroundColor: "transparent",
+              },
+            }
+          },
           MuiTypography: {
             styleOverrides: {
               root: {
-                fontFamily: "Inter, Avenir, Helvetica, Arial, sans-serif",
                 color: isDarkMode ? "hsla(192, 10%, 90%, 0.9)" : "hsla(192, 10%, 4%, 0.9)",
               },
               caption: {

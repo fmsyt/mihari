@@ -8,6 +8,8 @@ import ResourceLabel from "./ResourceLabel";
 import ResourceProvider from "./ResourceProvider";
 import ResourceValue from "./ResourceValue";
 
+import "../monitor.css"
+
 export default function Monitor(props: {
   resources: ResourceGroup[];
   muiGridProps?: typeof Grid;

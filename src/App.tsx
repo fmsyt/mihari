@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, CssBaseline } from "@mui/material";
 
 import ThemeProvider from "./ThemeProvider";
 import Monitor from "./components/Monitor";
@@ -10,6 +10,7 @@ function App() {
 
   return (
     <ThemeProvider>
+      <CssBaseline />
       <Box sx={{ width: "100%", height: "100vh" }}>
         <Monitor resources={resources} />
       </Box>
