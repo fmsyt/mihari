@@ -8,9 +8,25 @@ pub struct Config {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
+enum Theme {
+    Dark,
+    Light,
+}
+
+impl Theme {
+    fn to_string(&self) -> String {
+        match self {
+            Theme::Dark => "dark".to_string(),
+            Theme::Light => "light".to_string(),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(default, rename_all = "camelCase")]
 pub struct WindowConfig {
     pub always_on_top: bool,
+    pub theme: Option<Theme>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -53,6 +69,7 @@ impl Default for WindowConfig {
     fn default() -> Self {
         Self {
             always_on_top: true,
+            theme: None,
         }
     }
 }

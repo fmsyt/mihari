@@ -1,4 +1,4 @@
-import { Box, CssBaseline } from "@mui/material";
+import { Box, CssBaseline, Skeleton } from "@mui/material";
 import { useLayoutEffect, useState } from "react";
 
 import ThemeProvider from "./ThemeProvider";
@@ -9,6 +9,7 @@ import createResourceList from "./createResourceList";
 
 function App() {
   const [resources, setResources] = useState<ResourceGroup[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const config = useAppConfig();
   useLayoutEffect(() => {
@@ -19,8 +20,12 @@ function App() {
     setResources([]);
 
     (async () => {
+      setIsLoading(true);
+
       const resources = await createResourceList(config);
       setResources(resources);
+
+      setIsLoading(false);
     })();
 
   }, [config]);
@@ -29,7 +34,19 @@ function App() {
     <ThemeProvider>
       <CssBaseline />
       <Box sx={{ width: "100%", height: "100vh" }}>
-        <Monitor resources={resources} />
+
+        {isLoading && (
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            height="100%"
+          />
+        )}
+
+        {!isLoading && (
+          <Monitor resources={resources} />
+        )}
+
       </Box>
     </ThemeProvider>
   );

@@ -1,4 +1,3 @@
-import { Theme } from "@mui/material";
 import { ReactNode } from "react";
 
 export interface AppConfig {
@@ -7,7 +6,7 @@ export interface AppConfig {
 }
 
 export interface WindowState {
-  themeMode: Theme;
+  theme: "light" | "dark" | null;
   alwaysOnTop: boolean;
   decoration: boolean;
 }
