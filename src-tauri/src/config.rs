@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(default, rename_all = "camelCase")]
 pub struct Config {
-    pub window: Option<WindowConfig>,
+    pub window: WindowConfig,
     pub monitor: MonitorConfig,
 }
 
@@ -47,7 +47,7 @@ pub struct MemoryConfig {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            window: Some(WindowConfig::default()),
+            window: WindowConfig::default(),
             monitor: MonitorConfig::default(),
         }
     }
@@ -100,7 +100,6 @@ impl Storage<Config> for Config {
     fn load(path: PathBuf) -> Config {
         let try_load = fs::read_to_string(path);
         if let Err(_) = try_load {
-            eprintln!("Failed to load config.json: {:#?}", try_load);
             return Config::default();
         }
 

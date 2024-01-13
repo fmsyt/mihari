@@ -69,26 +69,28 @@ fn main() {
         .on_system_tray_event(handle_system_tray)
         .setup(|app| {
             let resolver = app.path_resolver();
-            let config_directory_path = resolver.app_local_data_dir().unwrap();
+            let config_directory_path_option = resolver.app_local_data_dir();
+            if let None = config_directory_path_option {
+                eprintln!("Failed to get config directory path");
+                return Err("Failed to get config directory path".into());
+            }
+
+            let config_directory_path = config_directory_path_option.unwrap();
 
             let config_path = config_directory_path.join("config.json");
-
             let config = Config::load(config_path);
-            let shared: AppState = Arc::new(Mutex::new(config));
 
             let try_main_window = app.get_window("main");
             if let Some(main_window) = try_main_window {
-                let window_config = shared
-                    .lock()
-                    .unwrap()
-                    .window
-                    .clone()
-                    .unwrap();
+                let window_config = config.window.clone();
+                main_window.set_always_on_top(window_config.always_on_top).unwrap();
+                main_window.set_decorations(window_config.decoration).unwrap();
 
-                main_window.set_always_on_top(window_config.always_on_top)?;
-                main_window.set_decorations(window_config.decoration)?;
+                // #[cfg(debug_assertions)]
+                // main_window.open_devtools();
             }
 
+            let shared: AppState = Arc::new(Mutex::new(config));
             app.manage(shared);
 
             Ok(())
