@@ -13,7 +13,7 @@ function App() {
 
   const config = useAppConfig();
   useLayoutEffect(() => {
-    if (config == null) {
+    if (!config?.monitor) {
       return;
     }
 
@@ -22,13 +22,13 @@ function App() {
     (async () => {
       setIsLoading(true);
 
-      const resources = await createResourceList(config);
+      const resources = await createResourceList(config.monitor);
       setResources(resources);
 
       setIsLoading(false);
     })();
 
-  }, [config]);
+  }, [config?.monitor]);
 
   return (
     <ThemeProvider>

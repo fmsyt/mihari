@@ -7,16 +7,16 @@ export default function useResourceList(config?: AppConfig | null) {
 
   useLayoutEffect(() => {
 
-    if (!config) {
+    if (!config?.monitor) {
       return;
     }
 
     (async () => {
-      const list = await createResourceList(config);
+      const list = await createResourceList(config.monitor);
       setResourceList(list);
     })();
 
-  }, [config])
+  }, [config?.monitor])
 
   return resourceList;
 }

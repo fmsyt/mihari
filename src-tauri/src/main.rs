@@ -7,7 +7,7 @@ mod config;
 use std::sync::{Arc, Mutex};
 
 use commands::{cpu_state, cpu_state_aggregate, memory_state, swap_state, get_app_config};
-use config::Config;
+use config::{Config, Storage};
 use tauri::{
     AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
 };
@@ -56,11 +56,9 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
 }
 
 fn main() {
-    let config: AppState = Arc::new(Mutex::new(Config::default()));
 
     tauri::Builder::default()
         .system_tray(create_task_tray())
-        .manage(config)
         .invoke_handler(tauri::generate_handler![
             cpu_state,
             cpu_state_aggregate,
@@ -69,6 +67,32 @@ fn main() {
             get_app_config,
         ])
         .on_system_tray_event(handle_system_tray)
+        .setup(|app| {
+            let resolver = app.path_resolver();
+            let config_directory_path = resolver.app_local_data_dir().unwrap();
+
+            let config_path = config_directory_path.join("config.json");
+
+            let config = Config::load(config_path);
+            let shared: AppState = Arc::new(Mutex::new(config));
+
+            let try_main_window = app.get_window("main");
+            if let Some(main_window) = try_main_window {
+                let window_config = shared
+                    .lock()
+                    .unwrap()
+                    .window
+                    .clone()
+                    .unwrap();
+
+                main_window.set_always_on_top(window_config.always_on_top)?;
+                main_window.set_decorations(window_config.decoration)?;
+            }
+
+            app.manage(shared);
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

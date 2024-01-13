@@ -1,10 +1,10 @@
 import { Typography } from "@mui/material";
 import { getCpuCoreState, getCpuState, getCpuStateAggregate, getMemoryState } from "./api";
-import { AppConfig, CPUState, MemoryState, Resource, ResourceGroup } from "./types";
+import { CPUState, MemoryState, MonitorConfig, Resource, ResourceGroup } from "./types";
 
-export default async function createResourceList(config: AppConfig) {
+export default async function createResourceList(config: MonitorConfig) {
   const cpuState = await getCpuState();
-  const { cpu, memory } = config.monitor;
+  const { cpu, memory } = config;
 
   const nextResources = [] as ResourceGroup[];
 

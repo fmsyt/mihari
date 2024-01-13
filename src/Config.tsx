@@ -1,15 +1,17 @@
 import { Button, ButtonGroup, Card, CardContent, CardHeader, Checkbox, CircularProgress, Container, CssBaseline, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, ThemeProvider, Tooltip, Typography, createTheme, useMediaQuery } from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
-import { emit } from "@tauri-apps/api/event";
+import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/window";
 
 import i18n from "./i18n";
 import { AppConfig, CpuConfig } from "./types";
 import useAppConfig from "./useAppConfig";
+import { fs } from "@tauri-apps/api";
+import { BaseDirectory } from "@tauri-apps/api/fs";
 
 const { t } = i18n;
 
@@ -34,6 +36,21 @@ function App() {
       },
     },
   });
+
+  useEffect(() => {
+    let unlisten: UnlistenFn | undefined = undefined;
+
+    (async () => {
+      unlisten = await listen<AppConfig>("configChanged", async ({ payload }) => {
+        const json = JSON.stringify(payload, null, 2);
+        await fs.writeTextFile("config.json", json, { dir: BaseDirectory.AppLocalData, append: false });
+      });
+    })();
+
+    return () => {
+      unlisten && unlisten();
+    }
+  }, [])
 
   return (
     <ThemeProvider theme={theme}>
@@ -100,14 +117,8 @@ const WindowConfigThemeForm = (props: FormProps) => {
   const themeMode = useMemo(() => config.window.theme || "system", [config.window.theme]);
 
   const handleEmit = useCallback((mode: "light" | "dark" | "system") => {
-
-    emit("configChanged", {
-      ...config,
-      window: {
-        ...config.window,
-        theme: mode,
-      }
-    });
+    config.window.theme = mode === "system" ? null : mode;
+    emit("configChanged", config);
 
   }, [config]);
 
@@ -163,33 +174,38 @@ const WindowConfigStateForm = (props: WindowConfigStateFormProps) => {
 
   const { mainWindow } = props;
 
-  const [isTopMost, setIsTopMost] = useState<boolean>(true);
-  const [decoration, setDecoration] = useState<boolean>(false);
+  const { config } = props;
+
+  const alwaysOnTop = useMemo(() => config.window.alwaysOnTop, [config.window.alwaysOnTop]);
+  const decoration = useMemo(() => config.window.decoration, [config.window.decoration]);
 
   const handleChangeTopMost = useCallback(async (toEnable: boolean) => {
+
+    config.window.alwaysOnTop = toEnable;
+    emit("configChanged", config);
 
     if (!mainWindow) {
       return;
     }
 
-
     if (toEnable) {
       await mainWindow.setAlwaysOnTop(true);
-      setIsTopMost(true);
     } else {
       await mainWindow.setAlwaysOnTop(false);
-      setIsTopMost(false);
     }
-  }, [mainWindow])
-
+  }, [config, mainWindow])
 
   const handleChangeDecoration = useCallback(async (toEnable: boolean) => {
+
+    config.window.decoration = toEnable;
+    emit("configChanged", config);
+
     if (!mainWindow) {
       return;
     }
 
     await mainWindow.setDecorations(toEnable);
-    setDecoration(toEnable);
+
   }, [mainWindow])
 
 
@@ -199,7 +215,7 @@ const WindowConfigStateForm = (props: WindowConfigStateFormProps) => {
         label={t("alwaysOnTop")}
         control={(
           <Checkbox
-            checked={isTopMost === true}
+            checked={alwaysOnTop === true}
             onChange={(e) => { handleChangeTopMost(e.target.checked) }}
           />
         )}
@@ -226,14 +242,8 @@ const CpuConfigForm = (props: FormProps) => {
   const cpuConfig = useMemo(() => config.monitor.cpu, [config.monitor.cpu]);
 
   const handleEmit = useCallback((next: CpuConfig) => {
-
-    emit("configChanged", {
-      ...config,
-      monitor: {
-        ...config.monitor,
-        cpu: next,
-      }
-    });
+    config.monitor = { ...config.monitor, cpu: next };
+    emit("configChanged", config);
 
   }, [config]);
 
