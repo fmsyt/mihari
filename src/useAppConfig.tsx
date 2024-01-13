@@ -9,15 +9,23 @@ export default function useAppConfig() {
 
   useEffect(() => {
     (async () => {
-      const config = await getAppConfig();
+
+      const [
+        config,
+        cpuState,
+      ] = await Promise.all([
+        getAppConfig(),
+        getCpuState(),
+      ]);
+
+      const { cpu, memory } = config.monitor;
 
       const nextResources = [] as ResourceGroup[];
-      const cpuState = await getCpuState();
 
-      if (config.monitor.showCpuAggregateState) {
+      if (cpu.show && cpu.showAggregated) {
         nextResources.push({
           id: "cpu_aggregate",
-          label: "CPU",
+          label: cpu.label,
           resources: [
             {
               label: "CPU",
@@ -41,10 +49,10 @@ export default function useAppConfig() {
         });
       }
 
-      if (config.monitor.showCpuState) {
+      if (cpu.show && !cpu.showAggregated) {
         nextResources.push({
           id: "cpu",
-          label: "CPU",
+          label: cpu.label,
           resources: cpuState.map((_, i) => ({
             label: `Core ${i + 1}`,
             updateHandler: () => getCpuCoreState(i),
@@ -55,13 +63,13 @@ export default function useAppConfig() {
         });
       }
 
-      if (config.monitor.showMemoryState) {
+      if (memory.show) {
         nextResources.push({
           "id": "memory",
-          label: "Mem",
+          label: memory.label,
           resources: [
             {
-              label: "Mem",
+              label: "Memory",
               updateHandler: getMemoryState,
               toValue: (memory) => {
                 return (1 - memory.free / memory.total) * 100;

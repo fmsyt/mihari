@@ -13,9 +13,19 @@ export interface WindowState {
 }
 
 export interface MonitorConfig {
-  showCpuState: boolean;
-  showCpuAggregateState: boolean;
-  showMemoryState: boolean;
+  cpu: CpuConfig;
+  memory: MemoryConfig;
+}
+
+export interface CpuConfig {
+  show: boolean;
+  showAggregated: boolean;
+  label: string;
+}
+
+export interface MemoryConfig {
+  show: boolean;
+  label: string;
 }
 
 export interface CPUState {

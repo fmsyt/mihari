@@ -3,10 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(default, rename_all = "camelCase")]
 pub struct Config {
-    #[serde(default)]
     pub window: Option<WindowConfig>,
-
-    #[serde(default)]
     pub monitor: MonitorConfig,
 }
 
@@ -19,15 +16,29 @@ pub struct WindowConfig {
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(default, rename_all = "camelCase")]
 pub struct MonitorConfig {
-    #[serde(default)]
-    pub show_cpu_state: bool,
-
-    #[serde(default)]
-    pub show_cpu_aggregate_state: bool,
-
-    #[serde(default)]
-    pub show_memory_state: bool,
+    pub cpu: CpuConfig,
+    pub memory: MemoryConfig,
 }
+
+
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(default, rename_all = "camelCase")]
+pub struct CpuConfig {
+    pub show: bool,
+    pub label: Option<String>,
+    pub show_aggregated: bool,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(default, rename_all = "camelCase")]
+pub struct MemoryConfig {
+    pub show: bool,
+    pub label: Option<String>,
+}
+
+
+
+
 
 impl Default for Config {
     fn default() -> Self {
@@ -49,9 +60,27 @@ impl Default for WindowConfig {
 impl Default for MonitorConfig {
     fn default() -> Self {
         Self {
-            show_cpu_state: true,
-            show_cpu_aggregate_state: true,
-            show_memory_state: true,
+            cpu: CpuConfig::default(),
+            memory: MemoryConfig::default(),
+        }
+    }
+}
+
+impl Default for CpuConfig {
+    fn default() -> Self {
+        Self {
+            show: true,
+            show_aggregated: false,
+            label: Some("CPU".to_string()),
+        }
+    }
+}
+
+impl Default for MemoryConfig {
+    fn default() -> Self {
+        Self {
+            show: true,
+            label: Some("Mem".to_string()),
         }
     }
 }
