@@ -116,8 +116,7 @@ export default function ChartExperimental(props: {
             vAxis: {
               minValue: 0,
               maxValue: 100,
-              // ticks: [25, 50, 75],
-              ticks: [],
+              ticks: [25, 50, 75],
             },
             legend: {
               position: "none",
