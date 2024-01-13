@@ -21,6 +21,14 @@
         "setAlwaysOnTop": true,
         "setDecorations": true,
         "startDragging": true
+      },
+      "fs": {
+        "all": false,
+        "writeFile": true,
+        "readFile": true,
+        "scope": [
+          "$APPLOCALDATA/*"
+        ]
       }
     },
     "bundle": {

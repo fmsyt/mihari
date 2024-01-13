@@ -1,37 +1,36 @@
 import { Button, ButtonGroup, Card, CardContent, CardHeader, Checkbox, Container, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, Tooltip, Typography } from "@mui/material";
+import { emit } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/window";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
 
 import i18n from "./i18n";
-const { t } = i18n;
-
 import ThemeContext from "./ThemeContext";
 import { CpuConfig } from "./types";
 import useAppConfig from "./useAppConfig";
 
-const mainWindow = WebviewWindow.getByLabel("main");
-
+const { t } = i18n;
 
 function App() {
 
-  if (!mainWindow) {
-    throw new Error("main window not found");
-  }
+  const mainWindowRef = useRef<WebviewWindow | null>(WebviewWindow.getByLabel("main"));
 
-  const { config } = useAppConfig();
-
-  const [cpuConfig, setCpuConfig] = useState<CpuConfig | undefined>(config?.monitor.cpu);
-  useLayoutEffect(() => setCpuConfig(config?.monitor.cpu), [config?.monitor.cpu]);
 
   const { themeMode, setThemeMode } = useContext(ThemeContext);
   const [isTopMost, setIsTopMost] = useState<boolean>(true);
   const [decoration, setDecoration] = useState<boolean>(false);
 
   const handleChangeTopMost = async (toEnable: boolean) => {
+
+    if (!mainWindowRef.current) {
+      return;
+    }
+
+    const mainWindow = mainWindowRef.current;
+
     if (toEnable) {
       await mainWindow.setAlwaysOnTop(true);
       setIsTopMost(true);
@@ -41,26 +40,26 @@ function App() {
     }
   }
 
-  const handleChangeThemeMode = async (mode: "light" | "dark" | "system") => {
+  const handleChangeThemeMode = useCallback(async (mode: "light" | "dark" | "system") => {
     setThemeMode(mode);
-  }
+    emit("themeChanged", mode);
+  }, [])
 
   const handleChangeDecoration = async (toEnable: boolean) => {
-    await mainWindow.setDecorations(toEnable);
+    if (!mainWindowRef.current) {
+      return;
+    }
+
+    await mainWindowRef.current.setDecorations(toEnable);
     setDecoration(toEnable);
   }
 
-  useEffect(() => {
-    return () => {
-      handleChangeDecoration(false);
-    }
-  }, [])
 
 
   return (
     <Container>
       <Stack spacing={2}>
-        <Typography variant="h6">{t("title")}</Typography>
+        <Typography variant="h5">{t("title")}</Typography>
 
         <Card>
           <CardHeader title={t("windowConfigTitle")} />
@@ -133,46 +132,7 @@ function App() {
         <Card>
           <CardHeader title={t("cpu")} />
           <CardContent>
-            <FormControl>
-              <FormLabel>{t("cpuDisplayContentHeader")}</FormLabel>
-              <RadioGroup
-                defaultValue={cpuConfig?.showAggregated ? "aggregate" : "logical"}
-              >
-                <FormControlLabel
-                  label={t("cpuDisplayContentAggregate")}
-                  value="aggregate"
-                  control={<Radio />}
-                />
-                <FormControlLabel
-                  label={t("cpuDisplayContentLogical")}
-                  value="logical"
-                  control={<Radio />}
-                />
-              </RadioGroup>
-            </FormControl>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader title={t("memory")} />
-          <CardContent>
-            <FormControl>
-              <FormLabel>{t("cpuDisplayContentHeader")}</FormLabel>
-              <RadioGroup
-                defaultValue={cpuConfig?.showAggregated ? "aggregate" : "logical"}
-              >
-                <FormControlLabel
-                  label={t("cpuDisplayContentAggregate")}
-                  value="aggregate"
-                  control={<Radio />}
-                />
-                <FormControlLabel
-                  label={t("cpuDisplayContentLogical")}
-                  value="logical"
-                  control={<Radio />}
-                />
-              </RadioGroup>
-            </FormControl>
+            <CpuConfigForm />
           </CardContent>
         </Card>
 
@@ -180,6 +140,66 @@ function App() {
 
     </Container>
   );
+}
+
+const CpuConfigForm = () => {
+
+  const currentConfig = useAppConfig();
+
+  const cpuConfig = useMemo(() => currentConfig?.monitor.cpu, [currentConfig?.monitor.cpu]);
+
+  const handleEmit = useCallback((next: CpuConfig) => {
+
+    if (!currentConfig || !cpuConfig) {
+      return;
+    }
+
+    emit("configChanged", {
+      ...currentConfig,
+      monitor: {
+        ...currentConfig.monitor,
+        cpu: next,
+      }
+    });
+
+  }, [cpuConfig]);
+
+  const handleChange = useCallback((key: keyof CpuConfig, value: any) => {
+
+    if (!cpuConfig) {
+      return;
+    }
+
+    const next = {
+      ...cpuConfig,
+      [key]: value,
+    };
+
+    handleEmit(next);
+
+
+  }, [cpuConfig, handleEmit]);
+
+  return (
+    <FormControl>
+      <FormLabel>{t("cpuDisplayContentHeader")}</FormLabel>
+      <RadioGroup
+        defaultValue={cpuConfig?.showAggregated ? "aggregate" : "logical"}
+        onChange={(e) => { handleChange("showAggregated", e.target.value === "aggregate") }}
+      >
+        <FormControlLabel
+          label={t("cpuDisplayContentAggregate")}
+          value="aggregate"
+          control={<Radio />}
+        />
+        <FormControlLabel
+          label={t("cpuDisplayContentLogical")}
+          value="logical"
+          control={<Radio />}
+        />
+      </RadioGroup>
+    </FormControl>
+  )
 }
 
 export default App;
