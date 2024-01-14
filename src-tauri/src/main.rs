@@ -9,7 +9,7 @@ use std::sync::{Arc, Mutex};
 use commands::{cpu_state, cpu_state_aggregate, memory_state, swap_state, get_app_config};
 use config::{Config, Storage};
 use tauri::{
-    AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
+    AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
 
 type AppState = Arc<Mutex<Config>>;
@@ -21,6 +21,7 @@ fn create_task_tray() -> SystemTray {
 
     let tray = SystemTrayMenu::new()
         .add_item(config_menu_item)
+        .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(quit);
 
     let system_tray = SystemTray::new().with_menu(tray);
