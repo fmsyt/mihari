@@ -59,6 +59,7 @@ fn main() {
 
     tauri::Builder::default()
         .system_tray(create_task_tray())
+        .manage(Arc::new(Mutex::new(Config::default())))
         .invoke_handler(tauri::generate_handler![
             cpu_state,
             cpu_state_aggregate,
@@ -83,8 +84,8 @@ fn main() {
             let try_main_window = app.get_window("main");
             if let Some(main_window) = try_main_window {
                 let window_config = config.window.clone();
-                main_window.set_always_on_top(window_config.always_on_top).unwrap();
-                main_window.set_decorations(window_config.decoration).unwrap();
+                main_window.set_always_on_top(window_config.always_on_top).expect("Failed to set always on top");
+                main_window.set_decorations(window_config.decoration).expect("Failed to set decoration");
 
                 // #[cfg(debug_assertions)]
                 // main_window.open_devtools();
