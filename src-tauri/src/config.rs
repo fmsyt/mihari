@@ -20,6 +20,8 @@ pub struct WindowConfig {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(default, rename_all = "camelCase")]
 pub struct MonitorConfig {
+    /// Update interval in milliseconds
+    pub update_interval: u64,
     pub cpu: CpuConfig,
     pub memory: MemoryConfig,
 }
@@ -66,6 +68,7 @@ impl Default for WindowConfig {
 impl Default for MonitorConfig {
     fn default() -> Self {
         Self {
+            update_interval: 1000,
             cpu: CpuConfig::default(),
             memory: MemoryConfig::default(),
         }

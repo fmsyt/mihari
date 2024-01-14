@@ -12,6 +12,8 @@ export interface WindowState {
 }
 
 export interface MonitorConfig {
+  /** @type number Update interval in milliseconds */
+  updateInterval: number;
   cpu: CpuConfig;
   memory: MemoryConfig;
 }
