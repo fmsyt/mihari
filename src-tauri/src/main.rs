@@ -3,19 +3,20 @@
 
 mod commands;
 mod config;
+mod core;
 
-use std::sync::{Arc, Mutex};
+use core::{AppState, GlobalState};
+use std::sync::Arc;
 
-use commands::{cpu_state, cpu_state_aggregate, memory_state, swap_state, get_app_config};
+use commands::{cpu_state, cpu_state_aggregate, get_app_config, memory_state, swap_state, watch};
 use config::{Config, Storage};
 use tauri::{
-    AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
+    AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
+    SystemTrayMenuItem,
 };
-
-type AppState = Arc<Mutex<Config>>;
+use tokio::sync::Mutex;
 
 fn create_task_tray() -> SystemTray {
-
     let config_menu_item = CustomMenuItem::new("config".to_string(), "設定");
     let quit = CustomMenuItem::new("quit".to_string(), "終了");
 
@@ -57,7 +58,6 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
 }
 
 fn main() {
-
     tauri::Builder::default()
         .system_tray(create_task_tray())
         .manage(Arc::new(Mutex::new(Config::default())))
@@ -67,6 +67,7 @@ fn main() {
             memory_state,
             swap_state,
             get_app_config,
+            watch,
         ])
         .on_system_tray_event(handle_system_tray)
         .setup(|app| {
@@ -85,14 +86,18 @@ fn main() {
             let try_main_window = app.get_window("main");
             if let Some(main_window) = try_main_window {
                 let window_config = config.window.clone();
-                main_window.set_always_on_top(window_config.always_on_top).expect("Failed to set always on top");
-                main_window.set_decorations(window_config.decoration).expect("Failed to set decoration");
+                main_window
+                    .set_always_on_top(window_config.always_on_top)
+                    .expect("Failed to set always on top");
+                main_window
+                    .set_decorations(window_config.decoration)
+                    .expect("Failed to set decoration");
 
                 // #[cfg(debug_assertions)]
                 // main_window.open_devtools();
             }
 
-            let shared: AppState = Arc::new(Mutex::new(config));
+            let shared: GlobalState = Arc::new(Mutex::new(AppState::from(config)));
             app.manage(shared);
 
             Ok(())

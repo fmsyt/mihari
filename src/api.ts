@@ -29,3 +29,7 @@ export async function getMemoryState(): Promise<MemoryState> {
 export async function getSwapState(): Promise<SwapState> {
   return await invoke("swap_state");
 }
+
+export async function startWatchResource(): Promise<void> {
+  return await invoke("watch");
+}

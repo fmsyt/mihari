@@ -1,7 +1,7 @@
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { getAppConfig } from "./api";
+import { getAppConfig, startWatchResource } from "./api";
 import { AppConfig } from "./types";
 
 export default function useAppConfig() {
@@ -26,6 +26,23 @@ export default function useAppConfig() {
     }
 
   }, [])
+
+  const watchingRef = useRef(false);
+
+  useEffect(() => {
+
+    if (watchingRef.current) {
+      return;
+    }
+
+    if (!config?.monitor?.cpu?.show) {
+      return;
+    }
+
+    watchingRef.current = true;
+    startWatchResource();
+
+  }, [config?.monitor?.cpu?.show])
 
   return config;
 }
