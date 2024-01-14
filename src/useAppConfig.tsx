@@ -12,7 +12,11 @@ export default function useAppConfig() {
     let unListen: UnlistenFn | undefined = undefined;
 
     (async () => {
+
+      // FIXME: Replace this to check tauri API is ready
+      await new Promise(resolve => setTimeout(resolve, 100));
       const config = await getAppConfig();
+
       setConfig(config);
 
       unListen = await listen<AppConfig>("configChanged", ({ payload: config }) => {
