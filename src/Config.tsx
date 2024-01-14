@@ -31,7 +31,13 @@ function App() {
         styleOverrides: {
           ":root": {
             colorScheme: isDarkMode ? "dark" : "light",
+            fontFamily: "Inter, Avenir, Helvetica, Arial, sans-serif",
+            fontSynthesis: "none",
+            textRendering: "optimizeLegibility",
           },
+          body: {
+            margin: "8px",
+          }
         }
       },
     },
@@ -271,13 +277,13 @@ const CpuConfigForm = (props: FormProps) => {
         onChange={(e) => { handleChange("showAggregated", e.target.value === "aggregate") }}
       >
         <FormControlLabel
-          label={t("cpuDisplayContentAggregate")}
-          value="aggregate"
+          label={t("cpuDisplayContentLogical")}
+          value="logical"
           control={<Radio />}
         />
         <FormControlLabel
-          label={t("cpuDisplayContentLogical")}
-          value="logical"
+          label={t("cpuDisplayContentAggregate")}
+          value="aggregate"
           control={<Radio />}
         />
       </RadioGroup>
