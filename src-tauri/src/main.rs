@@ -6,7 +6,7 @@ mod config;
 mod core;
 
 use core::{AppState, GlobalState};
-use std::sync::Arc;
+use std::{sync::Arc, process::exit};
 
 use commands::{cpu_state, cpu_state_aggregate, get_app_config, memory_state, swap_state, watch};
 use config::{Config, Storage};
@@ -15,6 +15,21 @@ use tauri::{
     SystemTrayMenuItem,
 };
 use tokio::sync::Mutex;
+
+fn handle_window(event: tauri::GlobalWindowEvent) {
+    match event.event() {
+        tauri::WindowEvent::CloseRequested { .. } => {
+            match event.window().label() {
+                "main" => {
+                    exit(0);
+                }
+                _ => {}
+            }
+        }
+        _ => {}
+    }
+}
+
 
 fn create_task_tray() -> SystemTray {
     let config_menu_item = CustomMenuItem::new("config".to_string(), "設定");
@@ -49,7 +64,7 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
                 }
             }
             "quit" => {
-                app.exit(0);
+                exit(0);
             }
             _ => {}
         },
@@ -61,6 +76,7 @@ fn main() {
     tauri::Builder::default()
         .system_tray(create_task_tray())
         .manage(Arc::new(Mutex::new(Config::default())))
+        .on_window_event(handle_window)
         .invoke_handler(tauri::generate_handler![
             cpu_state,
             cpu_state_aggregate,

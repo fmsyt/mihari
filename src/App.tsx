@@ -1,4 +1,4 @@
-import { Box, CssBaseline, Paper, Skeleton, Typography } from "@mui/material";
+import { Box, CssBaseline, Skeleton } from "@mui/material";
 import { useLayoutEffect, useState } from "react";
 
 import ThemeProvider from "./ThemeProvider";
@@ -35,29 +35,12 @@ function App() {
       <CssBaseline />
       <Box sx={{ width: "100%", height: "100vh" }}>
 
-        {isLoading && (
+        {resources.length === 0 && (
           <Skeleton
             variant="rounded"
             animation="wave"
             height="100%"
           />
-        )}
-
-        {!isLoading && resources.length === 0 && (
-          <Paper
-            sx={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              fontSize: "1.5rem",
-            }}
-          >
-            <Typography>
-              No resources found
-            </Typography>
-          </Paper>
         )}
 
         {!isLoading && resources.length > 0 && (
