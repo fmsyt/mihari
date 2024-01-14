@@ -221,7 +221,7 @@ const WindowConfigStateForm = (props: WindowConfigStateFormProps) => {
         label={t("alwaysOnTop")}
         control={(
           <Checkbox
-            checked={alwaysOnTop === true}
+            checked={alwaysOnTop}
             onChange={(e) => { handleChangeTopMost(e.target.checked) }}
           />
         )}
@@ -231,7 +231,7 @@ const WindowConfigStateForm = (props: WindowConfigStateFormProps) => {
         label={t("decoration")}
         control={(
           <Checkbox
-            checked={decoration === true}
+            checked={decoration}
             onChange={(e) => { handleChangeDecoration(e.target.checked) }}
           />
         )}
