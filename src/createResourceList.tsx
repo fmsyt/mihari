@@ -8,6 +8,11 @@ export default async function createResourceList(config: MonitorConfig) {
 
   const nextResources = [] as ResourceGroup[];
 
+  const toCpuValue = config.cpu.excludeIdle
+    ? (cpu: CPUState) => cpu.system * 100 + cpu.user * 100
+    : (cpu: CPUState) => 100 - cpu.idle * 100
+    ;
+
   if (cpu.show && cpu.showAggregated) {
     nextResources.push({
       id: "cpu_aggregate",
@@ -15,10 +20,8 @@ export default async function createResourceList(config: MonitorConfig) {
       resources: [
         {
           label: "CPU",
+          toValue: toCpuValue,
           updateHandler: getCpuStateAggregate,
-          toValue: (cpu) => {
-            return cpu.system * 100 + cpu.user * 100;
-          },
         } as Resource<CPUState>,
       ],
       monitorLabelComponent: ({ values }) => {
@@ -41,10 +44,8 @@ export default async function createResourceList(config: MonitorConfig) {
       label: cpu.label,
       resources: cpuState.map((_, i) => ({
         label: `Core ${i + 1}`,
+        toValue: toCpuValue,
         updateHandler: () => getCpuCoreState(i),
-        toValue: (core) => {
-          return core.system * 100 + core.user * 100;
-        },
       })) as Resource<CPUState>[],
     });
   }

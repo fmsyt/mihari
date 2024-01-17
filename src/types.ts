@@ -22,6 +22,7 @@ export interface CpuConfig {
   show: boolean;
   showAggregated: boolean;
   label: string;
+  excludeIdle: boolean;
 }
 
 export interface MemoryConfig {

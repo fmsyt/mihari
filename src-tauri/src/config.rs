@@ -1,4 +1,4 @@
-use std::{path::PathBuf, fs};
+use std::{fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -26,13 +26,13 @@ pub struct MonitorConfig {
     pub memory: MemoryConfig,
 }
 
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(default, rename_all = "camelCase")]
 pub struct CpuConfig {
     pub show: bool,
     pub label: Option<String>,
     pub show_aggregated: bool,
+    pub exclude_idle: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -41,10 +41,6 @@ pub struct MemoryConfig {
     pub show: bool,
     pub label: Option<String>,
 }
-
-
-
-
 
 impl Default for Config {
     fn default() -> Self {
@@ -81,6 +77,7 @@ impl Default for CpuConfig {
             show: true,
             show_aggregated: false,
             label: Some("CPU".to_string()),
+            exclude_idle: false,
         }
     }
 }
@@ -93,7 +90,6 @@ impl Default for MemoryConfig {
         }
     }
 }
-
 
 pub trait Storage<T> {
     fn load(path: PathBuf) -> T;

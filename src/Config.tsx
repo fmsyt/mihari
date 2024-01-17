@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Card, CardContent, CardHeader, Checkbox, CircularProgress, Container, CssBaseline, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, ThemeProvider, Tooltip, Typography, createTheme, useMediaQuery } from "@mui/material";
+import { Button, ButtonGroup, Card, CardContent, CardHeader, Checkbox, CircularProgress, Container, CssBaseline, FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup, Stack, ThemeProvider, Tooltip, Typography, createTheme, useMediaQuery } from "@mui/material";
 import { useCallback, useEffect, useMemo } from "react";
 
 import DarkModeIcon from '@mui/icons-material/DarkMode';
@@ -93,11 +93,9 @@ function App() {
 
               <Card>
                 <CardHeader title={t("cpu")} />
-                <CardContent>
-                  <CpuConfigForm
-                    config={config}
-                  />
-                </CardContent>
+                <CpuConfigContents
+                  config={config}
+                />
               </Card>
             </>
           )}
@@ -242,7 +240,7 @@ const WindowConfigStateForm = (props: WindowConfigStateFormProps) => {
 }
 
 
-const CpuConfigForm = (props: FormProps) => {
+const CpuConfigContents = (props: FormProps) => {
 
   const { config } = props;
   const cpuConfig = useMemo(() => config.monitor.cpu, [config.monitor.cpu]);
@@ -255,10 +253,6 @@ const CpuConfigForm = (props: FormProps) => {
 
   const handleChange = useCallback((key: keyof CpuConfig, value: any) => {
 
-    if (!cpuConfig) {
-      return;
-    }
-
     const next = {
       ...cpuConfig,
       [key]: value,
@@ -269,25 +263,63 @@ const CpuConfigForm = (props: FormProps) => {
 
   }, [cpuConfig, handleEmit]);
 
+  const helperText = useMemo(() => {
+
+    switch (cpuConfig.excludeIdle) {
+      case true:
+        return t("cpuDisplayCalculationExcludeIdleHelper");
+      case false:
+        return t("cpuDisplayCalculationIncludeIdleHelper");
+    }
+
+  }, [cpuConfig.excludeIdle]);
+
   return (
-    <FormControl>
-      <FormLabel>{t("cpuDisplayContentHeader")}</FormLabel>
-      <RadioGroup
-        defaultValue={cpuConfig.showAggregated ? "aggregate" : "logical"}
-        onChange={(e) => { handleChange("showAggregated", e.target.value === "aggregate") }}
-      >
-        <FormControlLabel
-          label={t("cpuDisplayContentLogical")}
-          value="logical"
-          control={<Radio />}
-        />
-        <FormControlLabel
-          label={t("cpuDisplayContentAggregate")}
-          value="aggregate"
-          control={<Radio />}
-        />
-      </RadioGroup>
-    </FormControl>
+    <>
+      <CardContent>
+        <FormControl>
+          <FormLabel>{t("cpuDisplayContentHeader")}</FormLabel>
+          <RadioGroup
+            value={cpuConfig.showAggregated ? "aggregate" : "logical"}
+            onChange={(e) => { handleChange("showAggregated", e.target.value === "aggregate") }}
+          >
+            <FormControlLabel
+              label={t("cpuDisplayContentLogical")}
+              value="logical"
+              control={<Radio />}
+            />
+            <FormControlLabel
+              label={t("cpuDisplayContentAggregate")}
+              value="aggregate"
+              control={<Radio />}
+            />
+          </RadioGroup>
+        </FormControl>
+      </CardContent>
+
+      <CardContent>
+        <FormControl>
+          <FormLabel>{t("cpuDisplayCalculationHeader")}</FormLabel>
+          <RadioGroup
+            value={cpuConfig.excludeIdle ? "exclude" : "include"}
+            onChange={(e) => { handleChange("excludeIdle", e.target.value === "exclude") }}
+          >
+            <FormControlLabel
+              label={t("cpuDisplayCalculationIncludeIdle")}
+              value="include"
+              control={<Radio />}
+            />
+            <FormControlLabel
+              label={t("cpuDisplayCalculationExcludeIdle")}
+              value="exclude"
+              control={<Radio />}
+            />
+          </RadioGroup>
+
+          <FormHelperText>{helperText}</FormHelperText>
+        </FormControl>
+      </CardContent>
+    </>
   )
 }
 
