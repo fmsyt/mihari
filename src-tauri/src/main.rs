@@ -12,7 +12,7 @@ use commands::{cpu_state, cpu_state_aggregate, get_app_config, memory_state, swa
 use config::{Config, Storage};
 use tauri::{
     AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-    SystemTrayMenuItem,
+    SystemTrayMenuItem, WindowBuilder, WindowUrl,
 };
 use tokio::sync::Mutex;
 
@@ -62,6 +62,9 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
                     config_window.set_focus().unwrap();
                     return;
                 }
+
+                let config_app = WindowBuilder::new(app, "config", WindowUrl::App("config.html".into())).build().expect("Failed to build config window");
+                config_app.set_title("Config - mihari").unwrap();
             }
             "quit" => {
                 exit(0);
