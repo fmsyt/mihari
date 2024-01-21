@@ -10,8 +10,10 @@ export default async function createResourceList(config: MonitorConfig) {
 
   const toCpuValue = config.cpu.excludeIdle
     ? (cpu: CPUState) => cpu.system * 100 + cpu.user * 100
-    : (cpu: CPUState) => 100 - cpu.idle * 100
+    : (cpu: CPUState) => 100 - cpu.idle * 100 / Object.values(cpu).reduce((p, c) => p + c, 0)
     ;
+
+  // const toCpuValue = (cpu: CPUState) => 100 - cpu.idle * 100 / Object.values(cpu).reduce((p, c) => p + c, 0)
 
   if (cpu.show && cpu.showAggregated) {
     nextResources.push({
