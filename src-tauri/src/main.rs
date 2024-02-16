@@ -16,6 +16,12 @@ use tauri::{
 };
 use tokio::sync::Mutex;
 
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+  args: Vec<String>,
+  cwd: String,
+}
+
 fn handle_window(event: tauri::GlobalWindowEvent) {
     match event.event() {
         tauri::WindowEvent::CloseRequested { .. } => {
@@ -77,6 +83,10 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+            println!("{}, {argv:?}, {cwd}", app.package_info().name);
+            app.emit_all("single-instance", Payload { args: argv, cwd }).unwrap();
+        }))
         .system_tray(create_task_tray())
         .manage(Arc::new(Mutex::new(Config::default())))
         .on_window_event(handle_window)
