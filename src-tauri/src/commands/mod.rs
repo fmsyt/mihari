@@ -1,16 +1,10 @@
-use std::{
-    sync::Arc,
-    time::Duration,
-};
+use std::{sync::Arc, time::Duration};
 use tauri::State;
 
 use serde::Serialize;
 use systemstat::{Platform, System};
 
-use crate::{
-    config::Config,
-    core::GlobalState,
-};
+use crate::{config::Config, core::GlobalState};
 
 #[tauri::command]
 pub async fn get_app_config(state: State<'_, GlobalState>) -> Result<Config, String> {
@@ -31,7 +25,6 @@ pub struct CPUState {
 
 #[tauri::command]
 pub async fn cpu_state(state: State<'_, GlobalState>) -> Result<Vec<CPUState>, String> {
-
     let state = state.lock().await;
 
     let current = state.watcher.lock().unwrap().current_cpu.clone();
@@ -117,13 +110,12 @@ pub fn swap_state() -> SwapState {
 
 /// @see https://docs.rs/tauri/latest/tauri/trait.Manager.html
 #[tauri::command]
-pub async fn watch(global_state: State<'_, GlobalState>) -> Result<(), String> {
-
+pub async fn watch_legacy(global_state: State<'_, GlobalState>) -> Result<(), String> {
     let state = global_state.lock().await;
 
     let cloned_state = Arc::clone(&global_state);
     let handler = tauri::async_runtime::spawn(async move {
-        watcher(cloned_state).await;
+        watcher_legacy(cloned_state).await;
     });
 
     let old_handler = state.watcher.lock().unwrap().watcher.take();
@@ -138,7 +130,7 @@ pub async fn watch(global_state: State<'_, GlobalState>) -> Result<(), String> {
     Ok(())
 }
 
-async fn watcher(state: GlobalState) {
+async fn watcher_legacy(state: GlobalState) {
     loop {
         let state = state.lock().await;
 
