@@ -4,12 +4,14 @@
 mod commands;
 mod config;
 mod core;
+mod resource;
 
 use core::{AppState, GlobalState};
 use std::{process::exit, sync::Arc};
 
 use commands::{
-    cpu_state, cpu_state_aggregate, get_app_config, memory_state, swap_state, watch_legacy,
+    cpu_state, cpu_state_aggregate, get_app_config, memory_state, start_watcher, stop_watcher,
+    swap_state, watch_legacy,
 };
 use config::{Config, Storage};
 use tauri::{
@@ -99,6 +101,8 @@ fn main() {
             memory_state,
             swap_state,
             get_app_config,
+            stop_watcher,
+            start_watcher,
             watch_legacy,
         ])
         .on_system_tray_event(handle_system_tray)
