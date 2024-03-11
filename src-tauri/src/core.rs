@@ -89,7 +89,7 @@ pub async fn watcher(app: AppHandle, state: GlobalState) {
 
         let try_main_window = app.get_window("main");
         if let Some(main_window) = try_main_window {
-            main_window.emit("state_list", Some(summary)).unwrap();
+            main_window.emit("resourceUpdated", Some(summary)).unwrap();
         }
 
         // println!("state_list");

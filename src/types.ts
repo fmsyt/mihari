@@ -66,3 +66,10 @@ export interface ResourceGroup {
   resources: Resource<any>[];
   monitorLabelComponent?: ({ values, rawValues }: { values: any[], rawValues: any[] }) => ReactNode;
 }
+
+export interface UpdateResourceEventData {
+  cpu: CPUState[] | null;
+  cpuAggregated: CPUState | null;
+  memory: MemoryState | null;
+  swap: SwapState | null;
+}
