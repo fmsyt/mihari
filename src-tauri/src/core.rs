@@ -1,7 +1,4 @@
-use std::{
-    sync::{Arc, Mutex},
-    time::Duration,
-};
+use std::sync::{Arc, Mutex};
 
 use serde::Serialize;
 use tauri::{async_runtime::JoinHandle, AppHandle, Manager};
@@ -25,12 +22,102 @@ pub struct Watcher {
     pub current_cpu_aggregated: Option<CPUState>,
 }
 
+pub type ResourceUpdatedPayload = Vec<ResourceUpdatedPayloadRow>;
+
 #[derive(Debug, Clone, Serialize)]
-pub struct Summary {
-    pub cpu: Option<Vec<CPUState>>,
-    pub cpu_aggregated: Option<CPUState>,
-    pub memory: Option<MemoryState>,
-    pub swap: Option<SwapState>,
+pub struct ResourceUpdatedPayloadRow {
+    pub chart_id: String,
+    pub delta: Vec<ChartResource>,
+}
+
+impl From<Vec<CPUState>> for ResourceUpdatedPayloadRow {
+    fn from(payload: Vec<CPUState>) -> Self {
+
+        let mut delta = Vec::new();
+        for (i, cpu) in payload.iter().enumerate() {
+            delta.push(ChartResource {
+                id: format!("cpu_{}", i),
+                label: format!("CPU {}", i),
+                value: 100.0 - cpu.idle * 100.0,
+                min: None,
+                max: None,
+                color: None,
+            });
+        }
+
+        Self {
+            chart_id: "cpu".to_string(),
+            delta,
+        }
+    }
+}
+
+impl From<MemoryState> for ResourceUpdatedPayloadRow {
+    fn from(payload: MemoryState) -> Self {
+        let mut delta = Vec::new();
+
+        if payload.total == 0 {
+            return Self {
+                chart_id: "memory".to_string(),
+                delta,
+            };
+        }
+
+        let value = 1.0 - payload.free as f32 / payload.total as f32;
+
+        delta.push(ChartResource {
+            id: "memory".to_string(),
+            label: "Memory".to_string(),
+            value,
+            min: None,
+            max: None,
+            color: None,
+        });
+
+        Self {
+            chart_id: "memory".to_string(),
+            delta,
+        }
+    }
+}
+
+impl From<SwapState> for ResourceUpdatedPayloadRow {
+    fn from(payload: SwapState) -> Self {
+        let mut delta = Vec::new();
+
+        if payload.total == 0 {
+            return Self {
+                chart_id: "swap".to_string(),
+                delta,
+            };
+        }
+
+        let value = 1.0 - payload.free as f32 / payload.total as f32;
+
+        delta.push(ChartResource {
+            id: "swap".to_string(),
+            label: "Swap".to_string(),
+            value,
+            min: None,
+            max: None,
+            color: None,
+        });
+
+        Self {
+            chart_id: "swap".to_string(),
+            delta,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ChartResource {
+    pub id: String,
+    pub label: String,
+    pub value: f32,
+    pub min: Option<f32>,
+    pub max: Option<f32>,
+    pub color: Option<String>,
 }
 
 impl Default for AppState {
@@ -68,28 +155,24 @@ pub async fn watcher(app: AppHandle, state: GlobalState) {
     loop {
         let state = state.lock().await;
 
-        let ms = state.config.lock().unwrap().monitor.update_interval;
-        let interval = Duration::from_millis(ms);
-        tokio::time::sleep(interval).await;
+        let mut payload: ResourceUpdatedPayload = Vec::new();
 
+        let ms = state.config.lock().unwrap().monitor.update_interval;
         let current_cpu = measure_cpu_state(ms).await;
+        payload.push(current_cpu.clone().into());
 
         let memory = measure_memory_state();
-        let swap = SwapState { total: 0, free: 0 };
+        payload.push(memory.into());
+
+        let swap = SwapState { total: 1, free: 0 };
+        payload.push(swap.into());
 
         let mut watcher = state.watcher.lock().unwrap();
         watcher.current_cpu = Some(current_cpu.clone());
 
-        let summary = Summary {
-            cpu: Some(current_cpu),
-            cpu_aggregated: None,
-            memory: Some(memory),
-            swap: Some(swap),
-        };
-
         let try_main_window = app.get_window("main");
         if let Some(main_window) = try_main_window {
-            main_window.emit("resourceUpdated", Some(summary)).unwrap();
+            main_window.emit("resourceUpdated", payload).unwrap();
         }
 
         // println!("state_list");

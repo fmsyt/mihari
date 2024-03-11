@@ -1,9 +1,9 @@
 import { useLayoutEffect, useState } from "react";
-import { AppConfig, ResourceGroup } from "./types";
+import { AppConfig, ChartType } from "./types";
 import createResourceList from "./createResourceList";
 
 export default function useResourceList(config?: AppConfig | null) {
-  const [resourceList, setResourceList] = useState<ResourceGroup[]>([]);
+  const [resourceList, setResourceList] = useState<ChartType[]>([]);
 
   useLayoutEffect(() => {
 

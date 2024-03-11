@@ -3,12 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 
 import { getAppConfig, startWatchResource } from "../api";
 import Monitor from "../components/Monitor";
-import { AppConfig, ResourceGroup, UpdateResourceEventData } from "../types";
+import { AppConfig, ChartType, UpdateResourceEventPayload } from "../types";
 
-const MonitorProvider = () => {
+const MonitorContainer = () => {
 
   const [config, setConfig] = useState<AppConfig | null>(null);
-  const [resources, setResources] = useState<ResourceGroup[]>([]);
+  const [chartList, setChartList] = useState<ChartType[]>([]);
 
   useEffect(() => {
 
@@ -35,23 +35,8 @@ const MonitorProvider = () => {
   }, [])
 
 
-  const handleResourceUpdated = useCallback(({ payload }: { payload: UpdateResourceEventData }) => {
-
-    setResources((prev) => {
-      const next = [...prev];
-
-      Object.entries(payload).forEach(([key, value]) => {
-        const resource = next.find((r) => r.id === key);
-        if (!resource) {
-          return;
-        }
-
-        // TODO: Update resource
-      });
-
-      return next;
-    });
-
+  const handleResourceUpdated = useCallback(({ payload }: { payload: UpdateResourceEventPayload }) => {
+    console.log("handleResourceUpdated", payload);
   }, []);
 
 
@@ -64,8 +49,10 @@ const MonitorProvider = () => {
 
     let unlisten: UnlistenFn | undefined = undefined;
     const fn = async () => {
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       await startWatchResource();
-      unlisten = await listen<UpdateResourceEventData>("resourceUpdated", handleResourceUpdated);
+      unlisten = await listen<UpdateResourceEventPayload>("resourceUpdated", handleResourceUpdated);
     }
 
     fn();
@@ -78,8 +65,10 @@ const MonitorProvider = () => {
 
 
   return (
-    <Monitor resources={resources} />
+    <div>
+      ほげ
+    </div>
   )
 }
 
-export default MonitorProvider;
+export default MonitorContainer;

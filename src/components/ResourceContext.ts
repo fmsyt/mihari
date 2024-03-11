@@ -1,11 +1,11 @@
 import { createContext } from "react";
 
-import { ResourceGroup } from "../types";
+import { ChartType } from "../types";
 
 interface Context {
-  resourceGroups: ResourceGroup[];
+  resourceGroups: ChartType[];
   updateInterval: number;
-  getGroup: (id: string) => ResourceGroup | undefined;
+  getGroup: (id: string) => ChartType | undefined;
   getCurrentValues: (id: string) => number[];
   getCurrentRawValues: (id: string) => any[];
 }

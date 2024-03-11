@@ -51,7 +51,8 @@ export interface SwapState {
 
 export type ResourceState = CPUState | MemoryState | SwapState;
 
-export interface Resource<T> {
+export interface ChartResourceType<T> {
+  id?: string;
   label: string;
   updateHandler: () => Promise<T>;
   min?: number;
@@ -60,16 +61,16 @@ export interface Resource<T> {
   toValue?: (value: T) => number;
 }
 
-export interface ResourceGroup {
+export interface ChartType {
   id: string;
   label: string;
-  resources: Resource<any>[];
+  resources: ChartResourceType<any>[];
   monitorLabelComponent?: ({ values, rawValues }: { values: any[], rawValues: any[] }) => ReactNode;
 }
 
-export interface UpdateResourceEventData {
-  cpu: CPUState[] | null;
-  cpuAggregated: CPUState | null;
-  memory: MemoryState | null;
-  swap: SwapState | null;
+export type UpdateResourceEventPayload = ResourceUpdatedPayloadRow[];
+
+export interface ResourceUpdatedPayloadRow {
+  id: string;
+  delta: ChartResourceType<ResourceState>[];
 }

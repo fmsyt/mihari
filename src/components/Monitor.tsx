@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
 import { Fragment } from "react";
 
-import { ResourceGroup } from "../types";
+import { ChartType } from "../types";
 import Chart from "./GoogleChartsChart";
 import Panel from "./Panel";
 import ResourceLabel from "./ResourceLabel";
@@ -11,7 +11,7 @@ import ResourceValue from "./ResourceValue";
 import "../monitor.css"
 
 export default function Monitor(props: {
-  resources: ResourceGroup[];
+  resources: ChartType[];
   muiGridProps?: typeof Grid;
 }) {
   const { resources, muiGridProps } = props;

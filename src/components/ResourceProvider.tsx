@@ -1,11 +1,11 @@
 import { ReactNode, useCallback, useLayoutEffect, useState } from "react";
 
 import ResourceContext from "./ResourceContext";
-import { ResourceGroup } from "../types";
+import { ChartType } from "../types";
 
 interface ResourceProviderProps {
   children: ReactNode;
-  groups?: ResourceGroup[];
+  groups?: ChartType[];
   updateInterval?: number;
 }
 
@@ -17,7 +17,7 @@ interface currentValuesType {
 
 export default function ResourceProvider(props: ResourceProviderProps) {
   const { groups: initialGroups = [] } = props;
-  const [groups, setGroups] = useState<ResourceGroup[]>(initialGroups);
+  const [groups, setGroups] = useState<ChartType[]>(initialGroups);
   useLayoutEffect(() => {
     setGroups(initialGroups || []);
   }, [initialGroups]);

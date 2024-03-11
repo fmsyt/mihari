@@ -1,12 +1,12 @@
 import { Typography } from "@mui/material";
 import { getCpuCoreState, getCpuState, getCpuStateAggregate, getMemoryState } from "./api";
-import { CPUState, MemoryState, MonitorConfig, Resource, ResourceGroup } from "./types";
+import { CPUState, MemoryState, MonitorConfig, ChartResourceType, ChartType } from "./types";
 
 export default async function createResourceList(config: MonitorConfig) {
   const cpuState = await getCpuState();
   const { cpu, memory } = config;
 
-  const nextResources = [] as ResourceGroup[];
+  const nextResources = [] as ChartType[];
 
   const toCpuValue = config.cpu.excludeIdle
     ? (cpu: CPUState) => cpu.system * 100 + cpu.user * 100
@@ -24,7 +24,7 @@ export default async function createResourceList(config: MonitorConfig) {
           label: "CPU",
           toValue: toCpuValue,
           updateHandler: getCpuStateAggregate,
-        } as Resource<CPUState>,
+        } as ChartResourceType<CPUState>,
       ],
       monitorLabelComponent: ({ values }) => {
         if (values.length === 0) {
@@ -48,7 +48,7 @@ export default async function createResourceList(config: MonitorConfig) {
         label: `Core ${i + 1}`,
         toValue: toCpuValue,
         updateHandler: () => getCpuCoreState(i),
-      })) as Resource<CPUState>[],
+      })) as ChartResourceType<CPUState>[],
     });
   }
 
@@ -63,7 +63,7 @@ export default async function createResourceList(config: MonitorConfig) {
           toValue: (memory) => {
             return (1 - memory.free / memory.total) * 100;
           },
-        } as Resource<MemoryState>,
+        } as ChartResourceType<MemoryState>,
       ],
       monitorLabelComponent: ({ values }) => {
         if (values.length === 0) {

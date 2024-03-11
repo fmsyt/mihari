@@ -3,12 +3,13 @@ import { useLayoutEffect, useState } from "react";
 
 import ThemeProvider from "./ThemeProvider";
 import Monitor from "./components/Monitor";
-import { ResourceGroup } from "./types";
+import { ChartType } from "./types";
 import useAppConfig from "./useAppConfig";
 import createResourceList from "./createResourceList";
+import MonitorContainer from "./dev/MonitorContainer";
 
 function App() {
-  const [resources, setResources] = useState<ResourceGroup[]>([]);
+  const [resources, setResources] = useState<ChartType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const config = useAppConfig();
@@ -46,6 +47,8 @@ function App() {
         {!isLoading && resources.length > 0 && (
           <Monitor resources={resources} />
         )}
+
+        <MonitorContainer />
 
       </Box>
     </ThemeProvider>
