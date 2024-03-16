@@ -129,8 +129,8 @@ fn main() {
                     .set_decorations(window_config.decoration)
                     .expect("Failed to set decoration");
 
-                // #[cfg(debug_assertions)]
-                // main_window.open_devtools();
+                #[cfg(debug_assertions)]
+                main_window.open_devtools();
             }
 
             let shared: GlobalState = Arc::new(Mutex::new(AppState::from(config)));

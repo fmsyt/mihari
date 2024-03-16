@@ -53,6 +53,14 @@ export async function startWatchResourceLegacy(): Promise<void> {
   return await invoke("watch_legacy");
 }
 
-export async function startWatchResource(): Promise<void> {
-  return await invoke("start_watcher");
+export function startWatchResource() {
+  invoke("start_watcher");
+
+  return () => {
+    stopWatchResource();
+  }
+}
+
+export function stopWatchResource() {
+  invoke("stop_watcher");
 }

@@ -1,52 +1,50 @@
 import { Grid } from "@mui/material";
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 
-import { ChartType } from "../types";
-import Chart from "./GoogleChartsChart";
+import { Chart } from "./Chart";
 import Panel from "./Panel";
 import ResourceLabel from "./ResourceLabel";
-import ResourceProvider from "./ResourceProvider";
 import ResourceValue from "./ResourceValue";
 
 import "../monitor.css"
+import ResourceContext from "./ResourceContext";
 
 export default function Monitor(props: {
-  resources: ChartType[];
   muiGridProps?: typeof Grid;
 }) {
-  const { resources, muiGridProps } = props;
+
+  const { resourceGroups: resources } = useContext(ResourceContext);
+  const { muiGridProps } = props;
 
   return (
-    <ResourceProvider groups={resources}>
-      <Grid
-        container
-        gap="4px"
-        height="100%"
-        display="grid"
-        gridTemplateColumns="max-content max-content 1fr"
-        gridTemplateRows={`repeat(${resources.length}, 1fr)`}
-        {...muiGridProps}
-      >
-        {resources.map((group) => (
-          <Fragment key={group.id}>
-            <Grid item>
-              <Panel width="3em">
-                <ResourceLabel id={group.id} />
-              </Panel>
-            </Grid>
-            <Grid item>
-              <Panel width="3em">
-                <ResourceValue id={group.id} />
-              </Panel>
-            </Grid>
-            <Grid item>
-              <Panel padding="4px">
-                <Chart id={group.id} />
-              </Panel>
-            </Grid>
-          </Fragment>
-        ))}
-      </Grid>
-    </ResourceProvider>
+    <Grid
+      container
+      gap="4px"
+      height="100%"
+      display="grid"
+      gridTemplateColumns="max-content max-content 1fr"
+      gridTemplateRows={`repeat(${resources.length}, 1fr)`}
+      {...muiGridProps}
+    >
+      {resources.map((group) => (
+        <Fragment key={group.id}>
+          <Grid item>
+            <Panel width="3em">
+              <ResourceLabel id={group.id} />
+            </Panel>
+          </Grid>
+          <Grid item>
+            <Panel width="3em">
+              <ResourceValue id={group.id} />
+            </Panel>
+          </Grid>
+          <Grid item>
+            <Panel padding="4px">
+              <Chart id={group.id} />
+            </Panel>
+          </Grid>
+        </Fragment>
+      ))}
+    </Grid>
   );
 }

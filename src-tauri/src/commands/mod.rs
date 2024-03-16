@@ -126,8 +126,11 @@ pub async fn start_watcher(
 
     let old_handler = state.watcher.lock().unwrap().watcher.take();
     if let Some(old_handler) = old_handler {
+        println!("Abort old handler");
         old_handler.abort();
     }
+
+    println!("Start watching...");
 
     // update watching
     state.watcher.lock().unwrap().is_watching = true;
