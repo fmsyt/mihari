@@ -51,19 +51,48 @@ export interface SwapState {
 
 export type ResourceState = CPUState | MemoryState | SwapState;
 
-export interface ChartResourceType<T> {
+
+
+export interface ChartProviderProps {
+  children?: ReactNode;
   id: string;
   label: string;
-  updateHandler: () => Promise<T>;
+  lines: ChartLine[];
+  historyLength?: number;
+  initialValue?: number;
+  incomingDeltas: ChartLineDelta[];
+}
+
+export interface ChartLine {
+  id: string;
+  label: string;
   min?: number;
   max?: number;
   color?: string;
-  toValue?: (value: T) => number;
 }
 
-export interface ChartType<T = any> {
+
+
+export interface ChartContextValuesType {
   id: string;
   label: string;
-  resources: ChartResourceType<T>[];
-  monitorLabelComponent?: ({ values, rawValues }: { values: T[], rawValues: T[] }) => ReactNode;
+  resources: ChartContextResource[];
+  currentLineValues: number[];
 }
+
+export interface ChartContextResource {
+  id: string;
+  label: string;
+  values: number[];
+}
+
+export interface ChartLineDelta extends ChartLine {
+  value: number;
+}
+
+export interface ResourceUpdatedPayloadRow {
+  chart_id: string;
+  delta: ChartLineDelta[];
+}
+
+export type UpdateResourceEventPayload = ResourceUpdatedPayloadRow[];

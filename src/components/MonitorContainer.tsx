@@ -3,12 +3,11 @@ import { useEffect, useState } from "react";
 
 import { Grid, Skeleton, Typography } from "@mui/material";
 import { getAppConfig, startWatchResource } from "../api";
-import Panel from "../components/Panel";
-import { AppConfig } from "../types";
+import Panel from "./Panel";
+import { AppConfig, ChartContextResource, ChartProviderProps, ResourceUpdatedPayloadRow } from "../types";
 import Chart from "./Chart";
 import ChartProvider from "./ChartProvider";
 import ChartValue from "./ChartValue";
-import { ChartContextResource, ChartProviderProps, ResourceUpdatedPayloadRow } from "./types";
 
 interface DeltasSummary {
   [id: string]: ChartProviderProps["incomingDeltas"];
@@ -56,7 +55,6 @@ const MonitorContainer = () => {
   useEffect(() => {
 
     if (!config?.monitor) {
-      console.error("config.monitor is not defined");
       return;
     }
 
@@ -102,7 +100,7 @@ const MonitorContainer = () => {
       unlisten = await listen<ResourceUpdatedPayloadRow[]>("resourceUpdated", ({ payload }) => {
 
         setChartList((prev) => {
-          console.debug("resourceUpdated", payload);
+          // console.debug("resourceUpdated", payload);
 
           const deltasSummary = payload.reduce((prev, row) => {
             prev[row.chart_id] = row.delta;

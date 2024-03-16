@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from "react";
+import { ChartContextResource, ChartContextValuesType, ChartProviderProps } from "../types";
 import ChartContext from "./ChartContext";
-import { ChartContextResource, ChartContextValuesType, ChartProviderProps } from "./types";
 
 function fillArray<T>(length: number, value: T): T[] {
   return Array.from({ length }, () => value);

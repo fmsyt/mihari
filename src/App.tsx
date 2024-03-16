@@ -1,7 +1,7 @@
 import { Box, CssBaseline } from "@mui/material";
 
 import ThemeProvider from "./ThemeProvider";
-import MonitorContainer from "./dev/MonitorContainer";
+import MonitorContainer from "./components/MonitorContainer";
 
 function App() {
 

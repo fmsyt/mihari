@@ -1,6 +1,6 @@
-import { Typography } from "@mui/material"
-import { useContext, useMemo } from "react"
-import ChartContext from "./ChartContext"
+import { Typography } from "@mui/material";
+import { useContext, useMemo } from "react";
+import ChartContext from "./ChartContext";
 
 const ChartValue = () => {
 

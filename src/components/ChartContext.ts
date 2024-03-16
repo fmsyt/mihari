@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { ChartContextValuesType } from "./types";
+import { ChartContextValuesType } from "../types";
 
 const ChartContext = createContext<ChartContextValuesType>({
   id: "",
