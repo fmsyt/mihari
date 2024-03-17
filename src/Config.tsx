@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Card, CardContent, CardHeader, Checkbox, CircularProgress, Container, CssBaseline, FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup, Stack, ThemeProvider, Tooltip, Typography, createTheme, useMediaQuery } from "@mui/material";
+import { Box, Button, ButtonGroup, Card, CardContent, CardHeader, Checkbox, CircularProgress, Container, CssBaseline, FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup, Stack, ThemeProvider, Tooltip, Typography, createTheme, useMediaQuery } from "@mui/material";
 import { fs } from "@tauri-apps/api";
 import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
 import { BaseDirectory } from "@tauri-apps/api/fs";
@@ -91,12 +91,14 @@ function App() {
 
               </Card>
 
-              <Card>
-                <CardHeader title={t("cpu")} />
-                <CpuConfigContents
-                  config={config}
-                />
-              </Card>
+              <Box hidden>
+                <Card>
+                  <CardHeader title={t("cpu")} />
+                  <CpuConfigContents
+                    config={config}
+                  />
+                </Card>
+              </Box>
             </>
           )}
 
