@@ -4,11 +4,15 @@
 mod commands;
 mod config;
 mod core;
+mod resource;
 
 use core::{AppState, GlobalState};
-use std::{sync::Arc, process::exit};
+use std::{process::exit, sync::Arc};
 
-use commands::{cpu_state, cpu_state_aggregate, get_app_config, memory_state, swap_state, watch};
+use commands::{
+    cpu_state, cpu_state_aggregate, get_app_config, memory_state, start_watcher, stop_watcher,
+    swap_state, watch_legacy,
+};
 use config::{Config, Storage};
 use tauri::{
     AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
@@ -18,24 +22,21 @@ use tokio::sync::Mutex;
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
-  args: Vec<String>,
-  cwd: String,
+    args: Vec<String>,
+    cwd: String,
 }
 
 fn handle_window(event: tauri::GlobalWindowEvent) {
     match event.event() {
-        tauri::WindowEvent::CloseRequested { .. } => {
-            match event.window().label() {
-                "main" => {
-                    exit(0);
-                }
-                _ => {}
+        tauri::WindowEvent::CloseRequested { .. } => match event.window().label() {
+            "main" => {
+                exit(0);
             }
-        }
+            _ => {}
+        },
         _ => {}
     }
 }
-
 
 fn create_task_tray() -> SystemTray {
     let config_menu_item = CustomMenuItem::new("config".to_string(), "設定");
@@ -69,7 +70,10 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
                     return;
                 }
 
-                let config_app = WindowBuilder::new(app, "config", WindowUrl::App("config.html".into())).build().expect("Failed to build config window");
+                let config_app =
+                    WindowBuilder::new(app, "config", WindowUrl::App("config.html".into()))
+                        .build()
+                        .expect("Failed to build config window");
                 config_app.set_title("Config - mihari").unwrap();
             }
             "quit" => {
@@ -85,7 +89,8 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             println!("{}, {argv:?}, {cwd}", app.package_info().name);
-            app.emit_all("single-instance", Payload { args: argv, cwd }).unwrap();
+            app.emit_all("single-instance", Payload { args: argv, cwd })
+                .unwrap();
         }))
         .system_tray(create_task_tray())
         .manage(Arc::new(Mutex::new(Config::default())))
@@ -96,7 +101,9 @@ fn main() {
             memory_state,
             swap_state,
             get_app_config,
-            watch,
+            stop_watcher,
+            start_watcher,
+            watch_legacy,
         ])
         .on_system_tray_event(handle_system_tray)
         .setup(|app| {
@@ -122,8 +129,8 @@ fn main() {
                     .set_decorations(window_config.decoration)
                     .expect("Failed to set decoration");
 
-                // #[cfg(debug_assertions)]
-                // main_window.open_devtools();
+                #[cfg(debug_assertions)]
+                main_window.open_devtools();
             }
 
             let shared: GlobalState = Arc::new(Mutex::new(AppState::from(config)));

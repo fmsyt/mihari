@@ -1,29 +1,25 @@
+import { Box } from "@mui/material";
 import {
-  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
   useState,
 } from "react";
-import { Box } from "@mui/material";
 
 import { Chart } from "react-google-charts";
 
-import ResourceContext from "./ResourceContext";
-
-const defaultHistoryLength = 60;
+interface ChartExperimentalProps {
+  headerRow: string[];
+  rows: number[][];
+}
 
 /**
  * @see https://developers.google.com/chart/interactive/docs?hl=ja
  * @see https://www.react-google-charts.com/examples/area-chart
  * @see https://qiita.com/arakaki_tokyo/items/9f57524df1509837bbec#google-charts
  */
-export default function ChartExperimental(props: {
-  id: string;
-  length?: number;
-}) {
-  const { length, id: groupId } = props;
-  const { resourceGroups, getCurrentValues } = useContext(ResourceContext);
+export default function ChartExperimental(props: ChartExperimentalProps) {
+  const { headerRow, rows } = props;
 
   const [renderChart, setRenderChart] = useState(true);
 
@@ -43,57 +39,7 @@ export default function ChartExperimental(props: {
   // NOTE: プロパティの変更で表示サイズが変わらないので、一旦リサイズイベントで強制的に再レンダリングさせる
   useLayoutEffect(() => setRenderChart(true), [renderChart])
 
-  const resourceGroup = useMemo(() => {
-    const group = resourceGroups?.find((g) => g.id === groupId);
-    if (!group) {
-      return {
-        id: groupId,
-        label: groupId,
-        resources: [],
-      };
-    }
 
-    return group;
-  }, [resourceGroups, groupId]);
-
-  const [historyLength, setHistoryLength] = useState(defaultHistoryLength);
-  useLayoutEffect(() => {
-    setHistoryLength(length || defaultHistoryLength);
-  }, [length]);
-
-  const headerRow = useMemo(
-    () => resourceGroup.resources.map((r) => r.label) || [],
-    [resourceGroup],
-  );
-
-  const [rows, setRows] = useState<number[][]>([]);
-  useLayoutEffect(() => {
-    const defaultRows = Array(resourceGroup.resources.length)
-      .fill(0)
-      .map((_) => 0);
-
-    const nextSeries = Array(historyLength)
-      .fill(0)
-      .map((_) => defaultRows);
-
-    setRows(nextSeries);
-  }, [resourceGroup, historyLength]);
-
-  useLayoutEffect(() => {
-    const nextValues = getCurrentValues(groupId);
-    if (nextValues.length !== resourceGroup.resources.length) {
-      return;
-    }
-
-    setRows((prev) => {
-      const next = [...prev];
-
-      next.push(nextValues);
-      next.shift();
-
-      return next;
-    });
-  }, [getCurrentValues, groupId, resourceGroup]);
 
   const data = useMemo(() => {
     const nextData = [

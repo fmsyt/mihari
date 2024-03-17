@@ -1,17 +1,17 @@
 import { Button, ButtonGroup, Card, CardContent, CardHeader, Checkbox, CircularProgress, Container, CssBaseline, FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup, Stack, ThemeProvider, Tooltip, Typography, createTheme, useMediaQuery } from "@mui/material";
+import { fs } from "@tauri-apps/api";
+import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
+import { BaseDirectory } from "@tauri-apps/api/fs";
+import { WebviewWindow } from "@tauri-apps/api/window";
 import { useCallback, useEffect, useMemo } from "react";
 
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
-import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
-import { WebviewWindow } from "@tauri-apps/api/window";
 
 import i18n from "./i18n";
 import { AppConfig, CpuConfig } from "./types";
 import useAppConfig from "./useAppConfig";
-import { fs } from "@tauri-apps/api";
-import { BaseDirectory } from "@tauri-apps/api/fs";
 
 const { t } = i18n;
 

@@ -71,7 +71,7 @@
         "fullscreen": false,
         "title": "mihari",
         "width": 200,
-        "height": 180,
+        "height": 224,
         "transparent": true,
         "skipTaskbar": true,
         "alwaysOnTop": true,

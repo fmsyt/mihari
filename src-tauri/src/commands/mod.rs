@@ -1,15 +1,15 @@
-use std::{
-    sync::Arc,
-    time::Duration,
-};
-use tauri::State;
+use std::{sync::Arc, time::Duration};
+use tauri::{AppHandle, State};
 
-use serde::Serialize;
 use systemstat::{Platform, System};
 
 use crate::{
     config::Config,
-    core::GlobalState,
+    core::{watcher, GlobalState},
+    resource::{
+        measure_cpu_state, measure_cpu_state_aggregate, measure_memory_state, measure_swap_state,
+        CPUState, MemoryState, SwapState,
+    },
 };
 
 #[tauri::command]
@@ -20,18 +20,8 @@ pub async fn get_app_config(state: State<'_, GlobalState>) -> Result<Config, Str
     Ok(config)
 }
 
-#[derive(Debug, Clone, Serialize)]
-pub struct CPUState {
-    pub system: f32,
-    pub user: f32,
-    pub nice: f32,
-    pub idle: f32,
-    pub interrupt: f32,
-}
-
 #[tauri::command]
 pub async fn cpu_state(state: State<'_, GlobalState>) -> Result<Vec<CPUState>, String> {
-
     let state = state.lock().await;
 
     let current = state.watcher.lock().unwrap().current_cpu.clone();
@@ -40,90 +30,36 @@ pub async fn cpu_state(state: State<'_, GlobalState>) -> Result<Vec<CPUState>, S
         return Ok(current);
     }
 
-    let sys = System::new();
-    let cpu = sys.cpu_load().unwrap();
-
     let ms = state.config.lock().unwrap().monitor.update_interval;
-    tokio::time::sleep(Duration::from_millis(ms)).await;
-
-    let cpu_load = cpu.done().unwrap();
-
-    let state_list = cpu_load
-        .iter()
-        .map(|cpu| CPUState {
-            system: cpu.system,
-            user: cpu.user,
-            nice: cpu.nice,
-            idle: cpu.idle,
-            interrupt: cpu.interrupt,
-        })
-        .collect();
+    let state_list = measure_cpu_state(ms).await;
 
     Ok(state_list)
 }
 
 #[tauri::command]
 pub async fn cpu_state_aggregate(ms: Option<u64>) -> CPUState {
-    let sys = System::new();
-    let cpu = sys.cpu_load_aggregate().unwrap();
-
     let ms = ms.unwrap_or(1000);
-    tokio::time::sleep(Duration::from_millis(ms)).await;
-
-    let cpu_load = cpu.done().unwrap();
-
-    CPUState {
-        system: cpu_load.system,
-        user: cpu_load.user,
-        nice: cpu_load.nice,
-        idle: cpu_load.idle,
-        interrupt: cpu_load.interrupt,
-    }
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct MemoryState {
-    pub total: u64,
-    pub free: u64,
+    measure_cpu_state_aggregate(ms).await
 }
 
 #[tauri::command]
 pub fn memory_state() -> MemoryState {
-    let sys = System::new();
-    let mem = sys.memory().unwrap();
-
-    MemoryState {
-        total: mem.total.as_u64(),
-        free: mem.free.as_u64(),
-    }
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct SwapState {
-    pub total: u64,
-    pub free: u64,
+    measure_memory_state()
 }
 
 #[tauri::command]
 pub fn swap_state() -> SwapState {
-    let sys = System::new();
-    let swap = sys.swap().unwrap();
-
-    SwapState {
-        total: swap.total.as_u64(),
-        free: swap.free.as_u64(),
-    }
+    measure_swap_state()
 }
 
 /// @see https://docs.rs/tauri/latest/tauri/trait.Manager.html
 #[tauri::command]
-pub async fn watch(global_state: State<'_, GlobalState>) -> Result<(), String> {
-
+pub async fn watch_legacy(global_state: State<'_, GlobalState>) -> Result<(), String> {
     let state = global_state.lock().await;
 
     let cloned_state = Arc::clone(&global_state);
     let handler = tauri::async_runtime::spawn(async move {
-        watcher(cloned_state).await;
+        watcher_legacy(cloned_state).await;
     });
 
     let old_handler = state.watcher.lock().unwrap().watcher.take();
@@ -138,7 +74,7 @@ pub async fn watch(global_state: State<'_, GlobalState>) -> Result<(), String> {
     Ok(())
 }
 
-async fn watcher(state: GlobalState) {
+async fn watcher_legacy(state: GlobalState) {
     loop {
         let state = state.lock().await;
 
@@ -168,4 +104,46 @@ async fn watcher(state: GlobalState) {
         // println!("state_list");
         // println!("{:?}", serde_json::to_string(&state_list).unwrap());
     }
+}
+
+#[tauri::command]
+pub async fn start_watcher(
+    app: AppHandle,
+    global_state: State<'_, GlobalState>,
+) -> Result<(), String> {
+    let state = global_state.lock().await;
+
+    let cloned_state = Arc::clone(&global_state);
+    let handler = tauri::async_runtime::spawn(async move {
+        watcher(app, cloned_state).await;
+    });
+
+    let old_handler = state.watcher.lock().unwrap().watcher.take();
+    if let Some(old_handler) = old_handler {
+        println!("Abort old handler");
+        old_handler.abort();
+    }
+
+    println!("Start watching...");
+
+    // update watching
+    state.watcher.lock().unwrap().is_watching = true;
+    state.watcher.lock().unwrap().watcher = Some(handler);
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn stop_watcher(global_state: State<'_, GlobalState>) -> Result<(), String> {
+    let state = global_state.lock().await;
+
+    let old_handler = state.watcher.lock().unwrap().watcher.take();
+    if let Some(old_handler) = old_handler {
+        old_handler.abort();
+    }
+
+    // update watching
+    state.watcher.lock().unwrap().is_watching = false;
+
+    Ok(())
 }
