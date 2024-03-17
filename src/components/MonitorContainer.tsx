@@ -62,12 +62,8 @@ const MonitorContainer = () => {
 
     const { monitor } = config;
 
-    let alive = false;
     let unlisten: UnlistenFn | undefined = undefined;
     const fn = async () => {
-
-      if (alive) return;
-      alive = true;
 
       const chartList: ChartProviderProps[] = Object.keys(monitor).reduce((prev, key) => {
         const item = monitor[key as keyof typeof monitor];
@@ -120,7 +116,6 @@ const MonitorContainer = () => {
     fn();
 
     return () => {
-      alive = false;
       if (unlisten) {
         console.log("Unregister resourceUpdated event listener");
         unlisten();
