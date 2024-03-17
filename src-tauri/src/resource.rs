@@ -103,3 +103,13 @@ pub fn measure_memory_state() -> MemoryState {
         free: memory.free.as_u64(),
     }
 }
+
+pub fn measure_swap_state() -> SwapState {
+    let sys = System::new();
+    let swap = sys.swap().unwrap();
+
+    SwapState {
+        total: swap.total.as_u64(),
+        free: swap.free.as_u64(),
+    }
+}

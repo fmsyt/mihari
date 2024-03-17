@@ -16,19 +16,38 @@ export interface MonitorConfig {
   updateInterval: number;
   cpu: CpuConfig;
   memory: MemoryConfig;
+  swap: SwapConfig;
 }
 
-export interface CpuConfig {
+export interface MonitorConfig {
   show: boolean;
-  showAggregated: boolean;
   label: string;
+}
+
+export function isMonitorConfig(obj: any): obj is MonitorConfig {
+  if (typeof obj !== "object") {
+    return false;
+  }
+
+  if (typeof obj.show !== "boolean") {
+    return false;
+  }
+
+  if (typeof obj.label !== "string") {
+    return false;
+  }
+
+  return true;
+}
+
+export interface CpuConfig extends MonitorConfig {
+  showAggregated: boolean;
   excludeIdle: boolean;
 }
 
-export interface MemoryConfig {
-  show: boolean;
-  label: string;
-}
+export interface MemoryConfig extends MonitorConfig { }
+
+export interface SwapConfig extends MonitorConfig { }
 
 export interface CPUState {
   system: number;
@@ -91,7 +110,7 @@ export interface ChartLineDelta extends ChartLine {
 }
 
 export interface ResourceUpdatedPayloadRow {
-  chart_id: string;
+  chartId: string;
   delta: ChartLineDelta[];
 }
 

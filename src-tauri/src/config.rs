@@ -24,6 +24,7 @@ pub struct MonitorConfig {
     pub update_interval: u64,
     pub cpu: CpuConfig,
     pub memory: MemoryConfig,
+    pub swap: SwapConfig,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -38,6 +39,13 @@ pub struct CpuConfig {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(default, rename_all = "camelCase")]
 pub struct MemoryConfig {
+    pub show: bool,
+    pub label: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(default, rename_all = "camelCase")]
+pub struct SwapConfig {
     pub show: bool,
     pub label: Option<String>,
 }
@@ -67,6 +75,7 @@ impl Default for MonitorConfig {
             update_interval: 1000,
             cpu: CpuConfig::default(),
             memory: MemoryConfig::default(),
+            swap: SwapConfig::default(),
         }
     }
 }
@@ -87,6 +96,15 @@ impl Default for MemoryConfig {
         Self {
             show: true,
             label: Some("Mem".to_string()),
+        }
+    }
+}
+
+impl Default for SwapConfig {
+    fn default() -> Self {
+        Self {
+            show: true,
+            label: Some("Swap".to_string()),
         }
     }
 }

@@ -6,7 +6,10 @@ use tokio::sync::MutexGuard;
 
 use crate::{
     config::Config,
-    resource::{measure_cpu_state, measure_memory_state, CPUState, MemoryState, SwapState},
+    resource::{
+        measure_cpu_state, measure_memory_state, measure_swap_state, CPUState, MemoryState,
+        SwapState,
+    },
 };
 
 #[derive(Debug)]
@@ -26,18 +29,19 @@ pub struct Watcher {
 pub type ResourceUpdatedPayload = Vec<ResourceUpdatedPayloadRow>;
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(default, rename_all = "camelCase")]
 pub struct ResourceUpdatedPayloadRow {
     pub chart_id: String,
-    pub delta: Vec<ChartResource>,
+    pub delta: Vec<ChartLine>,
 }
 
 impl From<Vec<CPUState>> for ResourceUpdatedPayloadRow {
     fn from(payload: Vec<CPUState>) -> Self {
         let mut delta = Vec::new();
         for (i, cpu) in payload.iter().enumerate() {
-            delta.push(ChartResource {
-                id: format!("cpu_{}", i),
-                label: format!("Core {}", i),
+            delta.push(ChartLine {
+                id: format!("core_{}", i),
+                label: format!("Core {}", i + 1),
                 value: 100.0 - cpu.idle * 100.0,
                 min: None,
                 max: None,
@@ -65,7 +69,7 @@ impl From<MemoryState> for ResourceUpdatedPayloadRow {
 
         let value = (1.0 - payload.free as f32 / payload.total as f32) * 100.0;
 
-        delta.push(ChartResource {
+        delta.push(ChartLine {
             id: "memory".to_string(),
             label: "Memory".to_string(),
             value,
@@ -94,7 +98,7 @@ impl From<SwapState> for ResourceUpdatedPayloadRow {
 
         let value = 1.0 - payload.free as f32 / payload.total as f32;
 
-        delta.push(ChartResource {
+        delta.push(ChartLine {
             id: "swap".to_string(),
             label: "Swap".to_string(),
             value,
@@ -111,7 +115,8 @@ impl From<SwapState> for ResourceUpdatedPayloadRow {
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct ChartResource {
+#[serde(default, rename_all = "camelCase")]
+pub struct ChartLine {
     pub id: String,
     pub label: String,
     pub value: f32,
@@ -182,7 +187,7 @@ pub async fn tick(state: MutexGuard<'_, AppState>) -> Vec<ResourceUpdatedPayload
     let memory = measure_memory_state();
     payload.push(memory.into());
 
-    let swap = SwapState { total: 1, free: 0 };
+    let swap = measure_swap_state();
     payload.push(swap.into());
 
     let mut watcher = state.watcher.lock().unwrap();

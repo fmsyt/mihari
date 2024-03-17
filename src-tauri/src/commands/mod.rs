@@ -7,8 +7,8 @@ use crate::{
     config::Config,
     core::{watcher, GlobalState},
     resource::{
-        measure_cpu_state, measure_cpu_state_aggregate, measure_memory_state, CPUState,
-        MemoryState, SwapState,
+        measure_cpu_state, measure_cpu_state_aggregate, measure_memory_state, measure_swap_state,
+        CPUState, MemoryState, SwapState,
     },
 };
 
@@ -49,13 +49,7 @@ pub fn memory_state() -> MemoryState {
 
 #[tauri::command]
 pub fn swap_state() -> SwapState {
-    let sys = System::new();
-    let swap = sys.swap().unwrap();
-
-    SwapState {
-        total: swap.total.as_u64(),
-        free: swap.free.as_u64(),
-    }
+    measure_swap_state()
 }
 
 /// @see https://docs.rs/tauri/latest/tauri/trait.Manager.html

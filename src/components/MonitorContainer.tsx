@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 
 import { Grid, Skeleton, Typography } from "@mui/material";
 import { getAppConfig, startWatchResource } from "../api";
-import Panel from "./Panel";
-import { AppConfig, ChartContextResource, ChartProviderProps, ResourceUpdatedPayloadRow } from "../types";
+import { AppConfig, ChartProviderProps, ResourceUpdatedPayloadRow, isMonitorConfig } from "../types";
 import Chart from "./Chart";
 import ChartProvider from "./ChartProvider";
 import ChartValue from "./ChartValue";
+import Panel from "./Panel";
 
 interface DeltasSummary {
   [id: string]: ChartProviderProps["incomingDeltas"];
@@ -31,6 +31,8 @@ const MonitorContainer = () => {
 
       const config = await getAppConfig();
       setConfig(config);
+
+      console.log("Config loaded", config);
 
       console.log("Start monitoring");
       stopWatchResource = startWatchResource();
@@ -67,32 +69,26 @@ const MonitorContainer = () => {
       if (alive) return;
       alive = true;
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      const chartList: ChartProviderProps[] = Object.keys(monitor).reduce((prev, key) => {
+        const item = monitor[key as keyof typeof monitor];
 
-      const chartList: ChartProviderProps[] = [];
-      if (monitor?.cpu?.show) {
+        if (!isMonitorConfig(item)) {
+          return prev;
+        }
 
-        const cpuResources = [] as ChartContextResource[];
+        if (!item.show) {
+          return prev;
+        }
 
-        chartList.push({
-          id: "cpu",
-          label: monitor.cpu.label,
-          lines: cpuResources,
+        prev.push({
+          id: key,
+          label: item.label,
+          lines: [],
           incomingDeltas: []
         });
-      }
 
-      if (monitor?.memory?.show) {
-
-        const memoryResources = [] as ChartContextResource[];
-
-        chartList.push({
-          id: "memory",
-          label: monitor.memory.label,
-          lines: memoryResources,
-          incomingDeltas: []
-        });
-      }
+        return prev;
+      }, [] as ChartProviderProps[]);
 
       setChartList(chartList);
 
@@ -103,7 +99,7 @@ const MonitorContainer = () => {
           // console.debug("resourceUpdated", payload);
 
           const deltasSummary = payload.reduce((prev, row) => {
-            prev[row.chart_id] = row.delta;
+            prev[row.chartId] = row.delta;
             return prev;
           }, {} as DeltasSummary);
 
