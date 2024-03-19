@@ -18,6 +18,8 @@ use tauri::{
     AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
     SystemTrayMenuItem, WindowBuilder, WindowUrl,
 };
+use tauri_plugin_window_state::{AppHandleExt, StateFlags};
+
 use tokio::sync::Mutex;
 
 #[derive(Clone, serde::Serialize)]
@@ -77,6 +79,7 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
                 config_app.set_title("Config - mihari").unwrap();
             }
             "quit" => {
+                app.save_window_state(StateFlags::all()).expect("Failed to save window state");
                 exit(0);
             }
             _ => {}
@@ -92,6 +95,7 @@ fn main() {
             app.emit_all("single-instance", Payload { args: argv, cwd })
                 .unwrap();
         }))
+        .plugin(tauri_plugin_window_state::Builder::default().build())
         .system_tray(create_task_tray())
         .manage(Arc::new(Mutex::new(Config::default())))
         .on_window_event(handle_window)
