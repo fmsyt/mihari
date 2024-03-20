@@ -59,13 +59,12 @@ export interface CPUState {
   idle: number;
   interrupt: number;
 }
+
 export interface MemoryState {
   total: number;
   free: number;
-  used: number;
-  active: number;
-  available: number;
 }
+
 export interface SwapState {
   total: number;
   free: number;
