@@ -17,17 +17,19 @@ export type MonitorKey = typeof MonitorKeys[number];
 export interface MonitorConfig {
   /** @type number Update interval in milliseconds */
   updateInterval: number;
-  cpu: CpuConfig;
-  memory: MemoryConfig;
-  swap: SwapConfig;
+  resource: {
+    cpu: CpuConfig;
+    memory: MemoryConfig;
+    swap: SwapConfig;
+  };
 }
 
-export interface MonitorConfig {
+export interface MonitorResourceConfig {
   show: boolean;
   label: string;
 }
 
-export function isMonitorConfig(obj: any): obj is MonitorConfig {
+export function isMonitorResourceConfig(obj: any): obj is MonitorResourceConfig {
   if (typeof obj !== "object") {
     return false;
   }
@@ -43,14 +45,14 @@ export function isMonitorConfig(obj: any): obj is MonitorConfig {
   return true;
 }
 
-export interface CpuConfig extends MonitorConfig {
+export interface CpuConfig extends MonitorResourceConfig {
   showAggregated: boolean;
   excludeIdle: boolean;
 }
 
-export interface MemoryConfig extends MonitorConfig { }
+export interface MemoryConfig extends MonitorResourceConfig { }
 
-export interface SwapConfig extends MonitorConfig { }
+export interface SwapConfig extends MonitorResourceConfig { }
 
 export interface CPUState {
   system: number;

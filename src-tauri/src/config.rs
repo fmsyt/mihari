@@ -22,10 +22,17 @@ pub struct WindowConfig {
 pub struct MonitorConfig {
     /// Update interval in milliseconds
     pub update_interval: u64,
+    pub resource: MonitorResourceConfig,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(default, rename_all = "camelCase")]
+pub struct MonitorResourceConfig {
     pub cpu: CpuConfig,
     pub memory: MemoryConfig,
     pub swap: SwapConfig,
 }
+
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(default, rename_all = "camelCase")]
@@ -73,6 +80,14 @@ impl Default for MonitorConfig {
     fn default() -> Self {
         Self {
             update_interval: 1000,
+            resource: MonitorResourceConfig::default(),
+        }
+    }
+}
+
+impl Default for MonitorResourceConfig {
+    fn default() -> Self {
+        Self {
             cpu: CpuConfig::default(),
             memory: MemoryConfig::default(),
             swap: SwapConfig::default(),

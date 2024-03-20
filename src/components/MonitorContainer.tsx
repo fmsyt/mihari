@@ -1,18 +1,21 @@
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { Grid, Skeleton, Typography } from "@mui/material";
 import { getAppConfig, startWatchResource } from "../api";
-import { AppConfig, ChartProviderProps, MonitorKey, UpdateResourceEventPayload, isMonitorConfig } from "../types";
+import { AppConfig, ChartProviderProps, MonitorKey, UpdateResourceEventPayload } from "../types";
 import Chart from "./Chart";
 import ChartProvider from "./ChartProvider";
 import ChartValue from "./ChartValue";
 import Panel from "./Panel";
+import ThemeContext from "../ThemeContext";
 
 const MonitorContainer = () => {
 
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [chartList, setChartList] = useState<ChartProviderProps[]>([]);
+
+  const { setThemeMode } = useContext(ThemeContext);
 
   useEffect(() => {
 
@@ -49,25 +52,29 @@ const MonitorContainer = () => {
   }, [])
 
 
+  useEffect(() => {
+    if (!config?.window.theme) {
+      return;
+    }
+
+    setThemeMode(config.window.theme);
+  }, [config?.window.theme, setThemeMode]);
+
 
   useEffect(() => {
 
-    if (!config?.monitor) {
+    if (!config?.monitor.resource) {
       return;
     }
 
     const { monitor } = config;
+    const { resource } = monitor;
 
     let unlisten: UnlistenFn | undefined = undefined;
     const fn = async () => {
 
-      const chartList: ChartProviderProps[] = Object.keys(monitor).reduce((prev, key) => {
-        const item = monitor[key as MonitorKey];
-
-        if (!isMonitorConfig(item)) {
-          return prev;
-        }
-
+      const chartList: ChartProviderProps[] = Object.keys(resource).reduce((prev, key) => {
+        const item = resource[key as MonitorKey];
         if (!item.show) {
           return prev;
         }
@@ -117,7 +124,11 @@ const MonitorContainer = () => {
       }
     }
 
-  }, [config])
+  }, [
+    config?.monitor.resource.cpu.show,
+    config?.monitor.resource.memory.show,
+    config?.monitor.resource.swap.show
+  ])
 
 
   return (

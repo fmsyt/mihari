@@ -245,7 +245,7 @@ const WindowConfigStateForm = (props: WindowConfigStateFormProps) => {
 const CpuConfigContents = (props: FormProps) => {
 
   const { config } = props;
-  const cpuConfig = useMemo(() => config.monitor.cpu, [config.monitor.cpu]);
+  const cpuConfig = useMemo(() => config.monitor.resource.cpu, [config.monitor.resource.cpu]);
 
   const handleEmit = useCallback((next: CpuConfig) => {
     config.monitor = { ...config.monitor, cpu: next };
