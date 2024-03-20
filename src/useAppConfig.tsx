@@ -39,14 +39,14 @@ export default function useAppConfig() {
       return;
     }
 
-    if (!config?.monitor?.cpu?.show) {
+    if (!config?.monitor?.resource.cpu.show) {
       return;
     }
 
     watchingRef.current = true;
     startWatchResourceLegacy();
 
-  }, [config?.monitor?.cpu?.show])
+  }, [config?.monitor?.resource.cpu.show])
 
   return config;
 }
