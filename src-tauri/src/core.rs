@@ -86,7 +86,7 @@ impl From<MemoryState> for ChartLineDelta<MemoryState> {
             };
         }
 
-        let value = (1.0 - payload.free as f32 / payload.total as f32) * 100.0;
+        let value = (payload.used as f32 / payload.total as f32) * 100.0;
 
         delta.push(ChartLine {
             id: "memory".to_string(),
@@ -113,7 +113,7 @@ impl From<SwapState> for ChartLineDelta<SwapState> {
             };
         }
 
-        let value = (1.0 - payload.free as f32 / payload.total as f32) * 100.0;
+        let value = (payload.used as f32 / payload.total as f32) * 100.0;
 
         delta.push(ChartLine {
             id: "swap".to_string(),

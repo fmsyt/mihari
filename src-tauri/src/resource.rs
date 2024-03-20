@@ -46,13 +46,13 @@ impl From<CPUCoresState> for CPUStateAggregated {
 #[derive(Debug, Clone, Serialize)]
 pub struct MemoryState {
     pub total: u64,
-    pub free: u64,
+    pub used: u64,
 }
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SwapState {
     pub total: u64,
-    pub free: u64,
+    pub used: u64,
 }
 
 pub async fn measure_cpu_state(interval: u64) -> Vec<CPUState> {
@@ -95,32 +95,24 @@ pub async fn measure_cpu_state_aggregate(interval: u64) -> CPUStateAggregated {
 }
 
 pub fn measure_memory_state() -> MemoryState {
-    let sys = System::new();
-    let memory = sys.memory().unwrap();
+    let mut sys = sysinfo::System::new_all();
+    sys.refresh_all();
 
-    MemoryState {
-        total: memory.total.as_u64(),
-        free: memory.free.as_u64(),
-    }
+    let total = sys.total_memory();
+    let used = sys.used_memory();
+
+    MemoryState { total, used }
 }
 
 /// @see https://learn.microsoft.com/ja-jp/windows/win32/cimwin32prov/win32-pagefileusage
 /// @see https://learn.microsoft.com/ja-jp/windows/win32/api/winbase/ns-winbase-memorystatus
 /// @see https://learn.microsoft.com/ja-jp/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex
 pub fn measure_swap_state() -> SwapState {
-    let sys = System::new();
-    let swap = sys.swap().unwrap();
+    let mut sys = sysinfo::System::new_all();
+    sys.refresh_all();
 
-    let total = swap.total.as_u64();
-    let free = swap.free.as_u64();
+    let total = sys.total_swap();
+    let used = sys.used_swap();
 
-    #[cfg(target_os = "windows")]
-    {
-        // NOTE: `free`の値は物理メモリと仮想メモリの両方の値を含む。`0`の場合は仮想メモリを使用していないとみなす。
-        if free == 0 {
-            return SwapState { total, free: total };
-        }
-    }
-
-    SwapState { total, free }
+    SwapState { total, used }
 }

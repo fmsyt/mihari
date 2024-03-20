@@ -64,12 +64,12 @@ export interface CPUState {
 
 export interface MemoryState {
   total: number;
-  free: number;
+  used: number;
 }
 
 export interface SwapState {
   total: number;
-  free: number;
+  used: number;
 }
 
 export type ResourceState = CPUState | MemoryState | SwapState;
