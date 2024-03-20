@@ -31,7 +31,7 @@ const MonitorContainer = () => {
       console.log("Config loaded", config);
 
       console.log("Start monitoring");
-      stopWatchResource = startWatchResource();
+      stopWatchResource = await startWatchResource();
 
       unlisten = await listen<AppConfig>("configChanged", ({ payload: config }) => {
         setConfig(config);
@@ -93,15 +93,11 @@ const MonitorContainer = () => {
           const next = prev.map((chart) => {
 
             const chartId = chart.id;
-
             const row = payload[chartId];
-            if (!row) {
-              return chart;
-            }
 
             return {
               ...chart,
-              incomingDeltas: row.delta
+              incomingDeltas: row?.delta || [],
             }
           });
 
@@ -121,7 +117,7 @@ const MonitorContainer = () => {
       }
     }
 
-  }, [config?.monitor])
+  }, [config])
 
 
   return (
