@@ -19,16 +19,16 @@ export function memoryTooltip(state: MemoryState): string {
   }
 
   const total = bytes(state.total, { unit });
-  const free = bytes(state.free, { unit });
+  const used = bytes(state.total - state.free, { unit });
 
-  return `Total: ${total}\nFree: ${free}`;
+  return `Total: ${total}\nUsed: ${used}`;
 }
 
 export function swapTooltip(state: SwapState): string {
 
   const unit = getUnit(state.total);
   const total = bytes(state.total, { unit });
-  const free = bytes(state.free, { unit });
+  const used = bytes(state.total - state.free, { unit });
 
-  return `Total: ${total}\nFree: ${free}`;
+  return `Total: ${total}\nUsed: ${used}`;
 }
