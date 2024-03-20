@@ -11,6 +11,9 @@ export interface WindowState {
   decoration: boolean;
 }
 
+export const MonitorKeys = ["cpu", "memory", "swap"] as const;
+export type MonitorKey = typeof MonitorKeys[number];
+
 export interface MonitorConfig {
   /** @type number Update interval in milliseconds */
   updateInterval: number;
@@ -74,7 +77,7 @@ export type ResourceState = CPUState | MemoryState | SwapState;
 
 export interface ChartProviderProps {
   children?: ReactNode;
-  id: string;
+  id: MonitorKey;
   label: string;
   lines: ChartLine[];
   historyLength?: number;
@@ -109,9 +112,14 @@ export interface ChartLineDelta extends ChartLine {
   value: number;
 }
 
-export interface ResourceUpdatedPayloadRow {
-  chartId: string;
+export interface ResourceUpdatedPayloadRow<T> {
+  chartId: MonitorKey;
   delta: ChartLineDelta[];
+  raw: T;
 }
 
-export type UpdateResourceEventPayload = ResourceUpdatedPayloadRow[];
+export interface UpdateResourceEventPayload {
+  cpu?: ResourceUpdatedPayloadRow<CPUState>,
+  memory?: ResourceUpdatedPayloadRow<MemoryState>,
+  swap?: ResourceUpdatedPayloadRow<SwapState>,
+}

@@ -3,15 +3,11 @@ import { useEffect, useState } from "react";
 
 import { Grid, Skeleton, Typography } from "@mui/material";
 import { getAppConfig, startWatchResource } from "../api";
-import { AppConfig, ChartProviderProps, ResourceUpdatedPayloadRow, isMonitorConfig } from "../types";
+import { AppConfig, ChartProviderProps, MonitorKey, UpdateResourceEventPayload, isMonitorConfig } from "../types";
 import Chart from "./Chart";
 import ChartProvider from "./ChartProvider";
 import ChartValue from "./ChartValue";
 import Panel from "./Panel";
-
-interface DeltasSummary {
-  [id: string]: ChartProviderProps["incomingDeltas"];
-}
 
 const MonitorContainer = () => {
 
@@ -66,7 +62,7 @@ const MonitorContainer = () => {
     const fn = async () => {
 
       const chartList: ChartProviderProps[] = Object.keys(monitor).reduce((prev, key) => {
-        const item = monitor[key as keyof typeof monitor];
+        const item = monitor[key as MonitorKey];
 
         if (!isMonitorConfig(item)) {
           return prev;
@@ -77,7 +73,7 @@ const MonitorContainer = () => {
         }
 
         prev.push({
-          id: key,
+          id: key as MonitorKey,
           label: item.label,
           lines: [],
           incomingDeltas: []
@@ -89,22 +85,25 @@ const MonitorContainer = () => {
       setChartList(chartList);
 
       console.log("Register resourceUpdated event listener");
-      unlisten = await listen<ResourceUpdatedPayloadRow[]>("resourceUpdated", ({ payload }) => {
+      unlisten = await listen<UpdateResourceEventPayload>("resourceUpdated", ({ payload }) => {
 
         setChartList((prev) => {
           // console.debug("resourceUpdated", payload);
 
-          const deltasSummary = payload.reduce((prev, row) => {
-            prev[row.chartId] = row.delta;
-            return prev;
-          }, {} as DeltasSummary);
-
           const next = prev.map((chart) => {
+
+            const chartId = chart.id;
+
+            const row = payload[chartId];
+            if (!row) {
+              return chart;
+            }
+
             return {
               ...chart,
-              incomingDeltas: deltasSummary[chart.id] || []
+              incomingDeltas: row.delta
             }
-          })
+          });
 
           return next;
         });

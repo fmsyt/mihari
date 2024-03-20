@@ -26,16 +26,22 @@ pub struct Watcher {
     pub current_cpu_aggregated: Option<CPUState>,
 }
 
-pub type ResourceUpdatedPayload = Vec<ResourceUpdatedPayloadRow>;
+#[derive(Debug, Clone, Serialize)]
+pub struct ResourceUpdatedPayload {
+    pub cpu: Option<ChartLineDelta<Vec<CPUState>>>,
+    pub memory: Option<ChartLineDelta<MemoryState>>,
+    pub swap: Option<ChartLineDelta<SwapState>>,
+}
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(default, rename_all = "camelCase")]
-pub struct ResourceUpdatedPayloadRow {
+pub struct ChartLineDelta<T> {
     pub chart_id: String,
     pub delta: Vec<ChartLine>,
+    pub raw: Option<T>,
 }
 
-impl From<Vec<CPUState>> for ResourceUpdatedPayloadRow {
+impl From<Vec<CPUState>> for ChartLineDelta<Vec<CPUState>> {
     fn from(payload: Vec<CPUState>) -> Self {
         let mut delta = Vec::new();
         for (i, cpu) in payload.iter().enumerate() {
@@ -52,11 +58,12 @@ impl From<Vec<CPUState>> for ResourceUpdatedPayloadRow {
         Self {
             chart_id: "cpu".to_string(),
             delta,
+            raw: Some(payload),
         }
     }
 }
 
-impl From<MemoryState> for ResourceUpdatedPayloadRow {
+impl From<MemoryState> for ChartLineDelta<MemoryState> {
     fn from(payload: MemoryState) -> Self {
         let mut delta = Vec::new();
 
@@ -64,6 +71,7 @@ impl From<MemoryState> for ResourceUpdatedPayloadRow {
             return Self {
                 chart_id: "memory".to_string(),
                 delta,
+                raw: None,
             };
         }
 
@@ -81,11 +89,12 @@ impl From<MemoryState> for ResourceUpdatedPayloadRow {
         Self {
             chart_id: "memory".to_string(),
             delta,
+            raw: Some(payload),
         }
     }
 }
 
-impl From<SwapState> for ResourceUpdatedPayloadRow {
+impl From<SwapState> for ChartLineDelta<SwapState> {
     fn from(payload: SwapState) -> Self {
         let mut delta = Vec::new();
 
@@ -93,6 +102,7 @@ impl From<SwapState> for ResourceUpdatedPayloadRow {
             return Self {
                 chart_id: "swap".to_string(),
                 delta,
+                raw: None,
             };
         }
 
@@ -110,6 +120,7 @@ impl From<SwapState> for ResourceUpdatedPayloadRow {
         Self {
             chart_id: "swap".to_string(),
             delta,
+            raw: Some(payload),
         }
     }
 }
@@ -177,18 +188,18 @@ pub async fn watcher(app: AppHandle, state: GlobalState) {
     }
 }
 
-pub async fn tick(state: MutexGuard<'_, AppState>) -> Vec<ResourceUpdatedPayloadRow> {
-    let mut payload: ResourceUpdatedPayload = Vec::new();
+pub async fn tick(state: MutexGuard<'_, AppState>) -> ResourceUpdatedPayload {
 
     let ms = state.config.lock().unwrap().monitor.update_interval;
     let current_cpu = measure_cpu_state(ms).await;
-    payload.push(current_cpu.clone().into());
-
     let memory = measure_memory_state();
-    payload.push(memory.into());
-
     let swap = measure_swap_state();
-    payload.push(swap.into());
+
+    let payload: ResourceUpdatedPayload = ResourceUpdatedPayload {
+        cpu: Some(current_cpu.clone().into()),
+        memory: Some(memory.into()),
+        swap: Some(swap.into()),
+    };
 
     let mut watcher = state.watcher.lock().unwrap();
     watcher.current_cpu = Some(current_cpu.clone());
