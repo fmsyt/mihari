@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use serde::Serialize;
+use sysinfo::{MemoryRefreshKind, RefreshKind};
 use tauri::{async_runtime::JoinHandle, AppHandle, Manager};
 use tokio::sync::MutexGuard;
 
@@ -180,8 +181,15 @@ pub async fn tick(state: MutexGuard<'_, AppState>) -> ResourceUpdatedPayload {
 
     let ms = state.config.lock().unwrap().monitor.update_interval;
     let current_cpu = measure_cpu_state(ms).await;
-    let memory = measure_memory_state();
-    let swap = measure_swap_state();
+
+    let kind = MemoryRefreshKind::everything();
+    let refreshes = RefreshKind::new().with_memory(kind);
+
+    let mut sys = sysinfo::System::new_with_specifics(refreshes);
+    sys.refresh_memory();
+
+    let memory = measure_memory_state(&sys);
+    let swap = measure_swap_state(&sys);
 
     let payload = ResourceUpdatedPayload {
         cpu: Some(current_cpu.clone().into()),

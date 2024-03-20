@@ -94,10 +94,7 @@ pub async fn measure_cpu_state_aggregate(interval: u64) -> CPUStateAggregated {
     }
 }
 
-pub fn measure_memory_state() -> MemoryState {
-    let mut sys = sysinfo::System::new_all();
-    sys.refresh_all();
-
+pub fn measure_memory_state(sys: &sysinfo::System) -> MemoryState {
     let total = sys.total_memory();
     let used = sys.used_memory();
 
@@ -107,10 +104,7 @@ pub fn measure_memory_state() -> MemoryState {
 /// @see https://learn.microsoft.com/ja-jp/windows/win32/cimwin32prov/win32-pagefileusage
 /// @see https://learn.microsoft.com/ja-jp/windows/win32/api/winbase/ns-winbase-memorystatus
 /// @see https://learn.microsoft.com/ja-jp/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex
-pub fn measure_swap_state() -> SwapState {
-    let mut sys = sysinfo::System::new_all();
-    sys.refresh_all();
-
+pub fn measure_swap_state(sys: &sysinfo::System) -> SwapState {
     let total = sys.total_swap();
     let used = sys.used_swap();
 

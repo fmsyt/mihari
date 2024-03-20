@@ -1,4 +1,5 @@
 use std::{sync::Arc, time::Duration};
+use sysinfo::{MemoryRefreshKind, RefreshKind};
 use tauri::{AppHandle, State};
 
 use systemstat::{Platform, System};
@@ -44,12 +45,24 @@ pub async fn cpu_state_aggregate(ms: Option<u64>) -> CPUState {
 
 #[tauri::command]
 pub fn memory_state() -> MemoryState {
-    measure_memory_state()
+    let kind = MemoryRefreshKind::everything();
+    let refreshes = RefreshKind::new().with_memory(kind);
+
+    let mut sys = sysinfo::System::new_with_specifics(refreshes);
+    sys.refresh_memory();
+
+    measure_memory_state(&sys)
 }
 
 #[tauri::command]
 pub fn swap_state() -> SwapState {
-    measure_swap_state()
+    let kind = MemoryRefreshKind::everything();
+    let refreshes = RefreshKind::new().with_memory(kind);
+
+    let mut sys = sysinfo::System::new_with_specifics(refreshes);
+    sys.refresh_memory();
+
+    measure_swap_state(&sys)
 }
 
 /// @see https://docs.rs/tauri/latest/tauri/trait.Manager.html
