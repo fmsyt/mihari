@@ -96,10 +96,11 @@ export interface ChartLine {
 
 
 export interface ChartContextValuesType {
-  id: string;
+  id: MonitorKey;
   label: string;
   resources: ChartContextResource[];
   currentLineValues: number[];
+  currentLineRaws: ResourceState[];
 }
 
 export interface ChartContextResource {
@@ -108,14 +109,14 @@ export interface ChartContextResource {
   values: number[];
 }
 
-export interface ChartLineDelta extends ChartLine {
+export interface ChartLineDelta<T = any> extends ChartLine {
   value: number;
+  raw: T;
 }
 
-export interface ResourceUpdatedPayloadRow<T> {
+export interface ResourceUpdatedPayloadRow<T = any> {
   chartId: MonitorKey;
-  delta: ChartLineDelta[];
-  raw: T;
+  delta: ChartLineDelta<T>[];
 }
 
 export interface UpdateResourceEventPayload {

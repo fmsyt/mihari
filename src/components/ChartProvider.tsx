@@ -1,5 +1,5 @@
-import { useEffect, useLayoutEffect, useState } from "react";
-import { ChartContextResource, ChartContextValuesType, ChartProviderProps } from "../types";
+import { useEffect, useMemo, useState } from "react";
+import { ChartContextResource, ChartContextValuesType, ChartLineDelta, ChartProviderProps } from "../types";
 import ChartContext from "./ChartContext";
 
 function fillArray<T>(length: number, value: T): T[] {
@@ -10,8 +10,10 @@ function fillArray<T>(length: number, value: T): T[] {
 export default function ChartProvider(props: ChartProviderProps) {
 
   const { children, id, label, lines, initialValue, historyLength, incomingDeltas } = props;
-  const [contextResources, setContextResources] = useState<ChartContextResource[]>([]);
-  const [currentLineValues, setCurrentLineValues] = useState<number[]>([]);
+  const [resources, setResources] = useState<ChartContextResource[]>([]);
+
+  const [currentIncomingDeltas, setCurrentIncomingDeltas] = useState<ChartLineDelta[]>([]);
+
 
   useEffect(() => {
 
@@ -23,18 +25,15 @@ export default function ChartProvider(props: ChartProviderProps) {
       }
     })
 
-    setContextResources(contextResources);
+    setResources(contextResources);
 
   }, [lines, initialValue, historyLength])
 
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    setCurrentIncomingDeltas(incomingDeltas);
 
-    const currentValues = incomingDeltas.map((param) => param.value);
-
-    setCurrentLineValues(currentValues);
-
-    const next = [...contextResources];
+    const next = [...resources];
     incomingDeltas.forEach((delta) => {
       let resource = next.find((resource) => resource.id === delta.id);
       if (!resource) {
@@ -50,15 +49,20 @@ export default function ChartProvider(props: ChartProviderProps) {
       resource.values = [...resource.values.slice(1), delta.value];
     })
 
-    setContextResources(next);
+    setResources(next);
 
   }, [incomingDeltas])
+
+
+  const currentLineValues = useMemo(() => currentIncomingDeltas.map((param) => param.value), [currentIncomingDeltas])
+  const currentLineRaws = useMemo(() => currentIncomingDeltas.map((param) => param.raw), [currentIncomingDeltas])
 
   const value: ChartContextValuesType = {
     id,
     label,
-    currentLineValues: currentLineValues,
-    resources: contextResources,
+    currentLineValues,
+    resources,
+    currentLineRaws
   }
 
   return (

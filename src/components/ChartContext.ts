@@ -1,11 +1,12 @@
 import { createContext } from "react";
-import { ChartContextValuesType } from "../types";
+import { ChartContextValuesType, MonitorKey } from "../types";
 
 const ChartContext = createContext<ChartContextValuesType>({
-  id: "",
+  id: "" as MonitorKey,
   label: "",
   resources: [],
   currentLineValues: [],
+  currentLineRaws: [],
 })
 
 export default ChartContext;

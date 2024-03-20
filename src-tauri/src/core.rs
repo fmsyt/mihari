@@ -28,7 +28,7 @@ pub struct Watcher {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ResourceUpdatedPayload {
-    pub cpu: Option<ChartLineDelta<Vec<CPUState>>>,
+    pub cpu: Option<ChartLineDelta<CPUState>>,
     pub memory: Option<ChartLineDelta<MemoryState>>,
     pub swap: Option<ChartLineDelta<SwapState>>,
 }
@@ -37,28 +37,40 @@ pub struct ResourceUpdatedPayload {
 #[serde(default, rename_all = "camelCase")]
 pub struct ChartLineDelta<T> {
     pub chart_id: String,
-    pub delta: Vec<ChartLine>,
+    pub delta: Vec<ChartLine<T>>,
+}
+
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct ChartLine<T> {
+    pub id: String,
+    pub label: String,
+    pub value: f32,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub raw: Option<T>,
 }
 
-impl From<Vec<CPUState>> for ChartLineDelta<Vec<CPUState>> {
+
+impl From<Vec<CPUState>> for ChartLineDelta<CPUState> {
     fn from(payload: Vec<CPUState>) -> Self {
         let mut delta = Vec::new();
         for (i, cpu) in payload.iter().enumerate() {
-            delta.push(ChartLine {
+
+            let data: ChartLine<CPUState> = ChartLine {
                 id: format!("core_{}", i),
                 label: format!("Core {}", i + 1),
                 value: 100.0 - cpu.idle * 100.0,
-                min: None,
-                max: None,
-                color: None,
-            });
+                raw: Some(cpu.clone()),
+            };
+
+            delta.push(data);
         }
 
         Self {
             chart_id: "cpu".to_string(),
             delta,
-            raw: Some(payload),
         }
     }
 }
@@ -71,7 +83,6 @@ impl From<MemoryState> for ChartLineDelta<MemoryState> {
             return Self {
                 chart_id: "memory".to_string(),
                 delta,
-                raw: None,
             };
         }
 
@@ -81,15 +92,12 @@ impl From<MemoryState> for ChartLineDelta<MemoryState> {
             id: "memory".to_string(),
             label: "Memory".to_string(),
             value,
-            min: None,
-            max: None,
-            color: None,
+            raw: Some(payload),
         });
 
         Self {
             chart_id: "memory".to_string(),
             delta,
-            raw: Some(payload),
         }
     }
 }
@@ -102,7 +110,6 @@ impl From<SwapState> for ChartLineDelta<SwapState> {
             return Self {
                 chart_id: "swap".to_string(),
                 delta,
-                raw: None,
             };
         }
 
@@ -112,35 +119,16 @@ impl From<SwapState> for ChartLineDelta<SwapState> {
             id: "swap".to_string(),
             label: "Swap".to_string(),
             value,
-            min: None,
-            max: None,
-            color: None,
+            raw: Some(payload),
         });
 
         Self {
             chart_id: "swap".to_string(),
             delta,
-            raw: Some(payload),
         }
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
-#[serde(default, rename_all = "camelCase")]
-pub struct ChartLine {
-    pub id: String,
-    pub label: String,
-    pub value: f32,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub min: Option<f32>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub max: Option<f32>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub color: Option<String>,
-}
 
 impl Default for AppState {
     fn default() -> Self {
@@ -195,7 +183,7 @@ pub async fn tick(state: MutexGuard<'_, AppState>) -> ResourceUpdatedPayload {
     let memory = measure_memory_state();
     let swap = measure_swap_state();
 
-    let payload: ResourceUpdatedPayload = ResourceUpdatedPayload {
+    let payload = ResourceUpdatedPayload {
         cpu: Some(current_cpu.clone().into()),
         memory: Some(memory.into()),
         swap: Some(swap.into()),
