@@ -11,7 +11,7 @@ use std::{process::exit, sync::Arc};
 
 use commands::{
     cpu_state, cpu_state_aggregate, get_app_config, memory_state, start_watcher, stop_watcher,
-    swap_state, watch_legacy,
+    swap_state,
 };
 use config::{Config, Storage};
 use tauri::{
@@ -107,7 +107,6 @@ fn main() {
             get_app_config,
             stop_watcher,
             start_watcher,
-            watch_legacy,
         ])
         .on_system_tray_event(handle_system_tray)
         .setup(|app| {

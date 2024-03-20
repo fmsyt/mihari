@@ -49,10 +49,6 @@ export async function getSwapState(): Promise<SwapState> {
   return await invoke("swap_state");
 }
 
-export async function startWatchResourceLegacy(): Promise<void> {
-  return await invoke("watch_legacy");
-}
-
 export async function startWatchResource() {
   await invoke("start_watcher");
 
