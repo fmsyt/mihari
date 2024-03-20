@@ -104,12 +104,23 @@ pub fn measure_memory_state() -> MemoryState {
     }
 }
 
+/// @see https://learn.microsoft.com/ja-jp/windows/win32/cimwin32prov/win32-pagefileusage
+/// @see https://learn.microsoft.com/ja-jp/windows/win32/api/winbase/ns-winbase-memorystatus
+/// @see https://learn.microsoft.com/ja-jp/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex
 pub fn measure_swap_state() -> SwapState {
     let sys = System::new();
     let swap = sys.swap().unwrap();
 
-    SwapState {
-        total: swap.total.as_u64(),
-        free: swap.free.as_u64(),
+    let total = swap.total.as_u64();
+    let free = swap.free.as_u64();
+
+    #[cfg(target_os = "windows")]
+    {
+        // NOTE: `free`の値は物理メモリと仮想メモリの両方の値を含む。`0`の場合は仮想メモリを使用していないとみなす。
+        if free == 0 {
+            return SwapState { total, free: total };
+        }
     }
+
+    SwapState { total, free }
 }
