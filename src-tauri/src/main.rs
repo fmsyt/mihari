@@ -15,7 +15,7 @@ use commands::{
 use config::{Config, Storage};
 use tauri::{
     AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-    SystemTrayMenuItem, WindowBuilder, WindowUrl,
+    SystemTrayMenuItem,
 };
 
 use tokio::sync::Mutex;
