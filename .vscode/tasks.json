@@ -10,10 +10,24 @@
       "problemMatcher": []
     },
     {
+      "label": "ui:dev:stop",
+      "type": "shell",
+      "command": "echo ${input:terminate}",
+      "problemMatcher": []
+    },
+    {
       "label": "compile",
       "type": "shell",
       "command": "pnpm",
       "args": ["tauri", "build"]
+    },
+  ],
+  "inputs": [
+    {
+      "id": "terminate",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "ui:dev"
     }
   ]
 }

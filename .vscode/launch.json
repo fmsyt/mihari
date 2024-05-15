@@ -12,7 +12,8 @@
           "--no-default-features"
         ]
       },
-      "preLaunchTask": "ui:dev"
+      "preLaunchTask": "ui:dev",
+      "postDebugTask": "ui:dev:stop",
     }
   ]
 }

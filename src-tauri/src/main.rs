@@ -10,15 +10,13 @@ use core::{AppState, GlobalState};
 use std::{process::exit, sync::Arc};
 
 use commands::{
-    cpu_state, cpu_state_aggregate, get_app_config, memory_state, start_watcher, stop_watcher,
-    swap_state,
+    cpu_state, cpu_state_aggregate, get_app_config, memory_state, quit, start_watcher, stop_watcher, swap_state
 };
 use config::{Config, Storage};
 use tauri::{
     AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
     SystemTrayMenuItem, WindowBuilder, WindowUrl,
 };
-use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
 use tokio::sync::Mutex;
 
@@ -63,24 +61,24 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
             window.set_focus().unwrap();
         }
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-            "config" => {
-                let config_window_option = app.get_window("config");
+            // "config" => {
+            //     let config_window_option = app.get_window("config");
 
-                if let Some(config_window) = config_window_option {
-                    config_window.show().unwrap();
-                    config_window.set_focus().unwrap();
-                    return;
-                }
+            //     if let Some(config_window) = config_window_option {
+            //         config_window.show().unwrap();
+            //         config_window.set_focus().unwrap();
+            //         return;
+            //     }
 
-                let config_app =
-                    WindowBuilder::new(app, "config", WindowUrl::App("config.html".into()))
-                        .build()
-                        .expect("Failed to build config window");
-                config_app.set_title("Config - mihari").unwrap();
-            }
+            //     let config_app =
+            //         WindowBuilder::new(app, "config", WindowUrl::App("config.html".into()))
+            //             .build()
+            //             .expect("Failed to build config window");
+            //     config_app.set_title("Config - mihari").unwrap();
+            // }
             "quit" => {
-                app.save_window_state(StateFlags::all()).expect("Failed to save window state");
-                exit(0);
+                let app = app.clone();
+                quit(app);
             }
             _ => {}
         },
@@ -90,6 +88,7 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_context_menu::init())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             println!("{}, {argv:?}, {cwd}", app.package_info().name);
             app.emit_all("single-instance", Payload { args: argv, cwd })
@@ -100,6 +99,7 @@ fn main() {
         .manage(Arc::new(Mutex::new(Config::default())))
         .on_window_event(handle_window)
         .invoke_handler(tauri::generate_handler![
+            quit,
             cpu_state,
             cpu_state_aggregate,
             memory_state,

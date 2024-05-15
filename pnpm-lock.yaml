@@ -41,6 +41,9 @@ dependencies:
   react-i18next:
     specifier: ^14.0.5
     version: 14.0.5(i18next@23.8.2)(react-dom@18.2.0)(react@18.2.0)
+  tauri-plugin-context-menu:
+    specifier: ^0.7.0
+    version: 0.7.0
 
 devDependencies:
   '@tauri-apps/cli':
@@ -1640,6 +1643,12 @@ packages:
   /supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+    dev: false
+
+  /tauri-plugin-context-menu@0.7.0:
+    resolution: {integrity: sha512-NtFyhP2lQrUqs2ZWxw5j75p0K/3+5xPAckKh8yvpn0Bjq6WpKpBRli5chmcP44ltUoHBfXl2yRnpU14G1G5ucg==}
+    dependencies:
+      '@tauri-apps/api': 1.5.3
     dev: false
 
   /to-fast-properties@2.0.0:

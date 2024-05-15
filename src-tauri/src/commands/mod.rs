@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use sysinfo::{MemoryRefreshKind, RefreshKind};
 use tauri::{AppHandle, State};
+use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
 use crate::{
     config::Config,
@@ -10,6 +11,16 @@ use crate::{
         CPUState, MemoryState, SwapState,
     },
 };
+
+#[tauri::command]
+pub fn quit(app: AppHandle) {
+    let try_save = app.save_window_state(StateFlags::all());
+    if let Err(e) = try_save {
+        eprintln!("Failed to save window state: {:?}", e);
+    }
+
+    app.exit(0)
+}
 
 #[tauri::command]
 pub async fn get_app_config(state: State<'_, GlobalState>) -> Result<Config, String> {
