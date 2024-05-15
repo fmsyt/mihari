@@ -7,7 +7,6 @@ export default defineConfig(async () => ({
     rollupOptions: {
       input: {
         index: "./index.html",
-        config: "./config.html",
       },
     },
     emptyOutDir: true,
