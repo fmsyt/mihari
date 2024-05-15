@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "mihari",
-    "version": "1.6.0"
+    "version": "1.6.1"
   },
   "tauri": {
     "allowlist": {
@@ -77,7 +77,8 @@
         "alwaysOnTop": true,
         "hiddenTitle": true,
         "titleBarStyle": "Transparent",
-        "decorations": false
+        "decorations": false,
+        "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --disable-gpu"
       }
     ],
     "systemTray": {
