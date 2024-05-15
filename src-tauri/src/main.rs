@@ -15,7 +15,6 @@ use commands::{
 use config::{Config, Storage};
 use tauri::{
     AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-    SystemTrayMenuItem,
 };
 
 use tokio::sync::Mutex;
@@ -39,12 +38,9 @@ fn handle_window(event: tauri::GlobalWindowEvent) {
 }
 
 fn create_task_tray() -> SystemTray {
-    let config_menu_item = CustomMenuItem::new("config".to_string(), "設定");
     let quit = CustomMenuItem::new("quit".to_string(), "終了");
 
     let tray = SystemTrayMenu::new()
-        .add_item(config_menu_item)
-        .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(quit);
 
     let system_tray = SystemTray::new().with_menu(tray);
