@@ -1,7 +1,7 @@
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import { useEffect, useRef, useState } from "react";
 
-import { getAppConfig, startWatchResourceLegacy } from "./api";
+import { getAppConfig } from "./api";
 import { AppConfig } from "./types";
 
 export default function useAppConfig() {
@@ -44,7 +44,6 @@ export default function useAppConfig() {
     }
 
     watchingRef.current = true;
-    startWatchResourceLegacy();
 
   }, [config?.monitor?.resource.cpu.show])
 
