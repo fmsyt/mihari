@@ -57,21 +57,6 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
             window.set_focus().unwrap();
         }
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-            // "config" => {
-            //     let config_window_option = app.get_window("config");
-
-            //     if let Some(config_window) = config_window_option {
-            //         config_window.show().unwrap();
-            //         config_window.set_focus().unwrap();
-            //         return;
-            //     }
-
-            //     let config_app =
-            //         WindowBuilder::new(app, "config", WindowUrl::App("config.html".into()))
-            //             .build()
-            //             .expect("Failed to build config window");
-            //     config_app.set_title("Config - mihari").unwrap();
-            // }
             "quit" => {
                 let app = app.clone();
                 quit(app);

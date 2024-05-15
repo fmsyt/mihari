@@ -1,8 +1,9 @@
 import { createTheme, ThemeProvider as MuiThemeProvider, useMediaQuery } from "@mui/material";
-import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { appWindow, Theme } from '@tauri-apps/api/window';
 import { useEffect, useMemo, useState } from "react";
 
+import { getAppConfig } from "./api";
+import registerThemeChanged from "./registerThemeChanged";
 import ThemeContext from "./ThemeContext";
 
 interface ThemeProviderProps {
@@ -26,19 +27,16 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
 
   const [systemTheme, setSystemTheme] = useState<Theme | null>()
   useEffect(() => {
-    let unlisten: UnlistenFn | undefined;
+    registerThemeChanged((theme) => setThemeMode(theme || "system"));
 
-    (async () => {
-      setSystemTheme(await appWindow.theme());
+    getAppConfig().then((config) => {
+      setThemeMode(config.window.theme || "system");
+    });
 
-      unlisten = await listen<"light" | "dark" | "system">("themeChanged", ({ payload: theme }) => {
-        setThemeMode(theme);
-      });
-    })();
+    appWindow.theme().then((theme) => {
+      setSystemTheme(theme);
+    });
 
-    return () => {
-      unlisten && unlisten();
-    };
   }, []);
 
 

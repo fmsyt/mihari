@@ -1,11 +1,14 @@
-import { Fragment, ReactNode, useEffect, useState } from "react";
+import { Fragment, ReactNode, useEffect } from "react";
 
 import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { WebviewWindow } from "@tauri-apps/api/window";
 
-import { getAppConfig } from "./api";
-import { AppConfig } from "./types";
+import handleSaveOnConfigChanged from "./handleSaveOnConfigChanged";
+import i18n from "./i18n";
+import useAppConfig from "./useAppConfig";
+
+const { t } = i18n;
 
 interface Props {
   children?: ReactNode;
@@ -13,31 +16,19 @@ interface Props {
 
 export default function ContextMenuContainer(props: Props) {
 
-  const [config, setConfig] = useState<AppConfig | null>(null);
+  const config = useAppConfig();
 
   useEffect(() => {
+
+    handleSaveOnConfigChanged();
 
     let unListen: UnlistenFn | undefined = undefined;
 
     (async () => {
-
-      // FIXME: Replace this to check tauri API is ready
-      await new Promise(resolve => setTimeout(resolve, 100));
-      const config = await getAppConfig();
-
-      setConfig(config);
-
-      const unListenConfigChanged = await listen<AppConfig>("configChanged", ({ payload: config }) => {
-        setConfig(config);
-      });
-
-      const unListenQuit = await listen("quit", () => {
-        invoke("quit");
-      });
+      const unListenQuit = await listen("quit", () => invoke("quit"));
 
       unListen = () => {
-        unListenConfigChanged && unListenConfigChanged();
-        unListenQuit && unListenQuit();
+        unListenQuit();
       }
 
     })();
@@ -64,11 +55,8 @@ export default function ContextMenuContainer(props: Props) {
         const theme = payload as "light" | "dark" | null;
         config.window.theme = theme;
 
-        console.log("theme", theme);
-
         await Promise.all([
           emit("configChanged", config),
-          emit("themeChanged", theme || "system"),
         ])
       });
 
@@ -112,23 +100,23 @@ export default function ContextMenuContainer(props: Props) {
         pos: { x: e.clientX, y: e.clientY },
         items: [
           {
-            label: "表示",
+            label: t("themeMode"),
             disabled: !config,
             subitems: [
               {
-                label: "システム",
+                label: t("themeModeSystem"),
                 checked: !config?.window.theme,
                 event: "theme",
                 payload: null,
               },
               {
-                label: "ライト",
+                label: t("themeModeLight"),
                 checked: config?.window.theme === "light",
                 event: "theme",
                 payload: "light",
               },
               {
-                label: "ダーク",
+                label: t("themeModeDark"),
                 checked: config?.window.theme === "dark",
                 event: "theme",
                 payload: "dark",
@@ -136,14 +124,14 @@ export default function ContextMenuContainer(props: Props) {
             ],
           },
           {
-            label: "常に手前に表示",
+            label: t("alwaysOnTop"),
             checked: Boolean(config?.window.alwaysOnTop),
             event: "always_on_top",
             payload: JSON.stringify(!config?.window.alwaysOnTop),
             disabled: !config,
           },
           {
-            label: "タイトルバーを表示",
+            label: t("decoration"),
             checked: Boolean(config?.window.decoration),
             event: "decoration",
             payload: JSON.stringify(!config?.window.decoration),
@@ -153,7 +141,7 @@ export default function ContextMenuContainer(props: Props) {
             is_separator: true,
           },
           {
-            label: "終了",
+            label: t("quit"),
             event: "quit",
           }
         ],

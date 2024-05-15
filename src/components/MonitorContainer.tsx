@@ -1,24 +1,23 @@
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Grid, Skeleton, Typography } from "@mui/material";
-import { getAppConfig, startWatchResource } from "../api";
-import { AppConfig, ChartProviderProps, MonitorKey, UpdateResourceEventPayload } from "../types";
+import { startWatchResource } from "../api";
+import { ChartProviderProps, MonitorKey, UpdateResourceEventPayload } from "../types";
+import useAppConfig from "../useAppConfig";
 import Chart from "./Chart";
 import ChartProvider from "./ChartProvider";
 import ChartValue from "./ChartValue";
 import Panel from "./Panel";
-import ThemeContext from "../ThemeContext";
 
 const MonitorContainer = () => {
 
-  const [config, setConfig] = useState<AppConfig | null>(null);
+  const config = useAppConfig();
   const [chartList, setChartList] = useState<ChartProviderProps[]>([]);
 
   useEffect(() => {
 
     let alive = false;
-    let unlisten: UnlistenFn | undefined = undefined;
     let stopWatchResource: (() => void) | undefined = undefined;
 
     const fn = async () => {
@@ -26,24 +25,14 @@ const MonitorContainer = () => {
       if (alive) return;
       alive = true;
 
-      const config = await getAppConfig();
-      setConfig(config);
-
-      console.log("Config loaded", config);
-
       console.log("Start monitoring");
       stopWatchResource = await startWatchResource();
-
-      unlisten = await listen<AppConfig>("configChanged", ({ payload: config }) => {
-        setConfig(config);
-      });
     }
 
     fn();
 
     return () => {
       alive = false;
-      unlisten && unlisten();
       stopWatchResource && stopWatchResource();
     }
 
