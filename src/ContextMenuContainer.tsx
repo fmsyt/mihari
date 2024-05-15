@@ -59,6 +59,19 @@ export default function ContextMenuContainer(props: Props) {
         return null;
       }
 
+      const unlistenTheme = await listen("theme", async ({ payload }) => {
+
+        const theme = payload as "light" | "dark" | null;
+        config.window.theme = theme;
+
+        console.log("theme", theme);
+
+        await Promise.all([
+          emit("configChanged", config),
+          emit("themeChanged", theme || "system"),
+        ])
+      });
+
       const unlistenAlwaysOnTop = await listen("always_on_top", async ({ payload }) => {
         config.window.alwaysOnTop = JSON.parse(payload as string);
         await emit("configChanged", config);
@@ -84,6 +97,7 @@ export default function ContextMenuContainer(props: Props) {
       unListen = () => {
         unlistenAlwaysOnTop && unlistenAlwaysOnTop();
         unlistenDecoration && unlistenDecoration();
+        unlistenTheme && unlistenTheme();
       }
 
     }
@@ -104,14 +118,20 @@ export default function ContextMenuContainer(props: Props) {
               {
                 label: "システム",
                 checked: !config?.window.theme,
+                event: "theme",
+                payload: null,
               },
               {
                 label: "ライト",
                 checked: config?.window.theme === "light",
+                event: "theme",
+                payload: "light",
               },
               {
                 label: "ダーク",
                 checked: config?.window.theme === "dark",
+                event: "theme",
+                payload: "dark",
               },
             ],
           },

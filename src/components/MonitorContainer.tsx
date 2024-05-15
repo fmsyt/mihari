@@ -15,8 +15,6 @@ const MonitorContainer = () => {
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [chartList, setChartList] = useState<ChartProviderProps[]>([]);
 
-  const { setThemeMode } = useContext(ThemeContext);
-
   useEffect(() => {
 
     let alive = false;
@@ -50,15 +48,6 @@ const MonitorContainer = () => {
     }
 
   }, [])
-
-
-  useEffect(() => {
-    if (!config?.window.theme) {
-      return;
-    }
-
-    setThemeMode(config.window.theme);
-  }, [config?.window.theme, setThemeMode]);
 
 
   useEffect(() => {
