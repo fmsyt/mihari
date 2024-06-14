@@ -7,11 +7,9 @@ import {
 } from "react";
 
 import { Chart } from "react-google-charts";
+import ChartProps from "./ChartProps";
 
-interface ChartExperimentalProps {
-  headerRow: string[];
-  rows: number[][];
-}
+type ChartExperimentalProps = ChartProps;
 
 /**
  * @see https://developers.google.com/chart/interactive/docs?hl=ja

@@ -1,5 +1,5 @@
 import { useContext, useMemo } from "react";
-import ChartExperimental from "./GoogleChartsChart";
+import MuiChart from "./MuiChart";
 import ChartContext from "./ChartContext";
 
 const Chart = () => {
@@ -23,7 +23,7 @@ const Chart = () => {
 
   const canDraw = headerRow.length > 0 && rows.length > 0;
   return canDraw && (
-    <ChartExperimental
+    <MuiChart
       headerRow={headerRow}
       rows={rows}
     />
