@@ -36,7 +36,7 @@ const Chart = () => {
       id,
       min: 1,
       max: r.values.length,
-      data: Array(r.values.length).fill(0).map((_, i) => i + 1),
+      data: r.values.map((_, i) => i + 1),
       hideTooltip: true,
     });
 
