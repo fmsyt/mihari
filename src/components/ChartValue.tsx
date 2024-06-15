@@ -1,8 +1,8 @@
 import { Tooltip, Typography } from "@mui/material";
 import { useContext, useMemo } from "react";
-import ChartContext from "./ChartContext";
 import { cpuTooltip, memoryTooltip, swapTooltip } from "../resource";
 import { CPUState, MemoryState, SwapState } from "../types";
+import ChartContext from "./ChartContext";
 
 const ChartValue = () => {
 

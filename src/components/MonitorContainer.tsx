@@ -1,7 +1,7 @@
 import { UnlistenFn, listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 
-import { Grid, Skeleton, Typography } from "@mui/material";
+import { Box, Grid, Skeleton, Typography } from "@mui/material";
 import { startWatchResource } from "../api";
 import { ChartProviderProps, MonitorKey, UpdateResourceEventPayload } from "../types";
 import useAppConfig from "../useAppConfig";
@@ -143,7 +143,9 @@ const MonitorContainer = () => {
           </Grid>
           <Grid item>
             <Panel padding="4px">
-              <Chart />
+              <Box width="100%" height="100%">
+                <Chart />
+              </Box>
             </Panel>
           </Grid>
         </ChartProvider>
