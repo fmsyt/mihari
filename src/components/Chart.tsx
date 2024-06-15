@@ -1,6 +1,7 @@
 import { useContext } from "react";
 
 import { ChartsYAxisProps, LineSeriesType } from "@mui/x-charts";
+import { axisClasses } from "@mui/x-charts/ChartsAxis";
 import { LineChart } from "@mui/x-charts/LineChart";
 
 import ChartContext from "./ChartContext";
@@ -46,7 +47,7 @@ const Chart = () => {
           hidden: true,
         },
         popper: {
-          // hidden: true,
+          hidden: true,
         },
         axisTickLabel: {
           display: 'none',
@@ -58,6 +59,13 @@ const Chart = () => {
           // display: 'none',
         },
       }}
+      sx={(theme) => ({
+        [`.${axisClasses.root}`]: {
+          [`.${axisClasses.line}, .${axisClasses.tick}`]: {
+            stroke: theme.palette.grey[600],
+          },
+        },
+      })}
     />
   );
 }
