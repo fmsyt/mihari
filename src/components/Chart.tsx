@@ -1,33 +1,65 @@
-import { useContext, useMemo } from "react";
-import MuiChart from "./MuiChart";
+import { useContext } from "react";
+
+import { ChartsYAxisProps, LineSeriesType } from "@mui/x-charts";
+import { LineChart } from "@mui/x-charts/LineChart";
+
 import ChartContext from "./ChartContext";
 
 const Chart = () => {
 
   const { resources } = useContext(ChartContext);
 
-  const { headerRow, rows } = useMemo(() => {
+  const { series, yAxis } = resources.reduce((prev, r) => {
 
-    const headerRow = resources.map((r) => r.label)
+    prev.series.push({
+      data: r.values,
+      type: 'line',
+      area: true,
+      showMark: false,
+      curve: 'linear',
+      label: r.label,
+    });
 
-    const rows = Array(resources[0]?.values?.length).fill(0).map((_, i) => {
-      return resources.map((r) => r.values[i])
-    })
+    prev.yAxis.push({
+      max: 100,
+      min: 0,
+    } as ChartsYAxisProps);
 
-    const result = { headerRow, rows }
-    return result;
+    return prev;
 
-  }, [resources])
+  }, {
+    series: [] as LineSeriesType[],
+    yAxis: [] as ChartsYAxisProps[],
+  });
 
-
-
-  const canDraw = headerRow.length > 0 && rows.length > 0;
-  return canDraw && (
-    <MuiChart
-      headerRow={headerRow}
-      rows={rows}
+  return (
+    <LineChart
+      series={series}
+      yAxis={yAxis}
+      skipAnimation
+      disableAxisListener
+      disableLineItemHighlight
+      grid={{ vertical: false, horizontal: true }}
+      margin={{ top: 8, right: 8, bottom: 4, left: 8 }}
+      slotProps={{
+        legend: {
+          hidden: true,
+        },
+        popper: {
+          // hidden: true,
+        },
+        axisTickLabel: {
+          display: 'none',
+        },
+        axisTick: {
+          // display: 'none',
+        },
+        axisLine: {
+          // display: 'none',
+        },
+      }}
     />
-  )
+  );
 }
 
 export default Chart;
