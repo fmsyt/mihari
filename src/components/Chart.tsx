@@ -13,9 +13,12 @@ function hsla(i: number, total: number) {
   return `hsla(${hue}, 70%, 50%, 0.8)`;
 }
 
-const Chart = () => {
+export default function Chart() {
 
   const { resources } = useContext(ChartContext);
+
+  const colors = resources.map((_, i) => hsla(i, resources.length));
+  const xValues = resources[0]?.values.map((_, i) => i + 1) as number[] | undefined;
 
   const { series, xAxis, yAxis } = resources.reduce((prev, r, i) => {
 
@@ -29,14 +32,14 @@ const Chart = () => {
       showMark: false,
       curve: 'linear',
       label: r.label,
-      color: hsla(i, resources.length),
+      color: colors[i],
     });
 
     prev.xAxis.push({
       id,
       min: 1,
       max: r.values.length,
-      data: r.values.map((_, i) => i + 1),
+      data: xValues,
       hideTooltip: true,
     });
 
@@ -62,7 +65,7 @@ const Chart = () => {
       margin={{ top: 8, right: 8, bottom: 4, left: 4 }}
       series={series}
       skipAnimation
-      // tooltip={{ trigger: 'none' }}
+      tooltip={{ trigger: 'none' }}
       xAxis={xAxis}
       yAxis={yAxis}
       slotProps={{
@@ -86,5 +89,3 @@ const Chart = () => {
     />
   );
 }
-
-export default Chart;

@@ -1,5 +1,5 @@
 import { Tooltip, Typography } from "@mui/material";
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { cpuTooltip, memoryTooltip, swapTooltip } from "../resource";
 import { CPUState, MemoryState, SwapState } from "../types";
 import ChartContext from "./ChartContext";
@@ -7,7 +7,7 @@ import ChartContext from "./ChartContext";
 const ChartValue = () => {
 
   const { id, currentLineValues: current, currentLineRaws } = useContext(ChartContext);
-  const display = useMemo(() => {
+  const display = (() => {
     const value = Math.round(current.reduce((a, b) => a + b, 0) / current.length)
     if (isNaN(value)) {
       return "";
@@ -15,9 +15,9 @@ const ChartValue = () => {
 
     return `${value}%`;
 
-  }, [current])
+  })();
 
-  const title = useMemo(() => {
+  const title = (() => {
 
     if (currentLineRaws.length === 0) {
       return null;
@@ -61,7 +61,7 @@ const ChartValue = () => {
         return null;
     }
 
-  }, [id, currentLineRaws])
+  })();
 
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ChartContextResource, ChartContextValuesType, ChartLineDelta, ChartProviderProps } from "../types";
 import ChartContext from "./ChartContext";
 
@@ -54,8 +54,8 @@ export default function ChartProvider(props: ChartProviderProps) {
   }, [incomingDeltas])
 
 
-  const currentLineValues = useMemo(() => currentIncomingDeltas.map((param) => param.value), [currentIncomingDeltas])
-  const currentLineRaws = useMemo(() => currentIncomingDeltas.map((param) => param.raw), [currentIncomingDeltas])
+  const currentLineValues = currentIncomingDeltas.map((param) => param.value);
+  const currentLineRaws = currentIncomingDeltas.map((param) => param.raw);
 
   const value: ChartContextValuesType = {
     id,
