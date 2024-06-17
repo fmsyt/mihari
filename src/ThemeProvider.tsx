@@ -101,7 +101,7 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
   );
 
   return (
-    <ThemeContext.Provider value={{ themeMode }}>
+    <ThemeContext.Provider value={{ themeMode, isDarkMode }}>
       <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
     </ThemeContext.Provider>
   );

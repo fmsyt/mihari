@@ -142,7 +142,7 @@ const MonitorContainer = () => {
             </Panel>
           </Grid>
           <Grid item>
-            <Panel padding="4px">
+            <Panel padding="2px">
               <Box width="100%" height="100%">
                 <Chart />
               </Box>

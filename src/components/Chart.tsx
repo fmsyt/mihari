@@ -5,6 +5,7 @@ import { axisClasses } from "@mui/x-charts/ChartsAxis";
 import { LineChart, areaElementClasses } from "@mui/x-charts/LineChart";
 
 import ChartContext from "./ChartContext";
+import ThemeContext from "../ThemeContext";
 
 const goldenRatioConjugate = 0.6180339887;
 
@@ -15,6 +16,7 @@ function hsla(i: number, total: number) {
 
 export default function Chart() {
 
+  const { isDarkMode } = useContext(ThemeContext);
   const { resources } = useContext(ChartContext);
 
   const colors = resources.map((_, i) => hsla(i, resources.length));
@@ -79,7 +81,7 @@ export default function Chart() {
       sx={(theme) => ({
         [`.${axisClasses.root}`]: {
           [`.${axisClasses.line}, .${axisClasses.tick}`]: {
-            stroke: theme.palette.grey[600],
+            stroke: theme.palette.grey[isDarkMode ? 600 : 500],
           },
         },
         [`.${areaElementClasses.root}`]: {
