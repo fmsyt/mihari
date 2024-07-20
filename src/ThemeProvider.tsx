@@ -3,7 +3,10 @@ import {
   ThemeProvider as MuiThemeProvider,
   useMediaQuery,
 } from "@mui/material";
-// import { appWindow, Theme } from "@tauri-apps/api/webviewWindow";
+
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { Theme } from "@tauri-apps/api/window";
+
 import { useEffect, useMemo, useState } from "react";
 
 import { getAppConfig } from "./api";
@@ -37,9 +40,11 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
       setThemeMode(config.window.theme || "system");
     });
 
-    appWindow.theme().then((theme) => {
-      setSystemTheme(theme);
-    });
+    getCurrentWebviewWindow()
+      .theme()
+      .then((theme) => {
+        setSystemTheme(theme);
+      });
   }, []);
 
   const isDarkMode = useMemo(() => {
