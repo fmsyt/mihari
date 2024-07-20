@@ -1,6 +1,6 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "default",
+  "identifier": "main-capability",
   "description": "Capability for the main window",
   "windows": ["main"],
   "permissions": [
@@ -8,10 +8,14 @@
     "event:default",
     "window:default",
     "app:default",
-    "image:default",
     "resources:default",
     "menu:default",
     "tray:default",
-    "shell:allow-open"
+    "window:allow-set-title",
+    "window:allow-set-always-on-top",
+    "window:allow-set-decorations",
+    "window:allow-start-dragging",
+    "fs:allow-write",
+    "fs:allow-read"
   ]
 }

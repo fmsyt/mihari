@@ -28,7 +28,10 @@
         "type": "downloadBootstrapper"
       },
       "wix": {
-        "language": ["en-US", "ja-JP"]
+        "language": [
+          "en-US",
+          "ja-JP"
+        ]
       },
       "certificateThumbprint": "1B1A97B87C6059CB8B58A007D1FFDC00D4F61811",
       "digestAlgorithm": "sha256",

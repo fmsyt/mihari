@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use serde::Serialize;
 use sysinfo::{MemoryRefreshKind, RefreshKind};
-use tauri::{async_runtime::JoinHandle, AppHandle, Manager};
+use tauri::{async_runtime::JoinHandle, AppHandle, Emitter, Manager};
 use tokio::sync::MutexGuard;
 
 use crate::{
@@ -167,7 +167,7 @@ pub async fn watcher(app: AppHandle, state: GlobalState) {
         let state = state.lock().await;
         let payload = tick(state).await;
 
-        let try_main_window = app.get_window("main");
+        let try_main_window = app.get_webview_window("main");
         if let Some(main_window) = try_main_window {
             main_window.emit("resourceUpdated", payload).unwrap();
         }

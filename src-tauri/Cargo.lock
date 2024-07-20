@@ -1953,6 +1953,7 @@ dependencies = [
  "systemstat",
  "tauri",
  "tauri-build",
+ "tauri-plugin-fs",
  "tauri-plugin-single-instance",
  "tauri-plugin-window-state",
  "tokio",
@@ -3603,6 +3604,24 @@ dependencies = [
  "tauri-utils",
  "toml 0.8.2",
  "walkdir",
+]
+
+[[package]]
+name = "tauri-plugin-fs"
+version = "2.0.0-beta.11"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#93bdb6d133b89d990ddd5470536edfe4cb617e89"
+dependencies = [
+ "anyhow",
+ "glob",
+ "schemars",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "tauri",
+ "tauri-plugin",
+ "thiserror",
+ "url",
+ "uuid",
 ]
 
 [[package]]
