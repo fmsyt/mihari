@@ -1,12 +1,13 @@
-import { window as tauriWindow } from "@tauri-apps/api";
 import React from "react";
 import ReactDOM from "react-dom/client";
+
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 import App from "../App";
 import "./main.css";
 
 document.addEventListener("mousedown", async (_) => {
-  await tauriWindow.appWindow.startDragging();
+  await getCurrentWebviewWindow().startDragging();
 });
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

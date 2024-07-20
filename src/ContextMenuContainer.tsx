@@ -1,8 +1,8 @@
 import { Fragment, ReactNode, useEffect } from "react";
 
 import { UnlistenFn, emit, listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
-import { WebviewWindow } from "@tauri-apps/api/window";
+import { invoke } from "@tauri-apps/api/core";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 import handleSaveOnConfigChanged from "./handleSaveOnConfigChanged";
 import i18n from "./i18n";
@@ -15,11 +15,9 @@ interface Props {
 }
 
 export default function ContextMenuContainer(props: Props) {
-
   const config = useAppConfig();
 
   useEffect(() => {
-
     handleSaveOnConfigChanged();
 
     let unListen: UnlistenFn | undefined = undefined;
@@ -29,19 +27,15 @@ export default function ContextMenuContainer(props: Props) {
 
       unListen = () => {
         unListenQuit();
-      }
-
+      };
     })();
 
     return () => {
       unListen && unListen();
-    }
-
-  }, [])
-
+    };
+  }, []);
 
   useEffect(() => {
-
     const mainWindow = WebviewWindow.getByLabel("main");
     let unListen: UnlistenFn | null = null;
 
@@ -51,47 +45,48 @@ export default function ContextMenuContainer(props: Props) {
       }
 
       const unlistenTheme = await listen("theme", async ({ payload }) => {
-
         const theme = payload as "light" | "dark" | null;
         config.window.theme = theme;
 
-        await Promise.all([
-          emit("configChanged", config),
-        ])
+        await Promise.all([emit("configChanged", config)]);
       });
 
-      const unlistenAlwaysOnTop = await listen("always_on_top", async ({ payload }) => {
-        config.window.alwaysOnTop = JSON.parse(payload as string);
-        await emit("configChanged", config);
+      const unlistenAlwaysOnTop = await listen(
+        "always_on_top",
+        async ({ payload }) => {
+          config.window.alwaysOnTop = JSON.parse(payload as string);
+          await emit("configChanged", config);
 
-        if (!mainWindow) {
-          return;
-        }
+          if (!mainWindow) {
+            return;
+          }
 
-        await mainWindow.setAlwaysOnTop(config.window.alwaysOnTop);
-      });
+          await mainWindow.setAlwaysOnTop(config.window.alwaysOnTop);
+        },
+      );
 
-      const unlistenDecoration = await listen("decoration", async ({ payload }) => {
-        config.window.decoration = JSON.parse(payload as string);
-        await emit("configChanged", config);
+      const unlistenDecoration = await listen(
+        "decoration",
+        async ({ payload }) => {
+          config.window.decoration = JSON.parse(payload as string);
+          await emit("configChanged", config);
 
-        if (!mainWindow) {
-          return;
-        }
+          if (!mainWindow) {
+            return;
+          }
 
-        await mainWindow.setDecorations(config.window.decoration);
-      });
+          await mainWindow.setDecorations(config.window.decoration);
+        },
+      );
 
       unListen = () => {
         unlistenAlwaysOnTop && unlistenAlwaysOnTop();
         unlistenDecoration && unlistenDecoration();
         unlistenTheme && unlistenTheme();
-      }
-
-    }
+      };
+    };
 
     open();
-
 
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -143,24 +138,22 @@ export default function ContextMenuContainer(props: Props) {
           {
             label: t("quit"),
             event: "quit",
-          }
+          },
         ],
       });
-    }
+    };
 
     window.addEventListener("contextmenu", handleContextMenu);
 
     return () => {
       window.removeEventListener("contextmenu", handleContextMenu);
       unListen && unListen();
-    }
+    };
+  }, [
+    config?.window.alwaysOnTop,
+    config?.window.decoration,
+    config?.window.theme,
+  ]);
 
-  }, [config?.window.alwaysOnTop, config?.window.decoration, config?.window.theme])
-
-
-  return (
-    <Fragment>
-      {props.children}
-    </Fragment>
-  )
+  return <Fragment>{props.children}</Fragment>;
 }

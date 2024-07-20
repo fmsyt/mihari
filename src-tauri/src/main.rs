@@ -10,12 +10,11 @@ use core::{AppState, GlobalState};
 use std::{process::exit, sync::Arc};
 
 use commands::{
-    cpu_state, cpu_state_aggregate, get_app_config, memory_state, quit, start_watcher, stop_watcher, swap_state
+    cpu_state, cpu_state_aggregate, get_app_config, memory_state, quit, start_watcher,
+    stop_watcher, swap_state,
 };
 use config::{Config, Storage};
-use tauri::{
-    AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-};
+use tauri::{AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 use tokio::sync::Mutex;
 
@@ -40,8 +39,7 @@ fn handle_window(event: tauri::GlobalWindowEvent) {
 fn create_task_tray() -> SystemTray {
     let quit = CustomMenuItem::new("quit".to_string(), "終了");
 
-    let tray = SystemTrayMenu::new()
-        .add_item(quit);
+    let tray = SystemTrayMenu::new().add_item(quit);
 
     let system_tray = SystemTray::new().with_menu(tray);
 
@@ -69,7 +67,7 @@ fn handle_system_tray(app: &AppHandle, event: SystemTrayEvent) {
 
 fn main() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_context_menu::init())
+        // .plugin(tauri_plugin_context_menu::init())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             println!("{}, {argv:?}, {cwd}", app.package_info().name);
             app.emit_all("single-instance", Payload { args: argv, cwd })

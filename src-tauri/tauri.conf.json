@@ -1,67 +1,41 @@
 {
+  "productName": "mihari",
+  "version": "1.0.2",
+  "identifier": "mihari.yotta-rc.dev",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
-    "devPath": "http://localhost:17011",
-    "distDir": "../dist"
+    "devUrl": "http://localhost:17011",
+    "frontendDist": "../dist"
   },
-  "package": {
-    "productName": "mihari",
-    "version": "1.0.2"
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "allowDowngrades": true,
+      "nsis": null,
+      "tsp": false,
+      "webviewFixedRuntimePath": null,
+      "webviewInstallMode": {
+        "silent": true,
+        "type": "downloadBootstrapper"
+      },
+      "wix": {
+        "language": ["en-US", "ja-JP"]
+      },
+      "certificateThumbprint": "1B1A97B87C6059CB8B58A007D1FFDC00D4F61811",
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "http://timestamp.comodoca.com"
+    }
   },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "window": {
-        "all": false,
-        "setAlwaysOnTop": true,
-        "setDecorations": true,
-        "startDragging": true
-      },
-      "fs": {
-        "all": false,
-        "writeFile": true,
-        "readFile": true,
-        "scope": [
-          "$APPLOCALDATA/*"
-        ]
-      }
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "mihari.yotta-rc.dev",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "windows": {
-        "allowDowngrades": true,
-        "nsis": null,
-        "tsp": false,
-        "webviewFixedRuntimePath": null,
-        "webviewInstallMode": {
-          "silent": true,
-          "type": "downloadBootstrapper"
-        },
-        "wix": {
-          "language": [
-            "en-US",
-            "ja-JP"
-          ]
-        },
-        "certificateThumbprint": "1B1A97B87C6059CB8B58A007D1FFDC00D4F61811",
-        "digestAlgorithm": "sha256",
-        "timestampUrl": "http://timestamp.comodoca.com"
-      }
-    },
+  "app": {
     "security": {
       "csp": null
     },
@@ -81,9 +55,10 @@
         "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --disable-gpu"
       }
     ],
-    "systemTray": {
+    "trayIcon": {
       "iconAsTemplate": true,
       "iconPath": "icons/128x128.png"
     }
-  }
+  },
+  "plugins": {}
 }

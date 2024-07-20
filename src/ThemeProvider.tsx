@@ -1,5 +1,9 @@
-import { createTheme, ThemeProvider as MuiThemeProvider, useMediaQuery } from "@mui/material";
-import { appWindow, Theme } from '@tauri-apps/api/window';
+import {
+  createTheme,
+  ThemeProvider as MuiThemeProvider,
+  useMediaQuery,
+} from "@mui/material";
+// import { appWindow, Theme } from "@tauri-apps/api/webviewWindow";
 import { useEffect, useMemo, useState } from "react";
 
 import { getAppConfig } from "./api";
@@ -25,7 +29,7 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
-  const [systemTheme, setSystemTheme] = useState<Theme | null>()
+  const [systemTheme, setSystemTheme] = useState<Theme | null>();
   useEffect(() => {
     registerThemeChanged((theme) => setThemeMode(theme || "system"));
 
@@ -36,10 +40,7 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
     appWindow.theme().then((theme) => {
       setSystemTheme(theme);
     });
-
   }, []);
-
-
 
   const isDarkMode = useMemo(() => {
     switch (themeMode) {
@@ -74,12 +75,14 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
               body: {
                 backgroundColor: "transparent",
               },
-            }
+            },
           },
           MuiTypography: {
             styleOverrides: {
               root: {
-                color: isDarkMode ? "hsla(192, 10%, 90%, 0.9)" : "hsla(192, 10%, 4%, 0.9)",
+                color: isDarkMode
+                  ? "hsla(192, 10%, 90%, 0.9)"
+                  : "hsla(192, 10%, 4%, 0.9)",
               },
               caption: {
                 fontSize: "0.7rem",
