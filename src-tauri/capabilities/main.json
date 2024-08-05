@@ -17,7 +17,7 @@
     "core:window:allow-set-always-on-top",
     "core:window:allow-set-decorations",
     "core:window:allow-start-dragging",
-    "fs:allow-write",
-    "fs:allow-read"
+    "fs:allow-config-read",
+    "fs:allow-config-write"
   ]
 }

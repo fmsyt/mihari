@@ -1,10 +1,11 @@
-import { MouseEventHandler, useCallback } from "react";
+import { MouseEventHandler, useCallback, useEffect } from "react";
 
 import { emit } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 import { invoke } from "@tauri-apps/api/core";
 import { CheckMenuItem, Menu, MenuItem, Submenu } from "@tauri-apps/api/menu";
+import handleSaveOnConfigChanged from "./handleSaveOnConfigChanged";
 import i18n from "./i18n";
 import useAppConfig from "./useAppConfig";
 
@@ -13,6 +14,10 @@ const { t } = i18n;
 export default function useRegisterContextMenu<T extends HTMLElement>() {
 
   const config = useAppConfig();
+
+  useEffect(() => {
+    handleSaveOnConfigChanged();
+  }, []);
 
   const handleContextMenu = useCallback<MouseEventHandler<T>>((e) => {
     e.preventDefault();
