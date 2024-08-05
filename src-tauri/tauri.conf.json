@@ -1,7 +1,7 @@
 {
   "productName": "mihari",
-  "version": "1.0.2",
-  "identifier": "mihari.yotta-rc.dev",
+  "version": "1.0.3",
+  "identifier": "mihari",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
