@@ -13,7 +13,11 @@ edition = "2021"
 tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0-beta", features = ["tray-icon"] }
+tauri = { version = "2.0.0-beta", features = [
+    "tray-icon",
+    "image-png",
+    "image-ico",
+] }
 # tauri-plugin-context-menu = "0.7.1"
 tauri-plugin-fs = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }

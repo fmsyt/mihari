@@ -53,15 +53,12 @@
         "skipTaskbar": true,
         "alwaysOnTop": true,
         "hiddenTitle": true,
+        "shadow": false,
         "titleBarStyle": "Transparent",
         "decorations": false,
         "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --disable-gpu"
       }
-    ],
-    "trayIcon": {
-      "iconAsTemplate": true,
-      "iconPath": "icons/128x128.png"
-    }
+    ]
   },
   "plugins": {}
 }

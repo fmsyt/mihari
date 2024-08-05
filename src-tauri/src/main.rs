@@ -13,8 +13,14 @@ use commands::{
     cpu_state, cpu_state_aggregate, get_app_config, memory_state, quit, start_watcher,
     stop_watcher, swap_state,
 };
+
 use config::{Config, Storage};
-use tauri::{menu::{MenuBuilder, MenuItemBuilder}, tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent}, Emitter, Manager};
+use tauri::{
+    image::Image,
+    menu::{MenuBuilder, MenuItemBuilder},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    Emitter, Manager,
+};
 
 use tokio::sync::Mutex;
 
@@ -26,7 +32,6 @@ struct Payload {
 
 fn main() {
     tauri::Builder::default()
-        // .plugin(tauri_plugin_context_menu::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             println!("{}, {argv:?}, {cwd}", app.package_info().name);
@@ -34,9 +39,7 @@ fn main() {
                 .unwrap();
         }))
         .plugin(tauri_plugin_window_state::Builder::default().build())
-        // .system_tray(create_task_tray())
         .manage(Arc::new(Mutex::new(Config::default())))
-        // .on_window_event(handle_window)
         .invoke_handler(tauri::generate_handler![
             quit,
             cpu_state,
@@ -47,12 +50,10 @@ fn main() {
             stop_watcher,
             start_watcher,
         ])
-        // .on_system_tray_event(handle_system_tray)
         .setup(|app| {
-
             let quit_menu = MenuItemBuilder::with_id("quit", "終了").build(app)?;
-            let menu = MenuBuilder::new(app).items(&[&quit_menu]).build()?;
-            let _tray = TrayIconBuilder::new()
+            let menu = MenuBuilder::new(app).item(&quit_menu).build()?;
+            let tray = TrayIconBuilder::new()
                 .menu(&menu)
                 .on_menu_event(move |app, event| match event.id().as_ref() {
                     "quit" => {
@@ -66,18 +67,26 @@ fn main() {
                         button: MouseButton::Left,
                         button_state: MouseButtonState::Up,
                         ..
-                    } = event {
+                    } = event
+                    {
                         let app = tray.app_handle();
                         if let Some(webview_window) = app.get_webview_window("main") {
                             let _ = webview_window.show();
                             let _ = webview_window.set_focus();
                         }
                     }
-
                 })
                 .build(app)?;
 
-            let config_directory_path = app.path().config_dir().expect("Failed to get config directory path");
+            let icon = include_bytes!("../icons/icon.ico").to_vec();
+            let image = Image::from_bytes(&icon).expect("Failed to load icon image");
+
+            tray.set_icon(Some(image)).expect("Failed to set tray icon");
+
+            let config_directory_path = app
+                .path()
+                .config_dir()
+                .expect("Failed to get config directory path");
 
             let config_path = config_directory_path.join("config.json");
             let config = Config::load(config_path);
