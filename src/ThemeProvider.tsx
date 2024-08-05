@@ -5,7 +5,7 @@ import {
 } from "@mui/material";
 
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { Theme } from "@tauri-apps/api/webviewWindow";
+import { Theme } from "@tauri-apps/api/window";
 
 import { useEffect, useMemo, useState } from "react";
 
