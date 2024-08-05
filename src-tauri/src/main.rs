@@ -91,10 +91,12 @@ fn main() {
             let config_path = config_directory_path.join("config.json");
             let config = Config::load(config_path);
 
-            let try_main_window = app.get_webview_window("main");
-            if let Some(main_window) = try_main_window {
-                #[cfg(debug_assertions)]
-                main_window.open_devtools();
+            #[cfg(debug_assertions)]
+            {
+                let try_main_window = app.get_webview_window("main");
+                if let Some(main_window) = try_main_window {
+                    main_window.open_devtools();
+                }
             }
 
             let shared: GlobalState = Arc::new(Mutex::new(AppState::from(config)));
