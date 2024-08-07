@@ -1,6 +1,6 @@
 {
   "productName": "mihari",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "identifier": "mihari",
   "build": {
     "beforeDevCommand": "pnpm dev",

@@ -7,7 +7,10 @@ mod core;
 mod resource;
 
 use core::{AppState, GlobalState};
-use std::sync::Arc;
+use std::{
+    env,
+    sync::Arc,
+};
 
 use commands::{
     cpu_state, cpu_state_aggregate, get_app_config, memory_state, quit, start_watcher,
@@ -31,6 +34,12 @@ struct Payload {
 }
 
 fn main() {
+
+    #[cfg(target_os = "linux")]
+    {
+        env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+    }
+
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
