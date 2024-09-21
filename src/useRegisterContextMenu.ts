@@ -1,10 +1,8 @@
-import { MouseEventHandler, useCallback, useEffect } from "react";
-
-import { emit } from "@tauri-apps/api/event";
-import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-
 import { invoke } from "@tauri-apps/api/core";
+import { emit } from "@tauri-apps/api/event";
 import { CheckMenuItem, Menu, MenuItem, Submenu } from "@tauri-apps/api/menu";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { MouseEventHandler, useCallback, useEffect } from "react";
 import handleSaveOnConfigChanged from "./handleSaveOnConfigChanged";
 import i18n from "./i18n";
 import useAppConfig from "./useAppConfig";
@@ -26,7 +24,7 @@ export default function useRegisterContextMenu<T extends HTMLElement>() {
       return undefined;
     }
 
-    const mainWindow = WebviewWindow.getByLabel("main");
+    const mainWindow = getCurrentWebviewWindow();
     if (!mainWindow) {
       return undefined;
     }
