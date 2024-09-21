@@ -18,6 +18,7 @@
     "core:window:allow-set-decorations",
     "core:window:allow-start-dragging",
     "fs:allow-config-read",
-    "fs:allow-config-write"
+    "fs:allow-config-write",
+    "fs:default"
   ]
 }

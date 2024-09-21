@@ -18,17 +18,19 @@ tauri = { version = "2.0.0-beta", features = [
     "image-png",
     "image-ico",
 ] }
-# tauri-plugin-context-menu = "0.7.1"
-tauri-plugin-fs = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
-tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
 tokio = { version = "1.35.1", features = ["time"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 systemstat = "0.2.3"
 sysinfo = "0.30.7"
+tauri-plugin-fs = "2.0.0-rc"
+tauri-plugin-dialog = "2.0.0-rc"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2.0.0-rc"
+tauri-plugin-window-state = "2.0.0-rc"

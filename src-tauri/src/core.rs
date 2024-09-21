@@ -41,7 +41,6 @@ pub struct ChartLineDelta<T> {
     pub delta: Vec<ChartLine<T>>,
 }
 
-
 #[derive(Debug, Clone, Serialize)]
 #[serde(default, rename_all = "camelCase")]
 pub struct ChartLine<T> {
@@ -53,12 +52,10 @@ pub struct ChartLine<T> {
     pub raw: Option<T>,
 }
 
-
 impl From<Vec<CPUState>> for ChartLineDelta<CPUState> {
     fn from(payload: Vec<CPUState>) -> Self {
         let mut delta = Vec::new();
         for (i, cpu) in payload.iter().enumerate() {
-
             let data: ChartLine<CPUState> = ChartLine {
                 id: format!("core_{}", i),
                 label: format!("Core {}", i + 1),
@@ -130,7 +127,6 @@ impl From<SwapState> for ChartLineDelta<SwapState> {
     }
 }
 
-
 impl Default for AppState {
     fn default() -> Self {
         Self {
@@ -178,7 +174,6 @@ pub async fn watcher(app: AppHandle, state: GlobalState) {
 }
 
 pub async fn tick(state: MutexGuard<'_, AppState>) -> ResourceUpdatedPayload {
-
     let ms = state.config.lock().unwrap().monitor.update_interval;
     let current_cpu = measure_cpu_state(ms).await;
 

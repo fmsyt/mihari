@@ -33,7 +33,6 @@ pub struct MonitorResourceConfig {
     pub swap: SwapConfig,
 }
 
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(default, rename_all = "camelCase")]
 pub struct CpuConfig {

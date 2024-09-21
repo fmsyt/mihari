@@ -7,10 +7,7 @@ mod core;
 mod resource;
 
 use core::{AppState, GlobalState};
-use std::{
-    env,
-    sync::Arc,
-};
+use std::{env, sync::Arc};
 
 use commands::{
     cpu_state, cpu_state_aggregate, get_app_config, memory_state, quit, start_watcher,
@@ -25,6 +22,7 @@ use tauri::{
     Emitter, Manager,
 };
 
+use tauri_plugin_dialog::DialogExt;
 use tokio::sync::Mutex;
 
 #[derive(Clone, serde::Serialize)]
@@ -34,13 +32,19 @@ struct Payload {
 }
 
 fn main() {
-
     #[cfg(target_os = "linux")]
     {
         env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
     }
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_window_state::Builder::new().build())
+        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+            println!("{}, {argv:?}, {cwd}", app.package_info().name);
+            app.emit("single-instance", Payload { args: argv, cwd })
+                .unwrap();
+        }))
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             println!("{}, {argv:?}, {cwd}", app.package_info().name);
@@ -60,14 +64,34 @@ fn main() {
             start_watcher,
         ])
         .setup(|app| {
+
             let quit_menu = MenuItemBuilder::with_id("quit", "終了").build(app)?;
-            let menu = MenuBuilder::new(app).item(&quit_menu).build()?;
+            let version_menu = MenuItemBuilder::with_id("version", "バージョン情報").build(app)?;
+
+            let menu = MenuBuilder::new(app)
+                .item(&quit_menu)
+                .item(&version_menu)
+                .build()?;
+
             let tray = TrayIconBuilder::new()
                 .menu(&menu)
                 .on_menu_event(move |app, event| match event.id().as_ref() {
                     "quit" => {
                         let app = app.clone();
                         quit(app);
+                    }
+                    "version" => {
+                        let message = format!(
+                            "{} v{}",
+                            app.package_info().name,
+                            app.package_info().version
+                        );
+
+                        app.dialog()
+                            .message(message)
+                            .title("バージョン情報")
+                            .blocking_show();
+
                     }
                     _ => (),
                 })

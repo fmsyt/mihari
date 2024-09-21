@@ -22,7 +22,6 @@
       "allowDowngrades": true,
       "nsis": null,
       "tsp": false,
-      "webviewFixedRuntimePath": null,
       "webviewInstallMode": {
         "silent": true,
         "type": "downloadBootstrapper"
