@@ -66,10 +66,18 @@ fn main() {
         .setup(|app| {
 
             let quit_menu = MenuItemBuilder::with_id("quit", "終了").build(app)?;
+
+            #[cfg(not(target_os = "linux"))]
             let version_menu = MenuItemBuilder::with_id("version", "バージョン情報").build(app)?;
 
+            #[cfg(not(target_os = "linux"))]
             let menu = MenuBuilder::new(app)
                 .item(&version_menu)
+                .item(&quit_menu)
+                .build()?;
+
+            #[cfg(target_os = "linux")]
+            let menu = MenuBuilder::new(app)
                 .item(&quit_menu)
                 .build()?;
 
@@ -91,7 +99,6 @@ fn main() {
                             .message(message)
                             .title("バージョン情報")
                             .blocking_show();
-
                     }
                     _ => (),
                 })
