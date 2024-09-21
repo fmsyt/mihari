@@ -69,8 +69,8 @@ fn main() {
             let version_menu = MenuItemBuilder::with_id("version", "バージョン情報").build(app)?;
 
             let menu = MenuBuilder::new(app)
-                .item(&quit_menu)
                 .item(&version_menu)
+                .item(&quit_menu)
                 .build()?;
 
             let tray = TrayIconBuilder::new()
