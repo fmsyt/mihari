@@ -17,8 +17,8 @@
     "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.20",
     "@mui/x-charts": "^7.7.0",
-    "@tauri-apps/api": "2.0.0-beta.15",
-    "@tauri-apps/plugin-fs": "2.0.0-beta.7",
+    "@tauri-apps/api": "2.2.0",
+    "@tauri-apps/plugin-fs": "2.2.0",
     "@types/bytes": "^3.1.4",
     "bytes": "^3.1.2",
     "i18next": "^23.11.5",
@@ -29,7 +29,7 @@
     "tauri-plugin-context-menu": "^0.7.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.0.2",
+    "@tauri-apps/cli": "2.2.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
