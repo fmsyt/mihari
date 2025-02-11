@@ -21,7 +21,7 @@
       "**/Thumbs.db": true
     },
     "editor.formatOnSave": true,
-    "files.autoSave": "off",
+    "files.autoSave": "afterDelay",
     "[rust]": {
       "editor.formatOnSave": false,
     },

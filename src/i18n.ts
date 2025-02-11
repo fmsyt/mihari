@@ -1,16 +1,16 @@
-import i18next from "i18next";
-import { initReactI18next } from "react-i18next";
+import i18next from "i18next"
+import { initReactI18next } from "react-i18next"
 
 interface Translation {
-  themeMode: string;
-  themeModeLight: string;
-  themeModeDark: string;
-  themeModeSystem: string;
+  themeMode: string
+  themeModeLight: string
+  themeModeDark: string
+  themeModeSystem: string
 
-  alwaysOnTop: string;
-  decoration: string;
+  alwaysOnTop: string
+  decoration: string
 
-  quit: string;
+  quit: string
 }
 
 const translation_en: Partial<Translation> = {
@@ -23,7 +23,7 @@ const translation_en: Partial<Translation> = {
   decoration: "Show title bar",
 
   quit: "Quit",
-};
+}
 
 const translation_ja: Partial<Translation> = {
   ...translation_en,
@@ -36,28 +36,26 @@ const translation_ja: Partial<Translation> = {
   decoration: "タイトルバーを表示",
 
   quit: "終了",
-};
+}
 
-i18next
-  .use(initReactI18next)
-  .init({
-    resources: {
-      ja: {
-        translation: translation_ja
-      },
-      en: {
-        translation: translation_en
-      }
+i18next.use(initReactI18next).init({
+  resources: {
+    ja: {
+      translation: translation_ja,
     },
-    lng: "ja",
-    interpolation: {
-      escapeValue: false
-    }
-  });
+    en: {
+      translation: translation_en,
+    },
+  },
+  lng: "ja",
+  interpolation: {
+    escapeValue: false,
+  },
+})
 
 const i18n = {
   ...i18next,
-  t: (key: keyof Translation) => i18next.t(key)
+  t: (key: keyof Translation) => i18next.t(key),
 }
 
-export default i18n;
+export default i18n

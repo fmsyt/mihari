@@ -1,17 +1,16 @@
-import { Card, CardContent, SxProps, Theme } from "@mui/material";
-import { ReactNode, useMemo } from "react";
+import { Card, CardContent, type SxProps, type Theme } from "@mui/material"
+import { type ReactNode, useMemo } from "react"
 
 interface PanelProps {
-  children?: ReactNode;
-  width?: number | string;
-  sx?: SxProps<Theme>;
-  padding?: number | string;
+  children?: ReactNode
+  width?: number | string
+  sx?: SxProps<Theme>
+  padding?: number | string
 }
 
 export default function Panel(props: PanelProps) {
-
-  const { padding: p } = props;
-  const padding = useMemo(() => p || "8px", [p]);
+  const { padding: p } = props
+  const padding = useMemo(() => p || "8px", [p])
 
   return (
     <Card
@@ -36,5 +35,5 @@ export default function Panel(props: PanelProps) {
         {props.children}
       </CardContent>
     </Card>
-  );
+  )
 }

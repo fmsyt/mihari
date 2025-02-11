@@ -1,22 +1,33 @@
-import { useEffect, useState } from "react";
-import { ChartContextResource, ChartContextValuesType, ChartLineDelta, ChartProviderProps } from "../types";
-import ChartContext from "./ChartContext";
+import { useEffect, useState } from "react"
+import type {
+  ChartContextResource,
+  ChartContextValuesType,
+  ChartLineDelta,
+  ChartProviderProps,
+} from "../types"
+import ChartContext from "./ChartContext"
 
 function fillArray<T>(length: number, value: T): T[] {
-  return Array.from({ length }, () => value);
+  return Array.from({ length }, () => value)
 }
 
-
 export default function ChartProvider(props: ChartProviderProps) {
+  const {
+    children,
+    id,
+    label,
+    lines,
+    initialValue,
+    historyLength,
+    incomingDeltas,
+  } = props
+  const [resources, setResources] = useState<ChartContextResource[]>([])
 
-  const { children, id, label, lines, initialValue, historyLength, incomingDeltas } = props;
-  const [resources, setResources] = useState<ChartContextResource[]>([]);
-
-  const [currentIncomingDeltas, setCurrentIncomingDeltas] = useState<ChartLineDelta[]>([]);
-
+  const [currentIncomingDeltas, setCurrentIncomingDeltas] = useState<
+    ChartLineDelta[]
+  >([])
 
   useEffect(() => {
-
     const contextResources: ChartContextResource[] = lines.map((info) => {
       return {
         id: info.id,
@@ -25,17 +36,16 @@ export default function ChartProvider(props: ChartProviderProps) {
       }
     })
 
-    setResources(contextResources);
-
+    setResources(contextResources)
   }, [lines, initialValue, historyLength])
 
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: IPC経由でのデータ更新のタイミングを同期するためにincomingDeltasを監視する
   useEffect(() => {
-    setCurrentIncomingDeltas(incomingDeltas);
+    setCurrentIncomingDeltas(incomingDeltas)
 
-    const next = [...resources];
-    incomingDeltas.forEach((delta) => {
-      let resource = next.find((resource) => resource.id === delta.id);
+    const next = [...resources]
+    for (const delta of incomingDeltas) {
+      let resource = next.find((resource) => resource.id === delta.id)
       if (!resource) {
         resource = {
           id: delta.id,
@@ -43,31 +53,25 @@ export default function ChartProvider(props: ChartProviderProps) {
           values: fillArray(historyLength || 60, initialValue || 0),
         }
 
-        next.push(resource);
+        next.push(resource)
       }
 
-      resource.values = [...resource.values.slice(1), delta.value];
-    })
+      resource.values = [...resource.values.slice(1), delta.value]
+    }
 
-    setResources(next);
-
+    setResources(next)
   }, [incomingDeltas])
 
-
-  const currentLineValues = currentIncomingDeltas.map((param) => param.value);
-  const currentLineRaws = currentIncomingDeltas.map((param) => param.raw);
+  const currentLineValues = currentIncomingDeltas.map((param) => param.value)
+  const currentLineRaws = currentIncomingDeltas.map((param) => param.raw)
 
   const value: ChartContextValuesType = {
     id,
     label,
     currentLineValues,
     resources,
-    currentLineRaws
+    currentLineRaws,
   }
 
-  return (
-    <ChartContext.Provider value={value}>
-      {children}
-    </ChartContext.Provider>
-  )
+  return <ChartContext.Provider value={value}>{children}</ChartContext.Provider>
 }

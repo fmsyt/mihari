@@ -1,12 +1,11 @@
-import { Box, CssBaseline } from "@mui/material";
+import { Box, CssBaseline } from "@mui/material"
 
-import MonitorContainer from "./components/MonitorContainer";
-import ThemeProvider from "./ThemeProvider";
-import useRegisterContextMenu from "./useRegisterContextMenu";
+import ThemeProvider from "./ThemeProvider"
+import MonitorContainer from "./components/MonitorContainer"
+import useRegisterContextMenu from "./useRegisterContextMenu"
 
 function App() {
-
-  const handleContextMenu = useRegisterContextMenu();
+  const handleContextMenu = useRegisterContextMenu()
 
   return (
     <ThemeProvider>
@@ -19,7 +18,7 @@ function App() {
         <MonitorContainer />
       </Box>
     </ThemeProvider>
-  );
+  )
 }
 
-export default App;
+export default App
