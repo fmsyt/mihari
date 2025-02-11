@@ -8,8 +8,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "lint": "prettier --check src",
-    "format": "prettier --write src"
+    "lint": "biome lint",
+    "format": "biome format",
+    "check": "biome check"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -29,11 +30,11 @@
     "tauri-plugin-context-menu": "^0.7.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@tauri-apps/cli": "2.2.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
-    "prettier": "^3.3.2",
     "typescript": "^5.4.5",
     "vite": "^5.3.1"
   }
