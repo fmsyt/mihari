@@ -1,14 +1,16 @@
-import { Event, UnlistenFn, listen } from "@tauri-apps/api/event";
-import { AppConfig } from "./types";
+import { type Event, type UnlistenFn, listen } from "@tauri-apps/api/event"
+import type { AppConfig } from "./types"
 
-let unListen: UnlistenFn | undefined = undefined;
+let unListen: UnlistenFn | undefined = undefined
 
-export default async function registerConfigChanged(handler: (config: AppConfig, e?: Event<AppConfig>) => void) {
+export default async function registerConfigChanged(
+  handler: (config: AppConfig, e?: Event<AppConfig>) => void,
+) {
   if (unListen) {
-    unListen();
+    unListen()
   }
 
   unListen = await listen<AppConfig>("configChanged", (e) => {
-    handler(e.payload, e);
-  });
+    handler(e.payload, e)
+  })
 }

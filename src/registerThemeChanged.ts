@@ -1,14 +1,16 @@
-import { UnlistenFn, listen } from "@tauri-apps/api/event";
-import { AppConfig } from "./types";
+import { type UnlistenFn, listen } from "@tauri-apps/api/event"
+import type { AppConfig } from "./types"
 
-let unListen: UnlistenFn | undefined = undefined;
+let unListen: UnlistenFn | undefined = undefined
 
-export default async function registerThemeChanged(handler: (theme: AppConfig["window"]["theme"]) => void) {
+export default async function registerThemeChanged(
+  handler: (theme: AppConfig["window"]["theme"]) => void,
+) {
   if (unListen) {
-    unListen();
+    unListen()
   }
 
   unListen = await listen<AppConfig>("configChanged", (e) => {
-    handler(e.payload.window.theme);
-  });
+    handler(e.payload.window.theme)
+  })
 }
