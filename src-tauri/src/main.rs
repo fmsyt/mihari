@@ -1,13 +1,14 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod utils;
 mod commands;
 mod config;
 mod core;
 mod resource;
 
 use core::{AppState, GlobalState};
-use std::{env, sync::Arc};
+use std::{env, sync::Arc, thread};
 
 use commands::{
     cpu_state, cpu_state_aggregate, get_app_config, memory_state, quit, start_watcher,
@@ -23,7 +24,7 @@ use tauri::{
 };
 
 use tauri_plugin_dialog::DialogExt;
-use tokio::sync::Mutex;
+use tokio::{runtime::Runtime, sync::Mutex};
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
@@ -83,10 +84,24 @@ fn main() {
                         quit(app);
                     }
                     "version" => {
+
+                        let handle = thread::spawn(|| {
+                            let rt = Runtime::new().expect("Failed to create Tokio runtime");
+                            let try_released_version = rt.block_on(utils::get_released_version());
+                            if let Ok(released_version) = try_released_version {
+                                released_version
+                            } else {
+                                "不明".to_string()
+                            }
+                        });
+
+                        let released_version = handle.join().expect("Failed to join thread");
+
                         let message = format!(
-                            "{} v{}",
+                            "{} v{}\n\n最新バージョン: {}",
                             app.package_info().name,
-                            app.package_info().version
+                            app.package_info().version,
+                            released_version,
                         );
 
                         app.dialog()
