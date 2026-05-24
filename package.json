@@ -19,7 +19,7 @@
     "@mui/material": "^5.17.1",
     "@mui/x-charts": "^7.29.1",
     "@tauri-apps/api": "2.11.0",
-    "@tauri-apps/plugin-fs": "2.3.0",
+    "@tauri-apps/plugin-fs": "2.5.1",
     "@types/bytes": "^3.1.5",
     "bytes": "^3.1.2",
     "i18next": "^23.16.8",
