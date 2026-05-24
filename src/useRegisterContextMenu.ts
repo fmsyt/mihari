@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core"
+import { LogicalPosition } from "@tauri-apps/api/dpi"
 import { emit } from "@tauri-apps/api/event"
 import { CheckMenuItem, Menu, MenuItem, Submenu } from "@tauri-apps/api/menu"
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
@@ -28,6 +29,8 @@ export default function useRegisterContextMenu<T extends HTMLElement>() {
       if (!mainWindow) {
         return undefined
       }
+
+      const position = new LogicalPosition(e.clientX, e.clientY)
 
       const fn = async () => {
         const menuItems = await Promise.all([
@@ -103,10 +106,10 @@ export default function useRegisterContextMenu<T extends HTMLElement>() {
           items: menuItems,
         })
 
-        await menu.popup()
+        await menu.popup(position, mainWindow)
       }
 
-      fn()
+      void fn()
     },
     [config],
   )

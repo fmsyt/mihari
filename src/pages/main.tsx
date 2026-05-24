@@ -6,7 +6,11 @@ import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
 import App from "../App"
 import "./main.css"
 
-document.addEventListener("mousedown", async (_) => {
+document.addEventListener("mousedown", async (event) => {
+  if (event.button !== 0) {
+    return
+  }
+
   await getCurrentWebviewWindow().startDragging()
 })
 
