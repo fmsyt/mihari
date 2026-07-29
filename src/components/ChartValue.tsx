@@ -1,7 +1,7 @@
 import { Tooltip, Typography } from "@mui/material"
 import { useContext } from "react"
-import { cpuTooltip, memoryTooltip, swapTooltip } from "../resource"
-import type { CPUState, MemoryState, SwapState } from "../types"
+import { cpuTooltip, gpuTooltip, memoryTooltip, swapTooltip } from "../resource"
+import type { CPUState, GpuState, MemoryState, SwapState } from "../types"
 import ChartContext from "./ChartContext"
 
 const ChartValue = () => {
@@ -69,6 +69,8 @@ const ChartValue = () => {
         return memoryTooltip(currentLineRaws[0] as MemoryState)
       case "swap":
         return swapTooltip(currentLineRaws[0] as SwapState)
+      case "gpu":
+        return gpuTooltip(currentLineRaws as GpuState[])
       default:
         return null
     }

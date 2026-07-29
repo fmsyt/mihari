@@ -31,6 +31,7 @@ pub struct MonitorResourceConfig {
     pub cpu: CpuConfig,
     pub memory: MemoryConfig,
     pub swap: SwapConfig,
+    pub gpu: GpuConfig,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -52,6 +53,13 @@ pub struct MemoryConfig {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(default, rename_all = "camelCase")]
 pub struct SwapConfig {
+    pub show: bool,
+    pub label: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GpuConfig {
     pub show: bool,
     pub label: Option<String>,
 }
@@ -90,6 +98,7 @@ impl Default for MonitorResourceConfig {
             cpu: CpuConfig::default(),
             memory: MemoryConfig::default(),
             swap: SwapConfig::default(),
+            gpu: GpuConfig::default(),
         }
     }
 }
@@ -119,6 +128,15 @@ impl Default for SwapConfig {
         Self {
             show: true,
             label: Some("Swap".to_string()),
+        }
+    }
+}
+
+impl Default for GpuConfig {
+    fn default() -> Self {
+        Self {
+            show: true,
+            label: Some("GPU".to_string()),
         }
     }
 }

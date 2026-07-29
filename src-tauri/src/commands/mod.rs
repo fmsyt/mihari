@@ -7,8 +7,8 @@ use crate::{
     config::Config,
     core::{watcher, GlobalState},
     resource::{
-        measure_cpu_state, measure_cpu_state_aggregate, measure_memory_state, measure_swap_state,
-        CPUState, MemoryState, SwapState,
+        measure_cpu_state, measure_cpu_state_aggregate, measure_gpu_state, measure_memory_state,
+        measure_swap_state, CPUState, GpuState, MemoryState, SwapState,
     },
 };
 
@@ -72,6 +72,11 @@ pub fn swap_state() -> SwapState {
     sys.refresh_memory();
 
     measure_swap_state(&sys)
+}
+
+#[tauri::command]
+pub fn gpu_state() -> Vec<GpuState> {
+    measure_gpu_state()
 }
 
 /// @see https://docs.rs/tauri/latest/tauri/trait.Manager.html

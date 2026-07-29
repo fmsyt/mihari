@@ -8,8 +8,8 @@ use tokio::sync::MutexGuard;
 use crate::{
     config::Config,
     resource::{
-        measure_cpu_state, measure_memory_state, measure_swap_state, CPUState, MemoryState,
-        SwapState,
+        measure_cpu_state, measure_gpu_state, measure_memory_state, measure_swap_state, CPUState,
+        GpuState, MemoryState, SwapState,
     },
 };
 
@@ -32,6 +32,7 @@ pub struct ResourceUpdatedPayload {
     pub cpu: Option<ChartLineDelta<CPUState>>,
     pub memory: Option<ChartLineDelta<MemoryState>>,
     pub swap: Option<ChartLineDelta<SwapState>>,
+    pub gpu: Option<ChartLineDelta<GpuState>>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -127,6 +128,25 @@ impl From<SwapState> for ChartLineDelta<SwapState> {
     }
 }
 
+impl From<Vec<GpuState>> for ChartLineDelta<GpuState> {
+    fn from(payload: Vec<GpuState>) -> Self {
+        let delta = payload
+            .iter()
+            .map(|gpu| ChartLine {
+                id: gpu.id.clone(),
+                label: gpu.label.clone(),
+                value: gpu.usage,
+                raw: Some(gpu.clone()),
+            })
+            .collect();
+
+        Self {
+            chart_id: "gpu".to_string(),
+            delta,
+        }
+    }
+}
+
 impl Default for AppState {
     fn default() -> Self {
         Self {
@@ -185,11 +205,13 @@ pub async fn tick(state: MutexGuard<'_, AppState>) -> ResourceUpdatedPayload {
 
     let memory = measure_memory_state(&sys);
     let swap = measure_swap_state(&sys);
+    let gpu = measure_gpu_state();
 
     let payload = ResourceUpdatedPayload {
         cpu: Some(current_cpu.clone().into()),
         memory: Some(memory.into()),
         swap: Some(swap.into()),
+        gpu: Some(gpu.into()),
     };
 
     let mut watcher = state.watcher.lock().unwrap();

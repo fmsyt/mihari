@@ -11,7 +11,7 @@ export interface WindowState {
   decoration: boolean
 }
 
-export const MonitorKeys = ["cpu", "memory", "swap"] as const
+export const MonitorKeys = ["cpu", "memory", "swap", "gpu"] as const
 export type MonitorKey = (typeof MonitorKeys)[number]
 
 export interface MonitorConfig {
@@ -21,6 +21,7 @@ export interface MonitorConfig {
     cpu: CpuConfig
     memory: MemoryConfig
     swap: SwapConfig
+    gpu: GpuConfig
   }
 }
 
@@ -57,6 +58,8 @@ export interface MemoryConfig extends MonitorResourceConfig {}
 
 export interface SwapConfig extends MonitorResourceConfig {}
 
+export interface GpuConfig extends MonitorResourceConfig {}
+
 export interface CPUState {
   system: number
   user: number
@@ -75,7 +78,13 @@ export interface SwapState {
   used: number
 }
 
-export type ResourceState = CPUState | MemoryState | SwapState
+export interface GpuState {
+  id: string
+  label: string
+  usage: number
+}
+
+export type ResourceState = CPUState | MemoryState | SwapState | GpuState
 
 export interface ChartProviderProps {
   children?: ReactNode
@@ -109,13 +118,13 @@ export interface ChartContextResource {
   values: number[]
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: chart payload raw values differ by resource
 export interface ChartLineDelta<T = any> extends ChartLine {
   value: number
   raw: T
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: chart payload rows are specialized by resource
 export interface ResourceUpdatedPayloadRow<T = any> {
   chartId: MonitorKey
   delta: ChartLineDelta<T>[]
@@ -125,4 +134,5 @@ export interface UpdateResourceEventPayload {
   cpu?: ResourceUpdatedPayloadRow<CPUState>
   memory?: ResourceUpdatedPayloadRow<MemoryState>
   swap?: ResourceUpdatedPayloadRow<SwapState>
+  gpu?: ResourceUpdatedPayloadRow<GpuState>
 }

@@ -1,6 +1,12 @@
 import { invoke } from "@tauri-apps/api/core"
 
-import type { AppConfig, CPUState, MemoryState, SwapState } from "./types"
+import type {
+  AppConfig,
+  CPUState,
+  GpuState,
+  MemoryState,
+  SwapState,
+} from "./types"
 
 export async function getAppConfig(): Promise<AppConfig> {
   return await invoke("get_app_config")
@@ -47,6 +53,10 @@ export async function getMemoryState(): Promise<MemoryState> {
 
 export async function getSwapState(): Promise<SwapState> {
   return await invoke("swap_state")
+}
+
+export async function getGpuState(): Promise<GpuState[]> {
+  return await invoke("gpu_state")
 }
 
 export async function startWatchResource() {

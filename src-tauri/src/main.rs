@@ -1,17 +1,17 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod utils;
 mod commands;
 mod config;
 mod core;
 mod resource;
+mod utils;
 
 use core::{AppState, GlobalState};
 use std::{env, sync::Arc, thread};
 
 use commands::{
-    cpu_state, cpu_state_aggregate, get_app_config, memory_state, quit, start_watcher,
+    cpu_state, cpu_state_aggregate, get_app_config, gpu_state, memory_state, quit, start_watcher,
     stop_watcher, swap_state,
 };
 
@@ -54,12 +54,12 @@ fn main() {
             cpu_state_aggregate,
             memory_state,
             swap_state,
+            gpu_state,
             get_app_config,
             stop_watcher,
             start_watcher,
         ])
         .setup(|app| {
-
             let quit_menu = MenuItemBuilder::with_id("quit", "終了").build(app)?;
 
             #[cfg(not(target_os = "linux"))]
@@ -72,9 +72,7 @@ fn main() {
                 .build()?;
 
             #[cfg(target_os = "linux")]
-            let menu = MenuBuilder::new(app)
-                .item(&quit_menu)
-                .build()?;
+            let menu = MenuBuilder::new(app).item(&quit_menu).build()?;
 
             let tray = TrayIconBuilder::new()
                 .menu(&menu)
@@ -84,7 +82,6 @@ fn main() {
                         quit(app);
                     }
                     "version" => {
-
                         let handle = thread::spawn(|| {
                             let rt = Runtime::new().expect("Failed to create Tokio runtime");
                             let try_released_version = rt.block_on(utils::get_released_version());

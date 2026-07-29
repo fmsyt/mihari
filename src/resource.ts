@@ -1,5 +1,5 @@
 import bytes, { type Unit } from "bytes"
-import type { CPUState, MemoryState, SwapState } from "./types"
+import type { CPUState, GpuState, MemoryState, SwapState } from "./types"
 
 export function cpuTooltip(state: CPUState): string {
   return `System: ${state.system}%\nUser: ${state.user}%\nNice: ${state.nice}%\nIdle: ${state.idle}%\nInterrupt: ${state.interrupt}%`
@@ -39,4 +39,10 @@ export function swapTooltip(state: SwapState): string {
   const used = bytes(state.used, { unit })
 
   return `Total: ${total}\nUsed: ${used}`
+}
+
+export function gpuTooltip(stateList: GpuState[]): string {
+  return stateList
+    .map((state) => `${state.label}: ${Math.round(state.usage)}%`)
+    .join("\n")
 }
