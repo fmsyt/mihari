@@ -1,20 +1,22 @@
-import {
-  ThemeProvider as MuiThemeProvider,
-  createTheme,
-  useMediaQuery,
-} from "@mui/material"
-
+import { Theme } from "@emotion/react"
+import { createTheme, ThemeProvider as MuiThemeProvider, useMediaQuery } from "@mui/material"
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
-import type { Theme } from "@tauri-apps/api/window"
+import { createContext, ReactNode, useEffect, useMemo, useState } from "react"
+import { getAppConfig } from "../api"
+import registerThemeChanged from "../registerThemeChanged"
 
-import { useEffect, useMemo, useState } from "react"
+export type ThemeContextProps = {
+  themeMode: "light" | "dark" | "system"
+  isDarkMode: boolean
+}
 
-import { ThemeContext } from "./contexts/theme"
-import { getAppConfig } from "./api"
-import registerThemeChanged from "./registerThemeChanged"
+export const ThemeContext = createContext<ThemeContextProps>({
+  themeMode: "system",
+  isDarkMode: false,
+})
 
-interface ThemeProviderProps {
-  children: React.ReactNode
+export type ThemeProviderProps = {
+  children: ReactNode;
 }
 
 const initialThemeMode = localStorage.getItem("themeMode") as
@@ -23,7 +25,7 @@ const initialThemeMode = localStorage.getItem("themeMode") as
   | "system"
   | null
 
-const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
+export const ThemeProvider = (props: ThemeProviderProps) => {
   const { children } = props
 
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">(
@@ -108,10 +110,12 @@ const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
   )
 
   return (
-    <ThemeContext.Provider value={{ themeMode, isDarkMode }}>
-      <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
+    <ThemeContext.Provider
+      value={{ themeMode, isDarkMode }}
+    >
+      <MuiThemeProvider theme={theme}> {children} </MuiThemeProvider>
     </ThemeContext.Provider>
   )
 }
 
-export default ThemeProvider
+

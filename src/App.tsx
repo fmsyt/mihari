@@ -1,7 +1,6 @@
 import { Box, CssBaseline } from "@mui/material"
-
-import ThemeProvider from "./ThemeProvider"
 import MonitorContainer from "./components/MonitorContainer"
+import ThemeProvider from "./ThemeProvider"
 import useRegisterContextMenu from "./useRegisterContextMenu"
 
 function App() {

@@ -9,8 +9,8 @@ import type {
 import { axisClasses } from "@mui/x-charts/ChartsAxis"
 import { LineChart, areaElementClasses } from "@mui/x-charts/LineChart"
 
-import ThemeContext from "../ThemeContext"
 import ChartContext from "./ChartContext"
+import { ThemeContext } from "../contexts/theme"
 
 const goldenRatioConjugate = 0.6180339887
 
