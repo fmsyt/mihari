@@ -1,7 +1,7 @@
 import { Box, CssBaseline } from "@mui/material"
 import MonitorContainer from "./components/MonitorContainer"
-import ThemeProvider from "./ThemeProvider"
 import useRegisterContextMenu from "./useRegisterContextMenu"
+import { ThemeProvider } from "./contexts/theme"
 
 function App() {
   const handleContextMenu = useRegisterContextMenu()
