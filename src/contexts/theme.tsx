@@ -1,5 +1,9 @@
 import { Theme } from "@emotion/react"
-import { createTheme, ThemeProvider as MuiThemeProvider, useMediaQuery } from "@mui/material"
+import {
+  createTheme,
+  ThemeProvider as MuiThemeProvider,
+  useMediaQuery,
+} from "@mui/material"
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
 import { createContext, ReactNode, useEffect, useMemo, useState } from "react"
 import { getAppConfig } from "../api"
@@ -16,7 +20,7 @@ export const ThemeContext = createContext<ThemeContextProps>({
 })
 
 export type ThemeProviderProps = {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const initialThemeMode = localStorage.getItem("themeMode") as
@@ -110,12 +114,8 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
   )
 
   return (
-    <ThemeContext.Provider
-      value={{ themeMode, isDarkMode }}
-    >
+    <ThemeContext.Provider value={{ themeMode, isDarkMode }}>
       <MuiThemeProvider theme={theme}> {children} </MuiThemeProvider>
     </ThemeContext.Provider>
   )
 }
-
-
